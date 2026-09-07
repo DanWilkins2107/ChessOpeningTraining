@@ -1,0 +1,15 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`RootLayout > matches snapshot 1`] = `
+<div>
+  <header>
+    <a
+      data-discover="true"
+      href="/"
+    >
+      Chess Opening Training
+    </a>
+  </header>
+  <main />
+</div>
+`;
