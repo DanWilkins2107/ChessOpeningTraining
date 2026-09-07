@@ -5,7 +5,10 @@
       "autoUpdate": true
     },
     "pr-evidence-tools": {
-      "source": { "source": "github", "repo": "DanWilkins2107/pr-evidence-gallery" },
+      "source": {
+        "source": "github",
+        "repo": "DanWilkins2107/pr-evidence-gallery"
+      },
       "autoUpdate": true
     },
     "agentjira": {
