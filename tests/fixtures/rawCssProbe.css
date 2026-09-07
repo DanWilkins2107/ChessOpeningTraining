@@ -1,0 +1,4 @@
+/* Probe for tests/paletteGate.test.ts — proves .css files reach it as raw source. */
+.probe {
+  color: #abc;
+}
