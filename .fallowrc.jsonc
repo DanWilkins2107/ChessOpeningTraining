@@ -1,0 +1,17 @@
+{
+  "$schema": "./node_modules/fallow/schema.json",
+  "health": {
+    "maxCyclomatic": 3,
+    "maxCognitive": 3,
+    // maxCrap only bites once health.coverage points at Istanbul data; until
+    // then fallow estimates coverage from the module graph, so this threshold
+    // is near-inert. Wiring the coverage path belongs to node de6831b9.
+    "maxCrap": 5,
+  },
+  "rules": {
+    "unused-dev-dependencies": "error",
+    "unused-optional-dependencies": "error",
+    "stale-suppressions": "error",
+    "require-suppression-reason": "error",
+  },
+}

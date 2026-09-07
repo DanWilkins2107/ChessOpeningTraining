@@ -1,3 +1,4 @@
+// fallow-ignore-file unused-file -- Client landed ahead of its first consumer (node da43388c).
 import { createClient } from '@supabase/supabase-js';
 import { env } from './env';
 

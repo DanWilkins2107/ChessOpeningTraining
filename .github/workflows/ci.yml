@@ -33,4 +33,6 @@ jobs:
 
       - run: npm run test
 
+      - run: npm run fallow
+
       - run: npm run build
