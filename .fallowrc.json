@@ -1,0 +1,14 @@
+{
+  "$schema": "./node_modules/fallow/schema.json",
+  "health": {
+    "maxCyclomatic": 3,
+    "maxCognitive": 3,
+    "maxCrap": 5
+  },
+  "rules": {
+    "unused-dev-dependencies": "error",
+    "unused-optional-dependencies": "error",
+    "stale-suppressions": "error",
+    "require-suppression-reason": "error"
+  }
+}
