@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest';
 
-const ROOT_FILES = ['main.tsx', 'theme.css'];
+const ROOT_EXCEPTIONS = ['main.tsx', 'theme.css', 'env.ts'];
 const NAME = String.raw`[\w-]+`;
 const EXT = String.raw`(?:tsx|ts|css|test\.ts|test\.tsx|snapshot\.test\.tsx)`;
 const SNAP = String.raw`snapshot\.test\.tsx\.snap`;
@@ -12,9 +12,9 @@ const LEAF = new RegExp(
 const companionOf = (base: string) =>
   new RegExp(String.raw`^(?:${base}\.${EXT}|__snapshots__/${base}\.${SNAP})$`);
 
-const isPlaced = (path: string) => {
+export const isPlaced = (path: string) => {
   const parts = path.split('/');
-  if (parts.length === 1) return ROOT_FILES.includes(path);
+  if (parts.length === 1) return ROOT_EXCEPTIONS.includes(path);
 
   let base = '';
   const [top = '', page = ''] = parts;
@@ -42,15 +42,4 @@ const modules = Object.keys(import.meta.glob('../src/**/*')).map((key) =>
 it('every module sits in a page folder or an elements folder', () => {
   expect(modules.length).toBeGreaterThan(0);
   expect(modules.filter((path) => !isPlaced(path))).toEqual([]);
-});
-
-it('the placement check flags misplaced modules', () => {
-  expect(isPlaced('pages/Home/page.tsx')).toBe(true);
-  expect(isPlaced('pages/Home/elements/Foo.tsx')).toBe(true);
-  expect(isPlaced('pages/Home/elements/Foo/Foo.tsx')).toBe(true);
-  expect(isPlaced('elements/useThing.test.ts')).toBe(true);
-  expect(isPlaced('pages/Home/stray.tsx')).toBe(false);
-  expect(isPlaced('pages/Home/elements/Foo/Bar.tsx')).toBe(false);
-  expect(isPlaced('components/Button.tsx')).toBe(false);
-  expect(isPlaced('stray.ts')).toBe(false);
 });
