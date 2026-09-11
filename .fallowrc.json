@@ -3,14 +3,7 @@
   "health": {
     "maxCyclomatic": 3,
     "maxCognitive": 3,
-    "maxCrap": 5,
-    "thresholdOverrides": [
-      {
-        "files": ["meta/**"],
-        "maxCyclomatic": 4,
-        "reason": "Repo gates are straight-line validators; three guard clauses is cyclomatic 4."
-      }
-    ]
+    "maxCrap": 5
   },
   "rules": {
     "unused-dev-dependencies": "error",
