@@ -3,15 +3,12 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { lineProblems } from './todoGate';
+import { startOfTodayUtc } from './today';
 
 const LOCKFILE = /(^|\/)(package-lock\.json|npm-shrinkwrap\.json|[^/]*\.lock)$/;
-
-const toPosix = (value: string) => value.split(path.sep).join('/');
+const GATE_DIR = 'meta/';
 
 const repoRoot = path.join(import.meta.dirname, '..');
-const gateFilePrefix = toPosix(
-  path.relative(repoRoot, import.meta.filename),
-).replace(/\.test\.ts$/, '');
 
 describe('todo gate', () => {
   it('finds no rotten TODOs in tracked files', () => {
@@ -43,18 +40,11 @@ function scannedFiles(): string[] {
     .split('\0')
     .filter(
       (file) =>
-        file !== '' && !file.startsWith(gateFilePrefix) && !LOCKFILE.test(file),
+        file !== '' && !file.startsWith(GATE_DIR) && !LOCKFILE.test(file),
     );
 }
 
 function readTextFile(file: string): string | null {
   const contents = readFileSync(path.join(repoRoot, file));
   return contents.includes(0) ? null : contents.toString('utf8');
-}
-
-function startOfTodayUtc(): Date {
-  const now = new Date();
-  return new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
-  );
 }

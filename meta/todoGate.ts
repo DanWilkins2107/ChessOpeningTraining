@@ -1,5 +1,6 @@
 const MAX_DAYS_AHEAD = 30;
-const FORMAT = 'TODO <8-hex AgentJira node id> <YYYY-MM-DD>: description';
+export const FORMAT =
+  'TODO <8-hex AgentJira node id> <YYYY-MM-DD>: description';
 const MS_PER_DAY = 86_400_000;
 
 const TODO_WORD = /\btodo\b/gi;
@@ -14,12 +15,18 @@ export function lineProblems(line: string, today: Date): string[] {
 function problemAt(line: string, index: number, today: Date): string | null {
   const match = TODO_FORMAT.exec(line.slice(index));
   if (match === null) return `off-format, expected: ${FORMAT}`;
+  return expiryProblem(match[1], today);
+}
 
-  const [, expiryText] = match;
+function expiryProblem(expiryText: string, today: Date): string | null {
   const expiry = parseIsoDate(expiryText);
   if (expiry === null) return `expiry ${expiryText} is not a real date`;
 
   const daysAhead = (expiry.getTime() - today.getTime()) / MS_PER_DAY;
+  return lifetimeProblem(expiryText, daysAhead);
+}
+
+function lifetimeProblem(expiryText: string, daysAhead: number): string | null {
   if (daysAhead < 0) return `expiry ${expiryText} has passed`;
   if (daysAhead > MAX_DAYS_AHEAD) {
     return `expiry ${expiryText} is more than ${MAX_DAYS_AHEAD} days out`;
