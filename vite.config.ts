@@ -6,7 +6,5 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/testUtils/setup.ts'],
-    // tests/paletteGate.test.ts reads .css files raw; vitest stubs them empty without this.
-    css: true,
   },
 });

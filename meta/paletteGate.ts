@@ -10,16 +10,18 @@ const NAMED = new RegExp(
   'gi',
 );
 
-const valueSide = (line: string) => {
-  const colon = line.indexOf(':');
-  return colon === -1 ? '' : line.slice(colon + 1);
-};
-
-export const colourLiteralsIn = (path: string, source: string) =>
-  source
-    .split('\n')
+export function colourLiteralsIn(path: string, source: string): string[] {
+  const isStylesheet = path.endsWith('.css');
+  return source
+    .split(/\r?\n/)
     .flatMap((line) => [
       ...(line.match(HEX) ?? []),
       ...(line.match(COLOUR_FUNCTION) ?? []),
-      ...(path.endsWith('.css') ? (valueSide(line).match(NAMED) ?? []) : []),
+      ...(isStylesheet ? (valueSide(line).match(NAMED) ?? []) : []),
     ]);
+}
+
+function valueSide(line: string): string {
+  const colon = line.indexOf(':');
+  return colon === -1 ? '' : line.slice(colon + 1);
+}
