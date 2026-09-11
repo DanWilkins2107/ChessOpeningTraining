@@ -1,5 +1,3 @@
-import { SRC_EXCEPTIONS } from './srcExceptions';
-
 const NAME = String.raw`[\w-]+`;
 const EXT = String.raw`(?:tsx|ts|css|test\.ts|test\.tsx|snapshot\.test\.tsx)`;
 const SNAP = String.raw`snapshot\.test\.tsx\.snap`;
@@ -11,9 +9,9 @@ const LEAF = new RegExp(
 const companionOf = (base: string) =>
   new RegExp(String.raw`^(?:${base}\.${EXT}|__snapshots__/${base}\.${SNAP})$`);
 
-export const isPlaced = (path: string) => {
+export const isPlaced = (path: string, rootExceptions: string[]) => {
   const parts = path.split('/');
-  if (parts.length === 1) return SRC_EXCEPTIONS.includes(path);
+  if (parts.length === 1) return rootExceptions.includes(path);
 
   let base = '';
   const [top = '', page = ''] = parts;

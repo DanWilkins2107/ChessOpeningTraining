@@ -1,9 +1,7 @@
-import { SRC_EXCEPTIONS } from './srcExceptions';
-
-export const needsSnapshot = (path: string) =>
+export const needsSnapshot = (path: string, nonComponents: string[]) =>
   path.endsWith('.tsx') &&
   !path.endsWith('.test.tsx') &&
-  !SRC_EXCEPTIONS.includes(path);
+  !nonComponents.includes(path);
 
 export const snapshotPathFor = (path: string) =>
   path.replace(/([^/]+)\.tsx$/, '__snapshots__/$1.snapshot.test.tsx.snap');
