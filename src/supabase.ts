@@ -1,4 +1,4 @@
-// fallow-ignore-file unused-file -- TODO da43388c 2026-10-11: client landed ahead of its first consumer.
+// fallow-ignore-file unused-file -- da43388c 2026-10-11 client landed ahead of its first consumer.
 import { createClient } from '@supabase/supabase-js';
 import { env } from './env';
 
