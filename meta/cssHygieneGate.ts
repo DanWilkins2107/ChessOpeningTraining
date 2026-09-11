@@ -1,8 +1,17 @@
+import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+
+const ENTRY = 'src/main.tsx';
+const SCANNED = /\.(tsx?|css)$/;
+
 const STYLESHEET_IMPORT = /import\s+(?:[^;'"]*from\s*)?['"]([^'"]+\.css)['"]/g;
 const AT_STATEMENT = /@[a-z-]+[^;{}]*;/gi;
 const CSS_COMMENT = /\/\*[\s\S]*?\*\//g;
 const CLASS_SELECTOR = /\.(-?[A-Za-z_][A-Za-z0-9_-]*)/g;
 const MODULE_EXTENSIONS = ['.tsx', '.ts'];
+
+const repoRoot = path.join(import.meta.dirname, '..');
 
 export type SourceFile = { path: string; text: string };
 
@@ -19,6 +28,21 @@ export function cssProblems(files: SourceFile[], entryPath: string): string[] {
       ? deadClassProblems(file, byPath, globals)
       : importProblems(file, entryPath),
   );
+}
+
+export function stylesheetHygieneProblems(): string[] {
+  return cssProblems(scannedFiles(), ENTRY);
+}
+
+function scannedFiles(): SourceFile[] {
+  return execFileSync('git', ['ls-files', '-z', 'src'], { cwd: repoRoot })
+    .toString('utf8')
+    .split('\0')
+    .filter((file) => SCANNED.test(file))
+    .map((file) => ({
+      path: file,
+      text: readFileSync(path.join(repoRoot, file), 'utf8'),
+    }));
 }
 
 function importProblems(file: SourceFile, entryPath: string): string[] {
@@ -64,9 +88,9 @@ function siblingModule(
   byPath: Map<string, string>,
 ): SourceFile | null {
   for (const extension of MODULE_EXTENSIONS) {
-    const path = stem(cssPath) + extension;
-    const text = byPath.get(path);
-    if (text !== undefined) return { path, text };
+    const modulePath = stem(cssPath) + extension;
+    const text = byPath.get(modulePath);
+    if (text !== undefined) return { path: modulePath, text };
   }
   return null;
 }
@@ -100,12 +124,12 @@ function usesClassName(source: string, name: string): boolean {
   return new RegExp(`(?<![\\w-])${name}(?![\\w-])`).test(source);
 }
 
-function stem(path: string): string {
-  return path.slice(0, path.lastIndexOf('.'));
+function stem(filePath: string): string {
+  return filePath.slice(0, filePath.lastIndexOf('.'));
 }
 
-function baseName(path: string): string {
-  return path.slice(path.lastIndexOf('/') + 1);
+function baseName(filePath: string): string {
+  return filePath.slice(filePath.lastIndexOf('/') + 1);
 }
 
 function resolveFrom(fromPath: string, specifier: string): string {
