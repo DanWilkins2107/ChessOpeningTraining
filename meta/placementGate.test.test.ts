@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
-
-import { isPlaced } from './placement-gate.test';
+import { isPlaced } from './placementGate';
 
 describe('isPlaced', () => {
-  it('accepts the root exceptions and nothing else at the root', () => {
+  it('accepts the src exceptions and nothing else at the root', () => {
     expect(isPlaced('main.tsx')).toBe(true);
-    expect(isPlaced('theme.css')).toBe(true);
+    expect(isPlaced('router.tsx')).toBe(true);
     expect(isPlaced('env.ts')).toBe(true);
+    expect(isPlaced('supabase.ts')).toBe(true);
     expect(isPlaced('stray.ts')).toBe(false);
   });
 

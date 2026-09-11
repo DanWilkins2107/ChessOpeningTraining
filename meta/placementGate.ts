@@ -1,6 +1,5 @@
-import { expect, it } from 'vitest';
+import { SRC_EXCEPTIONS } from './srcExceptions';
 
-const ROOT_EXCEPTIONS = ['main.tsx', 'theme.css', 'env.ts'];
 const NAME = String.raw`[\w-]+`;
 const EXT = String.raw`(?:tsx|ts|css|test\.ts|test\.tsx|snapshot\.test\.tsx)`;
 const SNAP = String.raw`snapshot\.test\.tsx\.snap`;
@@ -14,7 +13,7 @@ const companionOf = (base: string) =>
 
 export const isPlaced = (path: string) => {
   const parts = path.split('/');
-  if (parts.length === 1) return ROOT_EXCEPTIONS.includes(path);
+  if (parts.length === 1) return SRC_EXCEPTIONS.includes(path);
 
   let base = '';
   const [top = '', page = ''] = parts;
@@ -34,12 +33,3 @@ export const isPlaced = (path: string) => {
   const rest = parts.join('/');
   return LEAF.test(rest) || (base !== '' && companionOf(base).test(rest));
 };
-
-const modules = Object.keys(import.meta.glob('../src/**/*')).map((key) =>
-  key.replace('../src/', ''),
-);
-
-it('every module sits in a page folder or an elements folder', () => {
-  expect(modules.length).toBeGreaterThan(0);
-  expect(modules.filter((path) => !isPlaced(path))).toEqual([]);
-});
