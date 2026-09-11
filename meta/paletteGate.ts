@@ -2,7 +2,6 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 
-const THEME = 'src/theme.css';
 const SCANNED = /\.(tsx?|css)$/;
 
 const NAMED_COLOURS =
@@ -31,13 +30,11 @@ export function colourLiteralsIn(file: string, source: string): string[] {
 }
 
 export function strayColourLiterals(): string[] {
-  return scannedFiles()
-    .filter((file) => file !== THEME)
-    .flatMap((file) =>
-      colourLiteralsIn(file, readTextFile(file)).map(
-        (literal) => `${file}: ${literal.trim()}`,
-      ),
-    );
+  return scannedFiles().flatMap((file) =>
+    colourLiteralsIn(file, readTextFile(file)).map(
+      (literal) => `${file}: ${literal.trim()}`,
+    ),
+  );
 }
 
 function valueSide(line: string): string {

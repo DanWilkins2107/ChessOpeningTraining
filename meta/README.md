@@ -12,5 +12,3 @@ about the app. Each gate is three files here, named after the gate:
 
 A violation is a string naming the file and what is wrong with it, so a failing
 gate reads as a fix list.
-
-This file is linked from the root `README.md` — update that link if it moves.
