@@ -15,15 +15,16 @@ const { execFileSync, readFileSync } = vi.hoisted(() => {
   };
 });
 
-// Mocked at the process boundary because strayColourLiterals scans the real
-// repo, which is green, so the formatting and file-filtering paths never run.
-// The stub hands it a three-file repo with a known answer; the rule itself is
-// untouched.
+// mock-reason: strayColourLiterals scans the real repo, which is green, so the
+// formatting and file-filtering paths never run. The stub hands it a three-file
+// repo with a known answer; the rule itself is untouched.
 vi.mock('node:child_process', () => ({
   execFileSync,
   default: { execFileSync },
 }));
 
+// mock-reason: the stubbed repo's files do not exist on disk, so the real
+// readFileSync would throw before the rule ran.
 vi.mock('node:fs', () => ({ readFileSync, default: { readFileSync } }));
 
 describe('palette gate colour rules', () => {

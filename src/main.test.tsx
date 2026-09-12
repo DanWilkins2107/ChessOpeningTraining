@@ -5,8 +5,8 @@ const { createRoot, render } = vi.hoisted(() => {
   return { render, createRoot: vi.fn(() => ({ render })) };
 });
 
-// Mocked because the createRoot/render pair is the assertion: main's whole
-// contract is "mount the router into #root exactly once", and the real
+// mock-reason: the createRoot/render pair is the assertion — main's whole
+// contract is "mount the router into #root exactly once" — and the real
 // createRoot would render the app tree instead of letting us observe the call.
 vi.mock('react-dom/client', () => ({ createRoot }));
 
