@@ -1,15 +1,12 @@
 import { defineConfig } from 'vitest/config';
-import react from '@vitejs/plugin-react';
 
 export default defineConfig({
-  plugins: [react()],
   test: {
-    environment: 'jsdom',
-    setupFiles: ['./tests/setup.ts'],
+    projects: ['./web/vite.config.ts', { test: { root: './meta' } }],
     coverage: {
       provider: 'istanbul',
       reporter: ['text', 'json'],
-      include: ['src/**/*.{ts,tsx}', 'meta/**/*.ts'],
+      include: ['meta/**/*.ts', 'web/meta/**/*.ts', 'web/src/**/*.{ts,tsx}'],
       exclude: ['**/*.test.{ts,tsx}'],
       thresholds: {
         statements: 100,

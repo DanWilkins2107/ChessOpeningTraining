@@ -14,8 +14,8 @@ const ROOT_EXCEPTIONS = [
   'src/supabase.ts',
 ];
 
-// Modules knowingly left above or below their lowest common folder, each until
-// the named node moves them.
+// Modules knowingly left above or below their lowest common folder, each only
+// until its expiry.
 const TEMPORARY_EXCLUDES: TemporaryExclude[] = [];
 
 const sources = moduleSources();
