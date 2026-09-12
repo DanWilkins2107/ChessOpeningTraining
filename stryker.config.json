@@ -2,12 +2,10 @@
   "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
   "packageManager": "npm",
   "testRunner": "vitest",
-  "vitest_comment": "web/vite.config.ts, not the root projects config: the meta gates scan the repo from disk with git ls-files, which has no meaning inside Stryker's sandbox. dir narrows collection to the app's own tests.",
   "vitest": {
     "configFile": "web/vite.config.ts",
     "dir": "web/src"
   },
-  "mutate_comment": "web/src only. Deliberately narrower than the 100% coverage set in vitest.config.ts, which also covers meta/ and web/meta/ — mutating the gates would re-run their full-repo disk scans once per mutant. Keep the two lists divergent; if you change one, do not assume the other should follow.",
   "mutate": [
     "web/src/**/*.{ts,tsx}",
     "!web/src/**/*.test.{ts,tsx}",
