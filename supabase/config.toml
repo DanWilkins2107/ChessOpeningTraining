@@ -1,0 +1,29 @@
+project_id = "ChessOpeningTraining"
+
+# 54321-54324 are permanently held by another local Supabase stack
+# on this machine, so every port is shifted 543xx -> 545xx. Everything the CLI
+# can default is omitted; see the reference for what is available:
+# https://supabase.com/docs/guides/local-development/cli/config
+
+[api]
+port = 54521
+
+[db]
+port = 54522
+shadow_port = 54520
+
+[studio]
+port = 54523
+
+[local_smtp]
+port = 54524
+
+[analytics]
+port = 54527
+
+[auth]
+site_url = "http://localhost:5173"
+additional_redirect_urls = ["http://localhost:5173"]
+
+[auth.email]
+enable_confirmations = true

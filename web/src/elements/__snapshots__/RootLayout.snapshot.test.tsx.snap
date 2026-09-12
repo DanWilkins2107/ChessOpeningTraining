@@ -2,14 +2,19 @@
 
 exports[`RootLayout > matches snapshot 1`] = `
 <div>
-  <header>
+  <header
+    class="root-layout-header"
+  >
     <a
+      class="root-layout-wordmark"
       data-discover="true"
       href="/"
     >
       Chess Opening Training
     </a>
   </header>
-  <main />
+  <main
+    class="root-layout-main"
+  />
 </div>
 `;

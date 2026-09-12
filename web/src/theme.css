@@ -1,0 +1,81 @@
+/* The only file allowed to hold colour literals: meta/paletteGate.ts exempts
+   this path by name, so move or rename it and that gate must change too. */
+
+:root {
+  --surface-page: #f7f9fc;
+  --surface-raised: #ffffff;
+  --border: #d9e0ea;
+  --ink: #4f3824;
+  --ink-muted: #6b655f;
+  --accent: #2f7a57;
+  --accent-hover: #256247;
+
+  --gap-sm: 0.5rem;
+  --gap-md: 1rem;
+  --gap-lg: 2rem;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-pill: 999px;
+
+  --font-sans:
+    'Plus Jakarta Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --text-sm: 0.75rem;
+  --text-base: 1rem;
+  --text-lg: 1.375rem;
+  --text-xl: 2rem;
+
+  --shadow: 0 1px 3px rgb(31 41 55 / 8%), 0 4px 12px rgb(31 41 55 / 6%);
+
+  --content-width: 64rem;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+}
+
+body {
+  background: var(--surface-page);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+figure,
+blockquote {
+  margin: 0;
+}
+
+h1 {
+  font-size: var(--text-xl);
+}
+
+a {
+  color: var(--accent);
+}
+
+/* :where keeps this at the specificity of plain `a`, so one class can set a
+   link's colour without having to restate it for hover. */
+a:where(:hover) {
+  color: var(--accent-hover);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
