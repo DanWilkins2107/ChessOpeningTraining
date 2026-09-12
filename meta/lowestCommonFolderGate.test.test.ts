@@ -1,9 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { excludeProblems, placementProblems } from './lowestCommonFolderGate';
 import type { ModuleSources } from './lowestCommonFolderGate';
+import { MARKER } from './todoGate';
 
-// Spelled in parts so the todo gate does not read these fixtures as real entries.
-const MARKER = `TO${'DO'}`;
 const reason = (expiry: string) =>
   `${MARKER} 1a2b3c4d ${expiry}: moving with the analysis page`;
 

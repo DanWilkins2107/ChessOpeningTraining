@@ -1,7 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { lineProblems } from './todoGate';
+import { MARKER, lineProblems } from './todoGate';
 
 export type TemporaryExclude = { path: string; reason: string };
 
@@ -12,8 +12,6 @@ const COMPANION_TEST = /\.test\.tsx?$/;
 const RELATIVE_IMPORT = /\b(?:from|import)\s*\(?\s*['"](\.[^'"]*)['"]/g;
 const RESOLVED_EXTENSIONS = ['', '.ts', '.tsx'];
 
-// Spelled in parts so the todo gate does not read this file as a real entry.
-const MARKER = `TO${'DO'}`;
 const HAS_MARKER = new RegExp(String.raw`\b${MARKER}\b`, 'i');
 
 const repoRoot = path.join(import.meta.dirname, '..');
