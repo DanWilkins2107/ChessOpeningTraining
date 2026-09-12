@@ -1,5 +1,30 @@
-import { describe, expect, it } from 'vitest';
-import { colourLiteralsIn } from './paletteGate';
+import { describe, expect, it, vi } from 'vitest';
+import { colourLiteralsIn, strayColourLiterals } from './paletteGate';
+
+const { execFileSync, readFileSync } = vi.hoisted(() => {
+  const NUL = '\0';
+  const tracked = ['src/theme.css', 'src/pages/Home/page.tsx', 'src/logo.svg'];
+
+  return {
+    execFileSync: () =>
+      Buffer.from(tracked.map((file) => `${file}${NUL}`).join('')),
+    readFileSync: (file: string) =>
+      file.endsWith('.css')
+        ? '  color: #fff;\n  border: 1px solid red;'
+        : "const label = 'red';",
+  };
+});
+
+// Mocked at the process boundary because strayColourLiterals scans the real
+// repo, which is green, so the formatting and file-filtering paths never run.
+// The stub hands it a three-file repo with a known answer; the rule itself is
+// untouched.
+vi.mock('node:child_process', () => ({
+  execFileSync,
+  default: { execFileSync },
+}));
+
+vi.mock('node:fs', () => ({ readFileSync, default: { readFileSync } }));
 
 describe('palette gate colour rules', () => {
   const cases: [string, string, string[]][] = [
@@ -15,5 +40,14 @@ describe('palette gate colour rules', () => {
 
   it.each(cases)('%s %s', (file, line, expected) => {
     expect(colourLiteralsIn(file, line)).toEqual(expected);
+  });
+});
+
+describe('palette gate repo scan', () => {
+  it('names the file alongside each literal it found', () => {
+    expect(strayColourLiterals()).toEqual([
+      'src/theme.css: #fff',
+      'src/theme.css: red',
+    ]);
   });
 });

@@ -18,7 +18,11 @@ describe('todo gate line rules', () => {
     ['// TODO 30a01fbc 2026-01-15:', false],
     ['// TODO 30a01fbc 2025-12-31: expired yesterday', false],
     ['// TODO 30a01fbc 2026-02-01: more than 30 days out', false],
-    ['// TODO 30a01fbc 2026-02-30: not a real date', false],
+    [
+      '// TODO 30a01fbc 2026-02-30: a day that rolls into the next month',
+      false,
+    ],
+    ['// TODO 30a01fbc 2026-13-01: not a real date', false],
   ];
 
   it.each(cases)('%s', (line, accepted) => {

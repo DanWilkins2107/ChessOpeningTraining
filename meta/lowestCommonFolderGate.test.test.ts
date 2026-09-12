@@ -62,6 +62,15 @@ describe('placementProblems', () => {
     ).toEqual([]);
   });
 
+  it('ignores an import of an asset the gate does not track', () => {
+    expect(
+      placementProblems(
+        { 'src/pages/Home/page.tsx': imports('../../elements/logo.svg') },
+        [],
+      ),
+    ).toEqual([]);
+  });
+
   it('leaves a module with no consumers alone', () => {
     expect(placementProblems({ 'src/elements/Foo/Foo.tsx': '' }, [])).toEqual(
       [],

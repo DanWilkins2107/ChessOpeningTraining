@@ -45,6 +45,15 @@ describe('css hygiene gate stylesheet imports', () => {
     ).toEqual([]);
   });
 
+  it('rejects a global stylesheet reached by a longer path', () => {
+    expect(
+      problems(
+        entry("import './elements/../theme.css';"),
+        file('src/theme.css', ':root { --gap: 1px; }'),
+      ),
+    ).toEqual(['src/theme.css: no sibling module, so nothing may import it']);
+  });
+
   it('rejects a second stylesheet at the app entry', () => {
     expect(
       problems(entry("import './theme.css';\nimport './extra.css';")),

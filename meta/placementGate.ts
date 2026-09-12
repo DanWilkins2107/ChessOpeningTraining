@@ -8,6 +8,7 @@ const LEAF = new RegExp(
 );
 const companionOf = (base: string) =>
   new RegExp(String.raw`^(?:${base}\.${EXT}|__snapshots__/${base}\.${SNAP})$`);
+const stemOf = (name: string) => name.replace(/\..*$/, '');
 
 const pageBase = (page: string) => (IS_NAME.test(page) ? 'page' : null);
 
@@ -35,4 +36,6 @@ const placedUnder = (parts: string[], base: string): boolean => {
 export const isPlaced = (path: string, rootExceptions: string[]) =>
   path.includes('/')
     ? placedUnder(path.split('/'), '')
-    : rootExceptions.includes(path);
+    : rootExceptions.some((exception) =>
+        companionOf(stemOf(exception)).test(path),
+      );

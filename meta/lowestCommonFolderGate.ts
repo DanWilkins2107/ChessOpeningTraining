@@ -95,7 +95,7 @@ function consumersByModule(sources: ModuleSources): Record<string, string[]> {
   for (const [file, text] of Object.entries(sources)) {
     for (const target of importedModules(file, text)) {
       const resolved = resolveModule(target, sources);
-      if (resolved === null || resolved === file) continue;
+      if (resolved === null) continue;
       (consumers[resolved] ??= []).push(file);
     }
   }
@@ -104,7 +104,7 @@ function consumersByModule(sources: ModuleSources): Record<string, string[]> {
 }
 
 function importedModules(file: string, text: string): string[] {
-  return [...text.matchAll(RELATIVE_IMPORT)].map(([, specifier = '']) =>
+  return [...text.matchAll(RELATIVE_IMPORT)].map(([, specifier]) =>
     path.posix.join(path.posix.dirname(file), specifier),
   );
 }

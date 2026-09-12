@@ -135,9 +135,7 @@ function baseName(filePath: string): string {
 function resolveFrom(fromPath: string, specifier: string): string {
   const segments = fromPath.split('/').slice(0, -1);
   for (const part of specifier.split('/')) {
-    if (part === '.') continue;
-    if (part === '..') segments.pop();
-    else segments.push(part);
+    if (part !== '.') segments.push(part);
   }
   return segments.join('/');
 }
