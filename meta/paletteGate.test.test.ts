@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { colourLiteralsIn } from './paletteGate';
+import { colourLiteralsIn, colourViolationsIn } from './paletteGate';
 
 describe('palette gate colour rules', () => {
   const cases: [string, string, string[]][] = [
@@ -15,5 +15,11 @@ describe('palette gate colour rules', () => {
 
   it.each(cases)('%s %s', (file, line, expected) => {
     expect(colourLiteralsIn(file, line)).toEqual(expected);
+  });
+
+  it('names the file alongside each literal it found', () => {
+    expect(
+      colourViolationsIn('a.css', '  color: #fff;\n  border: 1px solid red;'),
+    ).toEqual(['a.css: #fff', 'a.css: red']);
   });
 });

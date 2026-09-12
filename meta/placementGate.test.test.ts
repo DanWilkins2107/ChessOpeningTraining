@@ -10,6 +10,11 @@ describe('isPlaced', () => {
     expect(isPlaced('singleton.ts', [])).toBe(false);
   });
 
+  it('accepts companions of a root exception', () => {
+    expect(isPlaced('singleton.test.ts', EXCEPTIONS)).toBe(true);
+    expect(isPlaced('stray.test.ts', EXCEPTIONS)).toBe(false);
+  });
+
   it('accepts a page folder whose files are named page.*', () => {
     expect(isPlaced('pages/Alpha/page.tsx', EXCEPTIONS)).toBe(true);
     expect(isPlaced('pages/Alpha/page.test.tsx', EXCEPTIONS)).toBe(true);

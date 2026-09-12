@@ -29,11 +29,15 @@ export function colourLiteralsIn(file: string, source: string): string[] {
     ]);
 }
 
+export function colourViolationsIn(file: string, source: string): string[] {
+  return colourLiteralsIn(file, source).map(
+    (literal) => `${file}: ${literal.trim()}`,
+  );
+}
+
 export function strayColourLiterals(): string[] {
   return scannedFiles().flatMap((file) =>
-    colourLiteralsIn(file, readTextFile(file)).map(
-      (literal) => `${file}: ${literal.trim()}`,
-    ),
+    colourViolationsIn(file, readTextFile(file)),
   );
 }
 

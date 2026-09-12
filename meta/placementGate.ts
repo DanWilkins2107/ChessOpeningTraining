@@ -8,20 +8,25 @@ const LEAF = new RegExp(
 );
 const companionOf = (base: string) =>
   new RegExp(String.raw`^(?:${base}\.${EXT}|__snapshots__/${base}\.${SNAP})$`);
+const stemOf = (name: string) => name.replace(/\..*$/, '');
 
 export const isPlaced = (path: string, rootExceptions: string[]) => {
   const parts = path.split('/');
-  if (parts.length === 1) return rootExceptions.includes(path);
+  if (parts.length === 1) {
+    return rootExceptions.some((exception) =>
+      companionOf(stemOf(exception)).test(path),
+    );
+  }
 
   let base = '';
-  const [top = '', page = ''] = parts;
+  const [top, page] = parts;
   if (top === 'pages' && parts.length > 2 && IS_NAME.test(page)) {
     base = 'page';
     parts.splice(0, 2);
   }
 
   while (parts.length > 2) {
-    const [dir = '', name = ''] = parts;
+    const [dir, name] = parts;
     if (dir !== 'elements' || name === '__snapshots__' || !IS_NAME.test(name))
       break;
     base = name;
