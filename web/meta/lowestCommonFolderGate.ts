@@ -1,7 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { MARKER, lineProblems } from './todoGate';
+import { MARKER, lineProblems } from '../../meta/todoGate';
 
 export type TemporaryExclude = { path: string; reason: string };
 

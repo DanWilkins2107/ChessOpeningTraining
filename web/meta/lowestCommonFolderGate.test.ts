@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { excludeProblems, placementProblems } from './lowestCommonFolderGate';
 import type { ModuleSources } from './lowestCommonFolderGate';
-import { MARKER } from './todoGate';
+import { MARKER } from '../../meta/todoGate';
 
 const reason = (expiry: string) =>
   `${MARKER} 1a2b3c4d ${expiry}: moving with the analysis page`;
