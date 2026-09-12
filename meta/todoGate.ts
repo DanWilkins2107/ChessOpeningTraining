@@ -1,6 +1,6 @@
 import { expiryProblem } from './expiry';
 
-export const MARKER = 'TODO';
+const MARKER = 'TODO';
 
 const FORMAT = `${MARKER} <8-hex AgentJira node id> <YYYY-MM-DD>: description`;
 
