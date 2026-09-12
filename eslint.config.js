@@ -6,7 +6,7 @@ import reactRefresh from 'eslint-plugin-react-refresh';
 import prettier from 'eslint-config-prettier';
 
 export default tseslint.config(
-  { ignores: ['**/dist'] },
+  { ignores: ['**/dist', '.stryker-tmp'] },
   {
     files: ['**/*.{js,ts,tsx}'],
     extends: [
