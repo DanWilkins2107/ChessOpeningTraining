@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { excludeProblems, placementProblems } from './lowestCommonFolderGate';
 import type { ModuleSources } from './lowestCommonFolderGate';
-import { MARKER } from '../../meta/todoGate';
-
-const reason = (expiry: string) =>
-  `${MARKER} 1a2b3c4d ${expiry}: moving with the analysis page`;
 
 const TODAY = new Date('2026-09-01T00:00:00Z');
 
@@ -110,47 +106,55 @@ describe('placementProblems', () => {
 });
 
 describe('excludeProblems', () => {
+  const exclude = (path: string, expiry = '2026-09-20') => [
+    { path, expiry, reason: 'moving with the analysis page' },
+  ];
+
   it('accepts a live exclude on a module that is still misplaced', () => {
     expect(
       excludeProblems(
         MISPLACED,
         [],
-        [{ path: 'src/elements/Foo/Foo.tsx', reason: reason('2026-09-20') }],
+        exclude('src/elements/Foo/Foo.tsx'),
         TODAY,
       ),
     ).toEqual([]);
   });
 
   it('rejects an expired exclude', () => {
-    const [problem] = excludeProblems(
-      MISPLACED,
-      [],
-      [{ path: 'src/elements/Foo/Foo.tsx', reason: reason('2026-08-31') }],
-      TODAY,
-    );
-    expect(problem).toContain('has passed');
-  });
-
-  it('rejects an off-format exclude', () => {
-    const [problem] = excludeProblems(
-      MISPLACED,
-      [],
-      [{ path: 'src/elements/Foo/Foo.tsx', reason: `${MARKER} soon` }],
-      TODAY,
-    );
-    expect(problem).toContain('off-format');
-  });
-
-  it('rejects an exclude carrying no node id and expiry at all', () => {
     expect(
       excludeProblems(
         MISPLACED,
         [],
-        [{ path: 'src/elements/Foo/Foo.tsx', reason: 'moving one day' }],
+        exclude('src/elements/Foo/Foo.tsx', '2026-08-31'),
+        TODAY,
+      ),
+    ).toEqual(['src/elements/Foo/Foo.tsx: expiry 2026-08-31 has passed']);
+  });
+
+  it('rejects an exclude parked more than 30 days out', () => {
+    expect(
+      excludeProblems(
+        MISPLACED,
+        [],
+        exclude('src/elements/Foo/Foo.tsx', '2026-10-02'),
         TODAY,
       ),
     ).toEqual([
-      `src/elements/Foo/Foo.tsx: exclude needs a ${MARKER} id and expiry`,
+      'src/elements/Foo/Foo.tsx: expiry 2026-10-02 is more than 30 days out',
+    ]);
+  });
+
+  it.each(['2026-09-31', 'soon'])('rejects the expiry %s', (expiry) => {
+    expect(
+      excludeProblems(
+        MISPLACED,
+        [],
+        exclude('src/elements/Foo/Foo.tsx', expiry),
+        TODAY,
+      ),
+    ).toEqual([
+      `src/elements/Foo/Foo.tsx: expiry ${expiry} is not a real date`,
     ]);
   });
 
@@ -159,7 +163,7 @@ describe('excludeProblems', () => {
       excludeProblems(
         MISPLACED,
         [],
-        [{ path: 'src/elements/Gone/Gone.tsx', reason: reason('2026-09-20') }],
+        exclude('src/elements/Gone/Gone.tsx'),
         TODAY,
       ),
     ).toEqual(['src/elements/Gone/Gone.tsx: exclude names no module']);
@@ -167,12 +171,7 @@ describe('excludeProblems', () => {
 
   it('rejects an exclude on a module that is now correctly placed', () => {
     expect(
-      excludeProblems(
-        MISPLACED,
-        [],
-        [{ path: 'src/pages/Home/page.tsx', reason: reason('2026-09-20') }],
-        TODAY,
-      ),
+      excludeProblems(MISPLACED, [], exclude('src/pages/Home/page.tsx'), TODAY),
     ).toEqual(['src/pages/Home/page.tsx: exclude is no longer needed']);
   });
 

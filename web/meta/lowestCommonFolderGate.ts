@@ -1,9 +1,13 @@
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { MARKER, lineProblems } from '../../meta/todoGate';
+import { expiryProblem, startOfTodayUtc } from '../../meta/expiry';
 
-export type TemporaryExclude = { path: string; reason: string };
+export type TemporaryExclude = {
+  path: string;
+  expiry: string;
+  reason: string;
+};
 
 export type ModuleSources = Record<string, string>;
 
@@ -11,8 +15,6 @@ const SOURCE = /\.(tsx?|css)$/;
 const COMPANION_TEST = /\.test\.tsx?$/;
 const RELATIVE_IMPORT = /\b(?:from|import)\s*\(?\s*['"](\.[^'"]*)['"]/g;
 const RESOLVED_EXTENSIONS = ['', '.ts', '.tsx'];
-
-const HAS_MARKER = new RegExp(String.raw`\b${MARKER}\b`, 'i');
 
 const repoRoot = path.join(import.meta.dirname, '..');
 
@@ -45,7 +47,7 @@ export function excludeProblems(
     .filter((modulePath) => !(modulePath in sources))
     .map((modulePath) => `${modulePath}: root exception names no module`);
 
-  for (const { path: modulePath, reason } of temporary) {
+  for (const { path: modulePath, expiry } of temporary) {
     if (!(modulePath in sources)) {
       problems.push(`${modulePath}: exclude names no module`);
       continue;
@@ -53,15 +55,8 @@ export function excludeProblems(
     if (!(modulePath in misplaced)) {
       problems.push(`${modulePath}: exclude is no longer needed`);
     }
-    if (!HAS_MARKER.test(reason)) {
-      problems.push(`${modulePath}: exclude needs a ${MARKER} id and expiry`);
-      continue;
-    }
-    problems.push(
-      ...lineProblems(reason, today).map(
-        (problem) => `${modulePath}: ${problem}`,
-      ),
-    );
+    const expired = expiryProblem(expiry, today);
+    if (expired !== null) problems.push(`${modulePath}: ${expired}`);
   }
 
   return problems;
@@ -152,11 +147,4 @@ function trackedModules(): string[] {
     .toString('utf8')
     .split('\0')
     .filter((file) => SOURCE.test(file) && !COMPANION_TEST.test(file));
-}
-
-function startOfTodayUtc(): Date {
-  const now = new Date();
-  return new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
-  );
 }
