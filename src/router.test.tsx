@@ -15,6 +15,14 @@ it('renders the home page inside the root layout at /', () => {
   ).toBeInTheDocument();
 });
 
+it('renders the design token specimen at /theme', () => {
+  render(<RouterProvider router={routesOf(['/theme'])} />);
+
+  expect(
+    screen.getByRole('heading', { level: 1, name: 'Design tokens' }),
+  ).toBeInTheDocument();
+});
+
 it('renders the not-found page for an unknown path', () => {
   render(<RouterProvider router={routesOf(['/no-such-page'])} />);
 

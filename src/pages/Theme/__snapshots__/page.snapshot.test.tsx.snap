@@ -1,0 +1,319 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Theme > matches snapshot 1`] = `
+<div>
+  <div
+    class="theme"
+  >
+    <h1
+      class="theme-title"
+    >
+      Design tokens
+    </h1>
+    <section
+      class="section"
+    >
+      <h2
+        class="section-heading"
+      >
+        Colour
+      </h2>
+      <ul
+        class="swatches"
+      >
+        <li
+          class="swatch"
+        >
+          <span
+            class="chip chip-surface-page"
+          />
+          <code
+            class="token"
+          >
+            --surface-page
+          </code>
+        </li>
+        <li
+          class="swatch"
+        >
+          <span
+            class="chip chip-surface-raised"
+          />
+          <code
+            class="token"
+          >
+            --surface-raised
+          </code>
+        </li>
+        <li
+          class="swatch"
+        >
+          <span
+            class="chip chip-border"
+          />
+          <code
+            class="token"
+          >
+            --border
+          </code>
+        </li>
+        <li
+          class="swatch"
+        >
+          <span
+            class="chip chip-ink"
+          />
+          <code
+            class="token"
+          >
+            --ink
+          </code>
+        </li>
+        <li
+          class="swatch"
+        >
+          <span
+            class="chip chip-ink-muted"
+          />
+          <code
+            class="token"
+          >
+            --ink-muted
+          </code>
+        </li>
+        <li
+          class="swatch"
+        >
+          <span
+            class="chip chip-accent"
+          />
+          <code
+            class="token"
+          >
+            --accent
+          </code>
+        </li>
+        <li
+          class="swatch"
+        >
+          <span
+            class="chip chip-accent-hover"
+          />
+          <code
+            class="token"
+          >
+            --accent-hover
+          </code>
+        </li>
+      </ul>
+    </section>
+    <section
+      class="section"
+    >
+      <h2
+        class="section-heading"
+      >
+        Surfaces
+      </h2>
+      <div
+        class="card"
+      >
+        <p
+          class="card-title"
+        >
+          A raised card
+        </p>
+        <p
+          class="card-body"
+        >
+          Ink on a raised surface, lifted off the page with a border and the shadow token.
+        </p>
+        <p
+          class="card-muted"
+        >
+          Muted ink for secondary copy.
+        </p>
+        <button
+          class="button"
+          type="button"
+        >
+          Accent button
+        </button>
+      </div>
+    </section>
+    <section
+      class="section"
+    >
+      <h2
+        class="section-heading"
+      >
+        Type
+      </h2>
+      <p
+        class="line line-xl"
+      >
+        Sicilian Defence 
+        <code
+          class="token"
+        >
+          --text-xl
+        </code>
+      </p>
+      <p
+        class="line line-lg"
+      >
+        Sicilian Defence 
+        <code
+          class="token"
+        >
+          --text-lg
+        </code>
+      </p>
+      <p
+        class="line line-base"
+      >
+        Sicilian Defence 
+        <code
+          class="token"
+        >
+          --text-base
+        </code>
+      </p>
+      <p
+        class="line line-sm"
+      >
+        Sicilian Defence 
+        <code
+          class="token"
+        >
+          --text-sm
+        </code>
+      </p>
+    </section>
+    <section
+      class="section"
+    >
+      <h2
+        class="section-heading"
+      >
+        Radius
+      </h2>
+      <ul
+        class="boxes"
+      >
+        <li
+          class="box-item"
+        >
+          <span
+            class="box box-radius-sm"
+          />
+          <code
+            class="token"
+          >
+            --radius-sm
+          </code>
+        </li>
+        <li
+          class="box-item"
+        >
+          <span
+            class="box box-radius-md"
+          />
+          <code
+            class="token"
+          >
+            --radius-md
+          </code>
+        </li>
+        <li
+          class="box-item"
+        >
+          <span
+            class="box box-radius-pill"
+          />
+          <code
+            class="token"
+          >
+            --radius-pill
+          </code>
+        </li>
+      </ul>
+    </section>
+    <section
+      class="section"
+    >
+      <h2
+        class="section-heading"
+      >
+        Gap
+      </h2>
+      <div
+        class="gap-row"
+      >
+        <code
+          class="token"
+        >
+          --gap-sm
+        </code>
+        <div
+          class="blocks row-gap-sm"
+        >
+          <span
+            class="block"
+          />
+          <span
+            class="block"
+          />
+          <span
+            class="block"
+          />
+        </div>
+      </div>
+      <div
+        class="gap-row"
+      >
+        <code
+          class="token"
+        >
+          --gap-md
+        </code>
+        <div
+          class="blocks row-gap-md"
+        >
+          <span
+            class="block"
+          />
+          <span
+            class="block"
+          />
+          <span
+            class="block"
+          />
+        </div>
+      </div>
+      <div
+        class="gap-row"
+      >
+        <code
+          class="token"
+        >
+          --gap-lg
+        </code>
+        <div
+          class="blocks row-gap-lg"
+        >
+          <span
+            class="block"
+          />
+          <span
+            class="block"
+          />
+          <span
+            class="block"
+          />
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+`;
