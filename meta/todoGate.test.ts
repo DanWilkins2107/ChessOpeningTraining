@@ -2,6 +2,7 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { startOfTodayUtc } from './expiry';
 import { lineProblems } from './todoGate';
 
 const LOCKFILE = /(^|\/)(package-lock\.json|npm-shrinkwrap\.json|[^/]*\.lock)$/;
@@ -50,11 +51,4 @@ function scannedFiles(): string[] {
 function readTextFile(file: string): string | null {
   const contents = readFileSync(path.join(repoRoot, file));
   return contents.includes(0) ? null : contents.toString('utf8');
-}
-
-function startOfTodayUtc(): Date {
-  const now = new Date();
-  return new Date(
-    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
-  );
 }
