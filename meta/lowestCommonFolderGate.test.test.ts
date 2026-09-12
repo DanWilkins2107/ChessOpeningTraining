@@ -62,6 +62,21 @@ describe('placementProblems', () => {
     ).toEqual([]);
   });
 
+  it('ignores an import that resolves to no tracked module', () => {
+    expect(
+      placementProblems(
+        { 'src/pages/Home/page.tsx': imports('../../elements/Gone/Gone') },
+        [],
+      ),
+    ).toEqual([]);
+  });
+
+  it('does not count a module importing itself as a consumer', () => {
+    expect(
+      placementProblems({ 'src/elements/Foo/Foo.tsx': imports('./Foo') }, []),
+    ).toEqual([]);
+  });
+
   it('leaves a module with no consumers alone', () => {
     expect(placementProblems({ 'src/elements/Foo/Foo.tsx': '' }, [])).toEqual(
       [],

@@ -104,7 +104,7 @@ function consumersByModule(sources: ModuleSources): Record<string, string[]> {
 }
 
 function importedModules(file: string, text: string): string[] {
-  return [...text.matchAll(RELATIVE_IMPORT)].map(([, specifier = '']) =>
+  return [...text.matchAll(RELATIVE_IMPORT)].map(([, specifier]) =>
     path.posix.join(path.posix.dirname(file), specifier),
   );
 }
