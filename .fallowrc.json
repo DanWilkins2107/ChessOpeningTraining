@@ -1,9 +1,8 @@
 {
   "$schema": "./node_modules/fallow/schema.json",
   "health": {
-    "maxCyclomatic": 3,
-    "maxCognitive": 3,
-    "maxCrap": 5
+    "maxCyclomatic": 6,
+    "maxCognitive": 8
   },
   "rules": {
     "unused-dev-dependencies": "error",

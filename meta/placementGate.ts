@@ -9,25 +9,30 @@ const LEAF = new RegExp(
 const companionOf = (base: string) =>
   new RegExp(String.raw`^(?:${base}\.${EXT}|__snapshots__/${base}\.${SNAP})$`);
 
-export const isPlaced = (path: string, rootExceptions: string[]) => {
-  const parts = path.split('/');
-  if (parts.length === 1) return rootExceptions.includes(path);
+const pageBase = (page: string) => (IS_NAME.test(page) ? 'page' : null);
 
-  let base = '';
-  const [top = '', page = ''] = parts;
-  if (top === 'pages' && parts.length > 2 && IS_NAME.test(page)) {
-    base = 'page';
-    parts.splice(0, 2);
-  }
+const elementBase = (dir: string, name: string) =>
+  dir === 'elements' && name !== '__snapshots__' && IS_NAME.test(name)
+    ? name
+    : null;
 
-  while (parts.length > 2) {
-    const [dir = '', name = ''] = parts;
-    if (dir !== 'elements' || name === '__snapshots__' || !IS_NAME.test(name))
-      break;
-    base = name;
-    parts.splice(0, 2);
-  }
+const folderBase = (parts: string[], base: string) => {
+  if (parts.length <= 2) return null;
+  const [dir, name] = parts;
+  return base === '' && dir === 'pages'
+    ? pageBase(name)
+    : elementBase(dir, name);
+};
+
+const placedUnder = (parts: string[], base: string): boolean => {
+  const nested = folderBase(parts, base);
+  if (nested !== null) return placedUnder(parts.slice(2), nested);
 
   const rest = parts.join('/');
   return LEAF.test(rest) || (base !== '' && companionOf(base).test(rest));
 };
+
+export const isPlaced = (path: string, rootExceptions: string[]) =>
+  path.includes('/')
+    ? placedUnder(path.split('/'), '')
+    : rootExceptions.includes(path);

@@ -8,7 +8,6 @@ export function startOfTodayUtc(): Date {
   );
 }
 
-// fallow-ignore-next-line complexity -- Three expiry rules, one guard clause each.
 export function expiryProblem(expiryText: string, today: Date): string | null {
   const expiry = parseIsoDate(expiryText);
   if (expiry === null) return `expiry ${expiryText} is not a real date`;
