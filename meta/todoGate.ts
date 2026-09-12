@@ -1,5 +1,7 @@
+export const MARKER = 'TODO';
+
 const MAX_DAYS_AHEAD = 30;
-const FORMAT = 'TODO <8-hex AgentJira node id> <YYYY-MM-DD>: description';
+const FORMAT = `${MARKER} <8-hex AgentJira node id> <YYYY-MM-DD>: description`;
 const MS_PER_DAY = 86_400_000;
 
 const TODO_WORD = /\btodo\b/gi;
