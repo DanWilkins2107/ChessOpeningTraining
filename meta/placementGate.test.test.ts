@@ -48,5 +48,6 @@ describe('isPlaced', () => {
   it('rejects folders that are neither pages nor elements', () => {
     expect(isPlaced('components/Widget.tsx', EXCEPTIONS)).toBe(false);
     expect(isPlaced('pages/Alpha/helpers/format.ts', EXCEPTIONS)).toBe(false);
+    expect(isPlaced('pages/not.a.name/page.tsx', EXCEPTIONS)).toBe(false);
   });
 });

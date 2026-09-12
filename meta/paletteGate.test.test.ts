@@ -1,14 +1,19 @@
 import { describe, expect, it, vi } from 'vitest';
 import { colourLiteralsIn, strayColourLiterals } from './paletteGate';
 
-const { execFileSync, readFileSync } = vi.hoisted(() => ({
-  execFileSync: () =>
-    Buffer.from('src/theme.css\0src/pages/Home/page.tsx\0src/logo.svg\0'),
-  readFileSync: (file: string) =>
-    file.endsWith('.css')
-      ? '  color: #fff;\n  border: 1px solid red;'
-      : "const label = 'red';",
-}));
+const { execFileSync, readFileSync } = vi.hoisted(() => {
+  const NUL = '\0';
+  const tracked = ['src/theme.css', 'src/pages/Home/page.tsx', 'src/logo.svg'];
+
+  return {
+    execFileSync: () =>
+      Buffer.from(tracked.map((file) => `${file}${NUL}`).join('')),
+    readFileSync: (file: string) =>
+      file.endsWith('.css')
+        ? '  color: #fff;\n  border: 1px solid red;'
+        : "const label = 'red';",
+  };
+});
 
 vi.mock('node:child_process', () => ({
   execFileSync,

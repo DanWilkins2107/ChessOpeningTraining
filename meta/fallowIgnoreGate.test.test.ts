@@ -1,12 +1,46 @@
-import { describe, expect, it } from 'vitest';
-import { reasonProblem } from './fallowIgnoreGate';
+import { describe, expect, it, vi } from 'vitest';
+import { reasonProblem, rottenIgnores } from './fallowIgnoreGate';
+
+const { execFileSync } = vi.hoisted(() => {
+  const inTenDays = new Date(Date.now() + 10 * 86_400_000)
+    .toISOString()
+    .slice(0, 10);
+
+  return {
+    execFileSync: () =>
+      Buffer.from(
+        JSON.stringify({
+          files: [
+            {
+              path: 'src/supabase.ts',
+              suppressions: [
+                { line: 1, kind: 'unused-export', reason: null },
+                {
+                  line: 2,
+                  kind: 'unused-file',
+                  reason: `30a01fbc ${inTenDays} waiting on its first consumer`,
+                },
+                { line: 4, kind: 'unused-file', reason: 'one day, honest' },
+              ],
+            },
+          ],
+        }),
+      ),
+  };
+});
+
+vi.mock('node:child_process', () => ({
+  execFileSync,
+  default: { execFileSync },
+}));
 
 describe('fallow ignore gate reason rules', () => {
   const today = new Date(Date.UTC(2026, 0, 1));
-  const cases: [string, boolean][] = [
+  const cases: [string | null, boolean][] = [
     ['30a01fbc 2026-01-15 waiting on its first consumer', true],
     ['30a01fbc 2026-01-01 expiring today is still valid', true],
     ['30a01fbc 2026-01-31 exactly 30 days out', true],
+    [null, false],
     ['', false],
     ['landed ahead of its first consumer', false],
     ['30a01fbc waiting on its first consumer', false],
@@ -21,5 +55,14 @@ describe('fallow ignore gate reason rules', () => {
 
   it.each(cases)('%s', (reason, accepted) => {
     expect(reasonProblem(reason, today) === null).toBe(accepted);
+  });
+});
+
+describe('fallow ignore gate repo scan', () => {
+  it('reports only the unused-file ignore whose reason is off-format', () => {
+    const [problem, ...rest] = rottenIgnores();
+
+    expect(rest).toEqual([]);
+    expect(problem).toContain('src/supabase.ts:4: off-format');
   });
 });

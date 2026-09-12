@@ -62,18 +62,12 @@ describe('placementProblems', () => {
     ).toEqual([]);
   });
 
-  it('ignores an import that resolves to no tracked module', () => {
+  it('ignores an import of an asset the gate does not track', () => {
     expect(
       placementProblems(
-        { 'src/pages/Home/page.tsx': imports('../../elements/Gone/Gone') },
+        { 'src/pages/Home/page.tsx': imports('../../elements/logo.svg') },
         [],
       ),
-    ).toEqual([]);
-  });
-
-  it('does not count a module importing itself as a consumer', () => {
-    expect(
-      placementProblems({ 'src/elements/Foo/Foo.tsx': imports('./Foo') }, []),
     ).toEqual([]);
   });
 

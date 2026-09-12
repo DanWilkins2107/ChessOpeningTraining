@@ -6,7 +6,6 @@ const { createRoot, render } = vi.hoisted(() => {
 });
 
 vi.mock('react-dom/client', () => ({ createRoot }));
-vi.mock('./env', () => ({ env: {} }));
 
 beforeEach(() => {
   vi.resetModules();
