@@ -6,7 +6,8 @@ coverage
 
 .env
 .env.*
-!.env.example
+!.env.local
+!.env.test
 
 .DS_Store
 npm-debug.log*

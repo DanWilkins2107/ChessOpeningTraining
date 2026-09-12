@@ -4,19 +4,20 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "npm run db:start && vite build",
-    "preview": "vite preview",
-    "typecheck": "tsc --noEmit",
+    "dev": "vite web",
+    "build": "npm run db:start && vite build web",
+    "preview": "vite preview web",
+    "typecheck": "tsc --noEmit -p web",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
+    "fallow": "fallow",
     "db:start": "supabase start",
     "db:stop": "supabase stop",
-    "check": "npm run typecheck && npm run lint && npm run format:check && npm run test:coverage"
+    "check": "npm run typecheck && npm run lint && npm run format:check && npm run test:coverage && npm run fallow"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.116.0",
@@ -38,6 +39,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.6",
+    "fallow": "3.23.0",
     "globals": "^17.12.0",
     "jsdom": "^29.1.1",
     "prettier": "^3.9.6",
