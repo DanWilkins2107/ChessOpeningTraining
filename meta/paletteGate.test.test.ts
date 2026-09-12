@@ -15,6 +15,10 @@ const { execFileSync, readFileSync } = vi.hoisted(() => {
   };
 });
 
+// Mocked at the process boundary because strayColourLiterals scans the real
+// repo, which is green, so the formatting and file-filtering paths never run.
+// The stub hands it a three-file repo with a known answer; the rule itself is
+// untouched.
 vi.mock('node:child_process', () => ({
   execFileSync,
   default: { execFileSync },

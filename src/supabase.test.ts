@@ -6,6 +6,9 @@ const { client, createClient } = vi.hoisted(() => {
   return { client, createClient: vi.fn(() => client) };
 });
 
+// Mocked because the createClient call is the assertion: the contract is "one
+// client, built from the validated env", and the real one would open a client
+// against a Supabase project that does not exist.
 vi.mock('@supabase/supabase-js', () => ({ createClient }));
 
 it('creates one client from the validated env', async () => {
