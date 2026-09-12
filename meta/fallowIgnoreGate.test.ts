@@ -29,9 +29,9 @@ const { execFileSync } = vi.hoisted(() => {
   };
 });
 
-// Mocked at the process boundary because rottenIgnores shells out to fallow.
-// A stubbed report is the only way to drive suppression shapes this repo does
-// not contain; the rule itself is untouched.
+// mock-reason: rottenIgnores shells out to fallow, and a stubbed report is the
+// only way to drive suppression shapes this repo does not contain. The rule
+// itself is untouched.
 vi.mock('node:child_process', () => ({
   execFileSync,
   default: { execFileSync },
