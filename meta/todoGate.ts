@@ -1,6 +1,8 @@
 import { expiryProblem } from './expiry';
 
-const FORMAT = 'TODO <8-hex AgentJira node id> <YYYY-MM-DD>: description';
+export const MARKER = 'TODO';
+
+const FORMAT = `${MARKER} <8-hex AgentJira node id> <YYYY-MM-DD>: description`;
 
 const TODO_WORD = /\btodo\b/gi;
 const TODO_FORMAT = /^TODO [0-9a-f]{8} (\d{4}-\d{2}-\d{2}): \S/;
