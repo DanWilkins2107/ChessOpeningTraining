@@ -26,6 +26,8 @@
   --text-xl: 2rem;
 
   --shadow: 0 1px 3px rgb(31 41 55 / 8%), 0 4px 12px rgb(31 41 55 / 6%);
+
+  --content-width: 64rem;
 }
 
 *,
@@ -57,6 +59,20 @@ p,
 figure,
 blockquote {
   margin: 0;
+}
+
+h1 {
+  font-size: var(--text-xl);
+}
+
+a {
+  color: var(--accent);
+}
+
+/* :where keeps this at the specificity of plain `a`, so one class can set a
+   link's colour without having to restate it for hover. */
+a:where(:hover) {
+  color: var(--accent-hover);
 }
 
 :focus-visible {

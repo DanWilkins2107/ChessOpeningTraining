@@ -1,0 +1,17 @@
+.root-layout-header {
+  padding: var(--gap-md);
+  background: var(--surface-raised);
+  border-bottom: 1px solid var(--border);
+}
+
+.root-layout-wordmark {
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.root-layout-main {
+  max-width: var(--content-width);
+  margin-inline: auto;
+  padding: var(--gap-lg) var(--gap-md);
+}
