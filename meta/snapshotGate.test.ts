@@ -1,31 +1,43 @@
-import { expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { needsSnapshot, snapshotPathFor } from './snapshotGate';
 
-// .tsx files that render nothing, so there is no snapshot to take of them.
-const NON_COMPONENTS = ['main.tsx', 'router.tsx'];
+const NON_COMPONENTS = ['entry.tsx'];
 
-const fromSrc = (keys: string[]) =>
-  keys.map((key) => key.replace('../src/', ''));
+describe('needsSnapshot', () => {
+  it('requires a snapshot of a .tsx wherever it sits', () => {
+    expect(needsSnapshot('pages/Alpha/page.tsx', NON_COMPONENTS)).toBe(true);
+    expect(
+      needsSnapshot('pages/Alpha/elements/Widget/Widget.tsx', NON_COMPONENTS),
+    ).toBe(true);
+  });
 
-const tsxFiles = fromSrc(Object.keys(import.meta.glob('../src/**/*.tsx')));
+  it('exempts test files', () => {
+    expect(needsSnapshot('pages/Alpha/page.test.tsx', NON_COMPONENTS)).toBe(
+      false,
+    );
+    expect(
+      needsSnapshot('pages/Alpha/page.snapshot.test.tsx', NON_COMPONENTS),
+    ).toBe(false);
+  });
 
-const components = tsxFiles.filter((path) =>
-  needsSnapshot(path, NON_COMPONENTS),
-);
+  it('exempts modules that are not .tsx', () => {
+    expect(needsSnapshot('elements/useWidget.ts', NON_COMPONENTS)).toBe(false);
+    expect(needsSnapshot('elements/Widget.css', NON_COMPONENTS)).toBe(false);
+  });
 
-const snapshots = new Set(
-  fromSrc(Object.keys(import.meta.glob('../src/**/__snapshots__/*.snap'))),
-);
-
-it('every component has a committed snapshot', () => {
-  expect(components.length).toBeGreaterThan(0);
-  expect(
-    components
-      .map(snapshotPathFor)
-      .filter((snapshot) => !snapshots.has(snapshot)),
-  ).toEqual([]);
+  it('exempts a .tsx only while it is on the given list', () => {
+    expect(needsSnapshot('entry.tsx', NON_COMPONENTS)).toBe(false);
+    expect(needsSnapshot('entry.tsx', [])).toBe(true);
+  });
 });
 
-it('every non-component names a file that exists', () => {
-  expect(NON_COMPONENTS.filter((name) => !tsxFiles.includes(name))).toEqual([]);
+describe('snapshotPathFor', () => {
+  it('names the committed snapshot beside the component', () => {
+    expect(snapshotPathFor('pages/Alpha/page.tsx')).toBe(
+      'pages/Alpha/__snapshots__/page.snapshot.test.tsx.snap',
+    );
+    expect(snapshotPathFor('elements/Widget.tsx')).toBe(
+      'elements/__snapshots__/Widget.snapshot.test.tsx.snap',
+    );
+  });
 });

@@ -5,9 +5,9 @@ about the app. Each gate is three files here, named after the gate:
 
 - `<gate>.ts` — all the logic: the pure rule, the file enumeration, and the
   exported function(s) returning the violations found.
-- `<gate>.test.ts` — a wrapper with no logic of its own, asserting each of
-  those functions comes back empty.
-- `<gate>.test.test.ts` — the unit tests, driving the pure rule with inline
+- `<gate>.meta.test.ts` — a wrapper with no logic of its own, asserting each
+  of those functions comes back empty.
+- `<gate>.test.ts` — the unit tests, driving the pure rule with inline
   cases rather than the real repo.
 
 A violation is a string naming the file and what is wrong with it, so a failing
