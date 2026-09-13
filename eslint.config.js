@@ -29,6 +29,18 @@ export default tseslint.config(
             'dangerouslySetInnerHTML is an XSS path to the localStorage session.',
         },
       ],
+      'no-restricted-imports': [
+        'error',
+        {
+          name: 'zod',
+          message:
+            "Import z from web/src/zod.ts, which stops zod's new Function probe that the CSP blocks.",
+        },
+      ],
     },
+  },
+  {
+    files: ['web/src/zod.ts'],
+    rules: { 'no-restricted-imports': 'off' },
   },
 );

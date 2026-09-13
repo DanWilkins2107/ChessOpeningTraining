@@ -1,17 +1,11 @@
-// Not zod: parsing an object schema probes for eval support with
-// `new Function`, which the CSP reports as a violation.
-const supabaseUrl: string = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey: string = import.meta.env.VITE_SUPABASE_ANON_KEY;
+import { z } from './zod';
 
-if (!URL.canParse(supabaseUrl)) {
-  throw new Error('VITE_SUPABASE_URL is not a URL');
-}
+const envSchema = z.object({
+  VITE_SUPABASE_URL: z.url(),
+  VITE_SUPABASE_ANON_KEY: z.string().min(1),
+});
 
-if (!supabaseAnonKey) {
-  throw new Error('VITE_SUPABASE_ANON_KEY is empty');
-}
-
-export const env = {
-  VITE_SUPABASE_URL: supabaseUrl,
-  VITE_SUPABASE_ANON_KEY: supabaseAnonKey,
-};
+export const env = envSchema.parse({
+  VITE_SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL,
+  VITE_SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY,
+});

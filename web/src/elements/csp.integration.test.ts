@@ -21,12 +21,6 @@ type Violation = { directive: string; blocked: string };
 // openProductionBuild exposes this to the page to report violations.
 declare function reportViolation(violation: Violation): void;
 
-// Chromium reports the blocked URL in a different shape per directive.
-const blockedFromAttacker = (directive: string) => ({
-  directive,
-  blocked: expect.stringContaining(ATTACKER),
-});
-
 let browser: Browser;
 let server: PreviewServer;
 beforeAll(async () => {
@@ -102,7 +96,12 @@ it('blocks a script from another origin', async () => {
   });
 
   // Then it is blocked
-  expect(violations).toEqual([blockedFromAttacker('script-src-elem')]);
+  expect(violations).toEqual([
+    {
+      directive: 'script-src-elem',
+      blocked: expect.stringContaining(ATTACKER),
+    },
+  ]);
 });
 
 it('lets the app reach Supabase but blocks requests anywhere else', async () => {
@@ -122,7 +121,9 @@ it('lets the app reach Supabase but blocks requests anywhere else', async () => 
   // Then only the other origin is blocked
   await expect
     .poll(() => violations)
-    .toEqual([blockedFromAttacker('connect-src')]);
+    .toEqual([
+      { directive: 'connect-src', blocked: expect.stringContaining(ATTACKER) },
+    ]);
 });
 
 it('blocks an injected <object>', async () => {
@@ -136,7 +137,9 @@ it('blocks an injected <object>', async () => {
   });
 
   // Then it is blocked
-  expect(violations).toEqual([blockedFromAttacker('object-src')]);
+  expect(violations).toEqual([
+    { directive: 'object-src', blocked: expect.stringContaining(ATTACKER) },
+  ]);
 });
 
 it('blocks a <base> that points relative URLs at another origin', async () => {
@@ -150,7 +153,9 @@ it('blocks a <base> that points relative URLs at another origin', async () => {
   });
 
   // Then it is blocked
-  expect(violations).toEqual([blockedFromAttacker('base-uri')]);
+  expect(violations).toEqual([
+    { directive: 'base-uri', blocked: expect.stringContaining(ATTACKER) },
+  ]);
 });
 
 it('blocks a form posting to another origin', async () => {
@@ -165,5 +170,7 @@ it('blocks a form posting to another origin', async () => {
   });
 
   // Then it is blocked
-  expect(violations).toEqual([blockedFromAttacker('form-action')]);
+  expect(violations).toEqual([
+    { directive: 'form-action', blocked: expect.stringContaining(ATTACKER) },
+  ]);
 });
