@@ -15,14 +15,15 @@ export function useUser(): User | null {
     setUser(userFrom(session)),
   );
 
+  // Stryker disable ArrayDeclaration: any constant dependency list subscribes
+  // once just like [], so no test can tell the mutant apart.
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((_event, session) =>
       onAuthChange(session),
     );
     return () => data.subscription.unsubscribe();
-    // Stryker disable next-line ArrayDeclaration: any constant dependency list
-    // subscribes once just like [], so no test can tell the mutant apart.
   }, []);
+  // Stryker restore ArrayDeclaration
 
   return user;
 }
