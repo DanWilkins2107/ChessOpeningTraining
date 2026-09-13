@@ -1,7 +1,7 @@
 import { RouterProvider, createMemoryRouter } from 'react-router-dom';
 import { act, cleanup, render, screen } from '@testing-library/react';
 import { afterEach, expect, it } from 'vitest';
-import { registerTestUser } from '../tests/testUser';
+import { registerTestUser } from './tests-shared/testUser';
 import { router } from './router';
 import { supabase } from './supabase';
 

@@ -4,7 +4,7 @@ const SNAP = String.raw`snapshot\.test\.tsx\.snap`;
 
 const IS_NAME = new RegExp(`^${NAME}$`);
 const LEAF = new RegExp(
-  String.raw`^elements/(?:${NAME}\.${EXT}|__snapshots__/${NAME}\.${SNAP})$`,
+  String.raw`^(?:elements/(?:${NAME}\.${EXT}|__snapshots__/${NAME}\.${SNAP})|tests-shared/${NAME}\.ts)$`,
 );
 const companionOf = (base: string) =>
   new RegExp(String.raw`^(?:${base}\.${EXT}|__snapshots__/${base}\.${SNAP})$`);
