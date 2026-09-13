@@ -3,7 +3,7 @@
   "packageManager": "npm",
   "testRunner": "vitest",
   "vitest": {
-    "configFile": "web/vite.config.ts",
+    "configFile": "vitest.config.ts",
     "dir": "web/src"
   },
   "mutate": [

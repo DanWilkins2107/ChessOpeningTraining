@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config';
+import { configDefaults, defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import { csp } from './src/elements/csp.ts';
 
@@ -10,5 +10,8 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: ['./tests/setup.ts'],
+    // The integration project in vitest.config.ts runs these against the test
+    // stack.
+    exclude: [...configDefaults.exclude, '**/*.integration.test.tsx'],
   },
 });

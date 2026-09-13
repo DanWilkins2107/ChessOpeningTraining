@@ -18,6 +18,9 @@ describe('isPlaced', () => {
   it('accepts a page folder whose files are named page.*', () => {
     expect(isPlaced('pages/Alpha/page.tsx', EXCEPTIONS)).toBe(true);
     expect(isPlaced('pages/Alpha/page.test.tsx', EXCEPTIONS)).toBe(true);
+    expect(isPlaced('pages/Alpha/page.integration.test.tsx', EXCEPTIONS)).toBe(
+      true,
+    );
     expect(
       isPlaced(
         'pages/Alpha/__snapshots__/page.snapshot.test.tsx.snap',
