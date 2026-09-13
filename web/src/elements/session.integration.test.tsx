@@ -1,11 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
-import type { User } from '@supabase/supabase-js';
 import { act, cleanup, render, screen } from '@testing-library/react';
 import { Suspense } from 'react';
 import { afterAll, afterEach, beforeAll, expect, it, vi } from 'vitest';
 import { env } from '../env';
 import { supabase } from '../supabase';
-import { readUser, startupUser, useUser } from './session';
+import { readUser, useUser } from './session';
 
 const admin = createClient(
   env.VITE_SUPABASE_URL,
@@ -40,16 +39,16 @@ afterEach(async () => {
   await supabase.auth.signOut({ scope: 'local' });
 });
 
-function UserId({ userRead }: { userRead: Promise<User | null> }) {
-  const user = useUser(userRead);
+function UserId({ useUserUnderTest }: { useUserUnderTest: typeof useUser }) {
+  const user = useUserUnderTest();
   return user === null ? 'signed out' : user.id;
 }
 
-const renderUserTestingHarness = (userRead: Promise<User | null>) =>
+const renderUserTestingHarness = (useUserUnderTest = useUser) =>
   act(async () =>
     render(
       <Suspense fallback="Loading…">
-        <UserId userRead={userRead} />
+        <UserId useUserUnderTest={useUserUnderTest} />
       </Suspense>,
     ),
   );
@@ -68,27 +67,31 @@ function expireStoredSession() {
   );
 }
 
-it('shows nothing about the user until the read finishes', async () => {
-  // Given a user read still in flight
-  let finishRead: (user: User | null) => void = () => {};
-  const userRead = new Promise<User | null>((resolve) => {
-    finishRead = resolve;
-  });
+it('shows loading while the startup read is still in flight', async () => {
+  // Given the app loading while the startup read is still in flight
+  vi.resetModules();
+  const loading = await import('../supabase');
+  // mock-reason: the startup read runs once, when session.ts loads, and has
+  // finished before any test can render it. Holding getSession open on a
+  // freshly loaded client is the only way to see it pending; the fresh modules
+  // and the spy stay local to this test.
+  vi.spyOn(loading.supabase.auth, 'getSession').mockReturnValue(
+    new Promise(() => {}),
+  );
+  const { useUser: useLoadingUser } = await import('./session');
 
-  // When the harness renders it
-  await renderUserTestingHarness(userRead);
+  // When the harness renders
+  await renderUserTestingHarness(useLoadingUser);
 
-  // Then it shows loading until the read finishes
+  // Then it shows loading
   expect(screen.getByText('Loading…')).toBeInTheDocument();
-  await act(async () => finishRead(null));
-  expect(screen.getByText('signed out')).toBeInTheDocument();
 });
 
 it('reads an empty session store at startup as signed out', async () => {
   // Given nothing was stored when the app loaded
 
-  // When the harness renders the startup read
-  await renderUserTestingHarness(startupUser);
+  // When the harness renders
+  await renderUserTestingHarness();
 
   // Then it shows signed out
   expect(await screen.findByText('signed out')).toBeInTheDocument();
@@ -98,11 +101,11 @@ it('reads a stored session back as its user', async () => {
   // Given a signed-in session in storage
   await signIn();
 
-  // When the harness renders a fresh read
-  await renderUserTestingHarness(readUser());
+  // When the user is read
+  const user = await readUser();
 
-  // Then it shows that user
-  expect(await screen.findByText(userId)).toBeInTheDocument();
+  // Then it is that user
+  expect(user?.id).toBe(userId);
 });
 
 it('fails the read when the stored session cannot be refreshed', async () => {
@@ -117,9 +120,9 @@ it('fails the read when the stored session cannot be refreshed', async () => {
   await expect(userRead).rejects.toThrow('Refresh token is not valid');
 });
 
-it('shows the user once they sign in, and signed out once they sign out', async () => {
+it('shows the user once they sign in', async () => {
   // Given a signed-out user on screen
-  await renderUserTestingHarness(startupUser);
+  await renderUserTestingHarness();
   await screen.findByText('signed out');
 
   // When they sign in
@@ -127,6 +130,13 @@ it('shows the user once they sign in, and signed out once they sign out', async 
 
   // Then it shows them
   expect(await screen.findByText(userId)).toBeInTheDocument();
+});
+
+it('shows signed out once they sign out', async () => {
+  // Given a signed-in user on screen
+  await signIn();
+  await renderUserTestingHarness();
+  await screen.findByText(userId);
 
   // When they sign out
   await act(() => supabase.auth.signOut());
@@ -141,7 +151,7 @@ it('does not subscribe to auth changes again when it rerenders', async () => {
   // mock-reason: the subscription count is the assertion, and supabase-js has
   // no public way to count listeners. The spy still calls the real client.
   const subscribe = vi.spyOn(supabase.auth, 'onAuthStateChange');
-  await renderUserTestingHarness(startupUser);
+  await renderUserTestingHarness();
   await screen.findByText('signed out');
 
   // When signing in rerenders it
@@ -158,7 +168,7 @@ it('unsubscribes from auth changes on unmount', async () => {
   // mock-reason: the subscription is the thing under test, and supabase-js has
   // no public way to see it. The spies still call the real client.
   const subscribe = vi.spyOn(supabase.auth, 'onAuthStateChange');
-  const { unmount } = await renderUserTestingHarness(startupUser);
+  const { unmount } = await renderUserTestingHarness();
   await screen.findByText('signed out');
   const { subscription } = subscribe.mock.results[0].value.data;
   // mock-reason: as above, for the subscription's unsubscribe.
