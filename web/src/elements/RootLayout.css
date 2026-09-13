@@ -1,4 +1,7 @@
 .root-layout-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: var(--gap-md);
   background: var(--surface-raised);
   border-bottom: 1px solid var(--border);
