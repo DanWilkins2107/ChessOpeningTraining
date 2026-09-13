@@ -19,6 +19,8 @@ export function csp(): Plugin {
   let base: string;
 
   return {
+    // Stryker disable next-line StringLiteral: the name is only a label in
+    // Vite's logs, so no test can observe it.
     name: 'csp',
     config: (_config, { command }) => ({
       build: { assetsInlineLimit: 0 },
@@ -30,8 +32,8 @@ export function csp(): Plugin {
       base = config.base;
     },
     transformIndexHtml: {
-      // Post, so the policy is prepended after Vite's dev scripts and so
-      // precedes them.
+      // Post, so the policy is prepended after every other plugin's tags and
+      // so precedes them.
       order: 'post',
       async handler(_html, { server }) {
         const directives: Record<string, string[]> = {

@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { build, createServer } from 'vite';
-import type { Rolldown } from 'vite';
+import type { Plugin, Rolldown } from 'vite';
 import { expect, it } from 'vitest';
 import indexHtml from '../index.html?raw';
 import config from '../vite.config';
@@ -18,9 +18,21 @@ function policyOf(html: string) {
   return content?.replaceAll('&#39;', "'");
 }
 
-it('builds the strict policy first in <head>, without dev additions', async () => {
+const laterHeadTag: Plugin = {
+  name: 'later-head-tag',
+  transformIndexHtml: () => [{ tag: 'script', attrs: { src: '/later.js' } }],
+};
+
+it('hashes to base64 sha256', async () => {
+  expect(await sha256('abc')).toBe(
+    'ungWv48Bz+pBQUDeXa4iI7ADYaOWF3qctBD/YfIAFa0=',
+  );
+});
+
+it('builds the strict policy first in <head>, ahead of later plugins, without dev additions', async () => {
   const { output } = (await build({
     ...config,
+    plugins: [config.plugins, laterHeadTag],
     configFile: false,
     // The config's URL-pathname root does not resolve on Windows at build.
     root: 'web',
