@@ -6,7 +6,6 @@ import {
   render,
   screen,
 } from '@testing-library/react';
-import { Suspense } from 'react';
 import { afterAll, afterEach, beforeAll, expect, it, vi } from 'vitest';
 import { env } from '../env';
 import { supabase } from '../supabase';
@@ -45,14 +44,7 @@ afterEach(async () => {
   await supabase.auth.signOut({ scope: 'local' });
 });
 
-const renderSignOut = () =>
-  act(async () =>
-    render(
-      <Suspense>
-        <SignOut />
-      </Suspense>,
-    ),
-  );
+const renderSignOut = () => act(async () => render(<SignOut />));
 
 async function signIn(client = supabase) {
   const { error } = await client.auth.signInWithPassword(credentials);

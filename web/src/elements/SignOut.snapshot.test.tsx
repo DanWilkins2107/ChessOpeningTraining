@@ -1,5 +1,4 @@
 import { act, render } from '@testing-library/react';
-import { Suspense } from 'react';
 import { describe, expect, it } from 'vitest';
 import { env } from '../env';
 
@@ -20,13 +19,7 @@ describe('SignOut', () => {
     );
     const { SignOut } = await import('./SignOut');
 
-    const { container } = await act(async () =>
-      render(
-        <Suspense>
-          <SignOut />
-        </Suspense>,
-      ),
-    );
+    const { container } = await act(async () => render(<SignOut />));
 
     expect(container).toMatchSnapshot();
   });
