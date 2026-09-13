@@ -6,7 +6,11 @@ export default defineConfig({
     coverage: {
       provider: 'istanbul',
       reporter: ['text', 'json'],
-      include: ['meta/**/*.ts', 'web/meta/**/*.ts', 'web/src/**/*.{ts,tsx}'],
+      include: [
+        'meta/**/*.{ts,js}',
+        'web/meta/**/*.ts',
+        'web/src/**/*.{ts,tsx}',
+      ],
       exclude: ['**/*.test.{ts,tsx}'],
       thresholds: {
         statements: 100,
