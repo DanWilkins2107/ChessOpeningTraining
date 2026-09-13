@@ -1,5 +1,5 @@
 const NAME = String.raw`[\w-]+`;
-const EXT = String.raw`(?:tsx|ts|css|test\.ts|test\.tsx|snapshot\.test\.tsx|integration\.test\.ts|integration\.test\.tsx)`;
+const EXT = String.raw`(?:tsx|ts|css|constants\.ts|test\.ts|test\.tsx|snapshot\.test\.tsx|integration\.test\.ts|integration\.test\.tsx)`;
 const SNAP = String.raw`snapshot\.test\.tsx\.snap`;
 
 const IS_NAME = new RegExp(`^${NAME}$`);

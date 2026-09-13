@@ -36,6 +36,7 @@ describe('isPlaced', () => {
     expect(isPlaced('elements/useWidget.integration.test.ts', EXCEPTIONS)).toBe(
       true,
     );
+    expect(isPlaced('elements/useWidget.constants.ts', EXCEPTIONS)).toBe(true);
     expect(isPlaced('pages/Alpha/elements/Widget.tsx', EXCEPTIONS)).toBe(true);
     expect(isPlaced('pages/Alpha/elements/Widget/Widget.tsx', EXCEPTIONS)).toBe(
       true,

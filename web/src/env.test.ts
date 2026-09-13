@@ -15,7 +15,9 @@ it('exposes the validated supabase env vars', async () => {
   });
 });
 
-it('turns off zod eval probing before any schema runs', async () => {
+// csp.integration.test.ts also catches this, but there env.ts runs in Chromium,
+// where Stryker's mutants are never switched on.
+it('stops zod trying `new Function`, which the CSP reports as a violation', async () => {
   await import('./env');
 
   expect(z.config().jitless).toBe(true);

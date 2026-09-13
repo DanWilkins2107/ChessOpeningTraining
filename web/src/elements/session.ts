@@ -1,7 +1,7 @@
 import type { Session, User } from '@supabase/supabase-js';
 import { use, useEffect, useEffectEvent, useState } from 'react';
 import { supabase } from '../supabase';
-import { SUBSCRIBE_ONCE } from './constants';
+import { SUBSCRIBE_ONCE } from './session.constants';
 
 export async function readUser(): Promise<User | null> {
   const { data, error } = await supabase.auth.getSession();
@@ -24,7 +24,7 @@ export function useUser(): User | null {
       );
       return () => data.subscription.unsubscribe();
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- an empty list from constants.ts, so Stryker skips its equivalent mutant
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- an empty list from session.constants.ts, so Stryker skips its equivalent mutant
     SUBSCRIBE_ONCE,
   );
 

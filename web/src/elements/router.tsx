@@ -1,5 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom';
-import { ROOT_ROUTE_PATH } from './constants';
+import { ROOT_ROUTE_PATH } from './router.constants';
 import { RootLayout } from './RootLayout';
 import { Home } from '../pages/Home/page';
 import { NotFound } from '../pages/NotFound/page';

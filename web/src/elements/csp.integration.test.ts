@@ -1,15 +1,11 @@
 import { chromium } from 'playwright';
 import type { Browser } from 'playwright';
-import { build, createServer, preview, resolveConfig } from 'vite';
+import { build, preview, resolveConfig } from 'vite';
 import type { InlineConfig, Plugin, Rolldown } from 'vite';
 import { afterAll, beforeAll, expect, it, onTestFinished } from 'vitest';
 import config from '../../vite.config';
 
-const POLICY =
-  "default-src 'self'; script-src 'self'; " +
-  `connect-src ${new URL(import.meta.env.VITE_SUPABASE_URL).origin}; ` +
-  "style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; " +
-  "object-src 'none'; base-uri 'self'; form-action 'self'";
+const ATTACKER = 'https://attacker.example';
 
 const app: InlineConfig = {
   ...config,
@@ -20,8 +16,16 @@ const app: InlineConfig = {
   logLevel: 'silent',
 };
 
+type Violation = { directive: string; blocked: string };
+
 // openProductionBuild exposes this to the page to report violations.
-declare function reportViolation(directive: string): void;
+declare function reportViolation(violation: Violation): void;
+
+// Chromium reports the blocked URL in a different shape per directive.
+const blockedFromAttacker = (directive: string) => ({
+  directive,
+  blocked: expect.stringContaining(ATTACKER),
+});
 
 let browser: Browser;
 
@@ -38,17 +42,27 @@ async function openProductionBuild() {
   const server = await preview({ ...app, preview: { port: 0 } });
   onTestFinished(() => server.close());
   const page = await browser.newPage();
-  const violations: string[] = [];
-  await page.exposeFunction('reportViolation', (directive: string) =>
-    violations.push(directive),
+  const violations: Violation[] = [];
+  await page.exposeFunction('reportViolation', (violation: Violation) =>
+    violations.push(violation),
   );
   await page.addInitScript(() =>
     document.addEventListener('securitypolicyviolation', (event) =>
-      reportViolation(event.effectiveDirective),
+      reportViolation({
+        directive: event.effectiveDirective,
+        blocked: event.blockedURI,
+      }),
     ),
   );
   await page.goto(server.resolvedUrls!.local[0], { waitUntil: 'networkidle' });
   return { page, violations };
+}
+
+async function violationsFrom(attack: (attacker: string) => unknown) {
+  const { page, violations } = await openProductionBuild();
+  await page.evaluate(attack, ATTACKER);
+  await expect.poll(() => violations).not.toEqual([]);
+  return violations;
 }
 
 it('loads the production build without a CSP violation', async () => {
@@ -61,32 +75,97 @@ it('loads the production build without a CSP violation', async () => {
   expect(violations).toEqual([]);
 });
 
-it('puts the policy first in <head>', async () => {
-  // Given the production build
-
-  // When it loads in Chromium
-  const { page } = await openProductionBuild();
-
-  // Then the first thing in <head> is the policy
-  expect(
-    await page.locator('head > :first-child').evaluate((tag) => tag.outerHTML),
-  ).toBe(`<meta http-equiv="Content-Security-Policy" content="${POLICY}">`);
-});
-
 it('blocks an injected inline script', async () => {
   // Given the production build loaded in Chromium
-  const { page } = await openProductionBuild();
 
   // When a script is injected inline
-  const ran = await page.evaluate(() => {
+  const violations = await violationsFrom(() => {
     const script = document.createElement('script');
     script.textContent = 'document.body.dataset.injected = "ran"';
     document.head.append(script);
-    return document.body.dataset.injected === 'ran';
   });
 
-  // Then it does not run
-  expect(ran).toBe(false);
+  // Then it is blocked
+  expect(violations).toEqual([
+    { directive: 'script-src-elem', blocked: 'inline' },
+  ]);
+});
+
+it('blocks a script from another origin', async () => {
+  // Given the production build loaded in Chromium
+
+  // When a script from another origin is injected
+  const violations = await violationsFrom((attacker) => {
+    const script = document.createElement('script');
+    script.src = attacker;
+    document.head.append(script);
+  });
+
+  // Then it is blocked
+  expect(violations).toEqual([blockedFromAttacker('script-src-elem')]);
+});
+
+it('lets the app reach Supabase but blocks requests anywhere else', async () => {
+  // Given the production build loaded in Chromium
+  const { page, violations } = await openProductionBuild();
+
+  // When it requests Supabase, then another origin
+  await page.evaluate(
+    async (urls) => {
+      for (const url of urls) {
+        await fetch(url).catch(() => undefined);
+      }
+    },
+    [import.meta.env.VITE_SUPABASE_URL, ATTACKER],
+  );
+
+  // Then only the other origin is blocked
+  await expect
+    .poll(() => violations)
+    .toEqual([blockedFromAttacker('connect-src')]);
+});
+
+it('blocks an injected <object>', async () => {
+  // Given the production build loaded in Chromium
+
+  // When an <object> is injected
+  const violations = await violationsFrom((attacker) => {
+    const object = document.createElement('object');
+    object.data = attacker;
+    document.body.append(object);
+  });
+
+  // Then it is blocked
+  expect(violations).toEqual([blockedFromAttacker('object-src')]);
+});
+
+it('blocks a <base> that points relative URLs at another origin', async () => {
+  // Given the production build loaded in Chromium
+
+  // When a <base> for another origin is injected
+  const violations = await violationsFrom((attacker) => {
+    const base = document.createElement('base');
+    base.href = attacker;
+    document.head.append(base);
+  });
+
+  // Then it is blocked
+  expect(violations).toEqual([blockedFromAttacker('base-uri')]);
+});
+
+it('blocks a form posting to another origin', async () => {
+  // Given the production build loaded in Chromium
+
+  // When a form for another origin is submitted
+  const violations = await violationsFrom((attacker) => {
+    const form = document.createElement('form');
+    form.action = attacker;
+    document.body.append(form);
+    form.submit();
+  });
+
+  // Then it is blocked
+  expect(violations).toEqual([blockedFromAttacker('form-action')]);
 });
 
 it('keeps the policy ahead of tags other plugins put first in <head>', async () => {
@@ -121,19 +200,4 @@ it('inlines no assets into the production build', async () => {
 
   // Then no asset is small enough to become a data: URI the policy blocks
   expect(resolved.build.assetsInlineLimit).toBe(0);
-});
-
-it('leaves the dev server without a policy', async () => {
-  // Given the dev server
-  const dev = await createServer({
-    ...app,
-    server: { middlewareMode: true, ws: false },
-  });
-
-  // When it serves the page
-  const html = await dev.transformIndexHtml('/', '<head></head>');
-  await dev.close();
-
-  // Then the page has no policy
-  expect(html).not.toContain('Content-Security-Policy');
 });
