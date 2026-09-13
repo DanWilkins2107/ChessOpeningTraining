@@ -48,21 +48,6 @@ describe('isPlaced', () => {
     );
   });
 
-  it('accepts shared .ts test helpers at any depth', () => {
-    expect(isPlaced('tests-shared/testUser.ts', EXCEPTIONS)).toBe(true);
-    expect(isPlaced('pages/Alpha/tests-shared/renderAt.ts', EXCEPTIONS)).toBe(
-      true,
-    );
-    expect(
-      isPlaced('pages/Alpha/elements/Widget/tests-shared/knob.ts', EXCEPTIONS),
-    ).toBe(true);
-    expect(isPlaced('tests-shared/renderAt.tsx', EXCEPTIONS)).toBe(false);
-    expect(isPlaced('tests-shared/testUser.test.ts', EXCEPTIONS)).toBe(false);
-    expect(isPlaced('tests-shared/helpers/testUser.ts', EXCEPTIONS)).toBe(
-      false,
-    );
-  });
-
   it('rejects folders that are neither pages nor elements', () => {
     expect(isPlaced('components/Widget.tsx', EXCEPTIONS)).toBe(false);
     expect(isPlaced('pages/Alpha/helpers/format.ts', EXCEPTIONS)).toBe(false);

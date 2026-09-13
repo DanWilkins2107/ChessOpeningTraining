@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { afterAll, afterEach, beforeAll } from 'vitest';
-import { env } from '../env';
-import { supabase } from '../supabase';
+import { env } from '../src/env';
+import { supabase } from '../src/supabase';
 
 const admin = createClient(
   env.VITE_SUPABASE_URL,
