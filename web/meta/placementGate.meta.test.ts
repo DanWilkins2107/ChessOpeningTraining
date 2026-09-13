@@ -2,14 +2,7 @@ import { expect, it } from 'vitest';
 import { isPlaced } from './placementGate';
 
 // App-wide singletons owned by no page or element, so they sit at the src root.
-const ROOT_EXCEPTIONS = [
-  'csp.ts',
-  'env.ts',
-  'main.tsx',
-  'router.tsx',
-  'supabase.ts',
-  'theme.css',
-];
+const ROOT_EXCEPTIONS = ['env.ts', 'main.tsx', 'supabase.ts', 'theme.css'];
 
 const modules = Object.keys(import.meta.glob('../src/**/*')).map((key) =>
   key.replace('../src/', ''),
