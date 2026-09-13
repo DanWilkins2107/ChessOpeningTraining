@@ -1,4 +1,4 @@
-import { act, render } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { env } from '../env';
 
@@ -18,8 +18,10 @@ describe('SignOut', () => {
       }),
     );
     const { SignOut } = await import('./SignOut');
+    const { authSettled } = await import('../../tests/authSettled');
 
-    const { container } = await act(async () => render(<SignOut />));
+    const { container } = render(<SignOut />);
+    await authSettled();
 
     expect(container).toMatchSnapshot();
   });
