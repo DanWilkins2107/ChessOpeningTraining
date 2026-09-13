@@ -1,4 +1,5 @@
 import { afterEach, expect, it, vi } from 'vitest';
+import { z } from 'zod';
 
 afterEach(() => {
   vi.unstubAllEnvs();
@@ -12,6 +13,12 @@ it('exposes the validated supabase env vars', async () => {
     VITE_SUPABASE_URL: 'https://project-ref.supabase.co',
     VITE_SUPABASE_ANON_KEY: 'anon-key',
   });
+});
+
+it('turns off zod eval probing before any schema runs', async () => {
+  await import('./env');
+
+  expect(z.config().jitless).toBe(true);
 });
 
 it('fails at import time when the url is not a url', async () => {

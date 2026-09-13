@@ -20,5 +20,15 @@ export default tseslint.config(
       ecmaVersion: 2022,
       globals: globals.browser,
     },
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: "JSXAttribute[name.name='dangerouslySetInnerHTML']",
+          message:
+            'dangerouslySetInnerHTML is an XSS path to the localStorage session.',
+        },
+      ],
+    },
   },
 );

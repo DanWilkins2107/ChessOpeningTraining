@@ -3,6 +3,7 @@ import { isPlaced } from './placementGate';
 
 // App-wide singletons owned by no page or element, so they sit at the src root.
 const ROOT_EXCEPTIONS = [
+  'csp.ts',
   'env.ts',
   'main.tsx',
   'router.tsx',

@@ -1,5 +1,8 @@
 import { z } from 'zod';
 
+// Stops zod probing for eval support with `new Function`, which the CSP blocks.
+z.config({ jitless: true });
+
 const envSchema = z.object({
   VITE_SUPABASE_URL: z.url(),
   VITE_SUPABASE_ANON_KEY: z.string().min(1),

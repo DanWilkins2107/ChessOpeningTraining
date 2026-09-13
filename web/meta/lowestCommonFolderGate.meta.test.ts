@@ -8,6 +8,7 @@ import type { TemporaryExclude } from './lowestCommonFolderGate';
 
 // App-wide singletons owned by no page or element, so they sit at the src root.
 const ROOT_EXCEPTIONS = [
+  'src/csp.ts',
   'src/env.ts',
   'src/main.tsx',
   'src/router.tsx',
