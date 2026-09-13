@@ -70,34 +70,45 @@ function misplacements(sources: ModuleSources): Record<string, string> {
   for (const modulePath of Object.keys(sources)) {
     if (!isPlaceable(modulePath)) continue;
 
-    const sharedFolder = sharedFolderOf(modulePath);
-    const owners = [
-      ...new Set(
-        (consumers[modulePath] ?? [])
-          .filter((consumer) => consumerFolderOf(consumer) === sharedFolder)
-          .map(owningFolder),
-      ),
-    ].sort();
-    if (owners.length === 0) continue;
-
-    const required = requiredFolder(owners, sharedFolder);
-    if (declaredFolder(modulePath) === required) continue;
-
-    found[modulePath] =
-      `consumed from ${owners.join(', ')}, so it belongs in ${required}`;
+    const problem = placementProblem(modulePath, consumers[modulePath] ?? []);
+    if (problem !== null) found[modulePath] = problem;
   }
 
   return found;
 }
 
-function consumersByModule(sources: ModuleSources): Record<string, string[]> {
+function placementProblem(
+  modulePath: string,
+  consumers: string[],
+): string | null {
+  const sharedFolder = sharedFolderOf(modulePath);
+  const placing = consumers.filter(
+    (consumer) => consumerFolderOf(consumer) === sharedFolder,
+  );
+  if (placing.length === 0) return null;
+  if (sharedFolder === 'tests-shared' && placing.length === 1) {
+    return `only ${placing[0]} uses it, so it belongs in that file`;
+  }
+
+  const owners = [...new Set(placing.map(owningFolder))].sort();
+  const required = requiredFolder(owners, sharedFolder);
+  if (declaredFolder(modulePath) === required) return null;
+
+  return `consumed from ${owners.join(', ')}, so it belongs in ${required}`;
+}
+
+export function consumersByModule(
+  sources: ModuleSources,
+): Record<string, string[]> {
   const consumers: Record<string, string[]> = {};
 
   for (const [file, text] of Object.entries(sources)) {
-    for (const target of importedModules(file, text)) {
-      const resolved = resolveModule(target, sources);
-      if (resolved === null) continue;
-      (consumers[resolved] ??= []).push(file);
+    const resolved = importedModules(file, text).map((target) =>
+      resolveModule(target, sources),
+    );
+    for (const target of new Set(resolved)) {
+      if (target === null) continue;
+      (consumers[target] ??= []).push(file);
     }
   }
 
@@ -132,6 +143,9 @@ const sharedFolderOf = (modulePath: string) =>
 // what they import into tests-shared.
 const consumerFolderOf = (consumer: string) =>
   TEST.test(consumer) ? 'tests-shared' : sharedFolderOf(consumer);
+
+export const isTestSide = (modulePath: string) =>
+  consumerFolderOf(modulePath) === 'tests-shared';
 
 function declaredFolder(modulePath: string): string | null {
   const folders = modulePath.split('/').slice(0, -1);

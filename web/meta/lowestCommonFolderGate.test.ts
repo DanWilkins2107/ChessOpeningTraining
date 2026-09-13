@@ -127,6 +127,10 @@ describe('placementProblems', () => {
           'src/tests-shared/signIn.ts': '',
           'src/pages/Home/page.test.tsx': imports(
             '../../tests-shared/renderAt',
+            '../../tests-shared/signIn',
+          ),
+          'src/pages/Home/elements/Board.test.tsx': imports(
+            '../../../tests-shared/renderAt',
           ),
           'src/pages/Home/tests-shared/board.ts': imports(
             '../../../tests-shared/signIn',
@@ -137,6 +141,23 @@ describe('placementProblems', () => {
     ).toEqual([
       'src/tests-shared/renderAt.ts: consumed from src/pages/Home, so it belongs in src/pages/Home/tests-shared',
       'src/tests-shared/signIn.ts: consumed from src/pages/Home, so it belongs in src/pages/Home/tests-shared',
+    ]);
+  });
+
+  it('rejects a test helper that only one file uses, however often it imports it', () => {
+    expect(
+      placementProblems(
+        {
+          'src/pages/Home/tests-shared/renderAt.ts': '',
+          'src/pages/Home/page.test.tsx': imports(
+            './tests-shared/renderAt',
+            './tests-shared/renderAt.ts',
+          ),
+        },
+        [],
+      ),
+    ).toEqual([
+      'src/pages/Home/tests-shared/renderAt.ts: only src/pages/Home/page.test.tsx uses it, so it belongs in that file',
     ]);
   });
 
