@@ -1,13 +1,12 @@
 import type { Plugin } from 'vite';
 import { z } from 'zod';
+import { CSP_PLUGIN_NAME } from './constants.ts';
 
 export function csp(): Plugin {
   let supabaseOrigin: string;
 
   return {
-    // Stryker disable next-line StringLiteral: the name is only a label in
-    // Vite's logs, so no test can observe it.
-    name: 'csp',
+    name: CSP_PLUGIN_NAME,
     apply: 'build',
     config: () => ({ build: { assetsInlineLimit: 0 } }),
     configResolved(config) {

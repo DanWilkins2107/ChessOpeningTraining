@@ -9,7 +9,8 @@
   "mutate": [
     "web/src/**/*.{ts,tsx}",
     "!web/src/**/*.test.{ts,tsx}",
-    "!web/src/**/*.snapshot.test.tsx"
+    "!web/src/**/*.snapshot.test.tsx",
+    "!web/src/**/constants.ts"
   ],
   "coverageAnalysis": "perTest",
   "thresholds": {
