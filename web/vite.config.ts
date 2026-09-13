@@ -7,6 +7,8 @@ export default defineConfig({
   // config is loaded from the repo root, as Stryker does.
   root: new URL('.', import.meta.url).pathname,
   plugins: [react(), csp()],
+  // Stops small assets becoming data: URIs, which the CSP blocks.
+  build: { assetsInlineLimit: 0 },
   test: {
     environment: 'jsdom',
     setupFiles: ['./tests/setup.ts'],

@@ -24,7 +24,7 @@ export function useUser(): User | null {
       );
       return () => data.subscription.unsubscribe();
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- an empty list from session.constants.ts, so Stryker skips its equivalent mutant
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- SUBSCRIBE_ONCE is empty, so the effect subscribes once, on mount
     SUBSCRIBE_ONCE,
   );
 

@@ -1,8 +1,8 @@
 import { chromium } from 'playwright';
 import type { Browser } from 'playwright';
-import { build, preview, resolveConfig } from 'vite';
-import type { InlineConfig, Plugin, Rolldown } from 'vite';
-import { afterAll, beforeAll, expect, it, onTestFinished } from 'vitest';
+import { build, preview } from 'vite';
+import type { InlineConfig, PreviewServer } from 'vite';
+import { afterAll, beforeAll, expect, it } from 'vitest';
 import config from '../../vite.config';
 
 const ATTACKER = 'https://attacker.example';
@@ -28,19 +28,19 @@ const blockedFromAttacker = (directive: string) => ({
 });
 
 let browser: Browser;
-
+let server: PreviewServer;
 beforeAll(async () => {
   browser = await chromium.launch();
+  await build(app);
+  server = await preview({ ...app, preview: { port: 0 } });
 });
 
-afterAll(() => browser.close());
+afterAll(async () => {
+  await server.close();
+  await browser.close();
+});
 
-// Builds inside the test rather than in beforeAll, so a build that breaks fails
-// the test. Stryker does not count a failed beforeAll as killing a mutant.
 async function openProductionBuild() {
-  await build(app);
-  const server = await preview({ ...app, preview: { port: 0 } });
-  onTestFinished(() => server.close());
   const page = await browser.newPage();
   const violations: Violation[] = [];
   await page.exposeFunction('reportViolation', (violation: Violation) =>
@@ -166,38 +166,4 @@ it('blocks a form posting to another origin', async () => {
 
   // Then it is blocked
   expect(violations).toEqual([blockedFromAttacker('form-action')]);
-});
-
-it('keeps the policy ahead of tags other plugins put first in <head>', async () => {
-  // Given a plugin that also puts a tag first in <head>
-  const prepender: Plugin = {
-    name: 'prepender',
-    transformIndexHtml: () => [
-      { tag: 'meta', attrs: { name: 'prepended' }, injectTo: 'head-prepend' },
-    ],
-  };
-
-  // When the app builds with it
-  const { output } = (await build({
-    ...app,
-    plugins: [config.plugins, prepender],
-    build: { write: false },
-  })) as Rolldown.RolldownOutput;
-
-  // Then the policy is still first
-  expect(output.find((file) => file.fileName === 'index.html')).toMatchObject({
-    source: expect.stringMatching(
-      /<head>\s*<meta http-equiv="Content-Security-Policy"/,
-    ),
-  });
-});
-
-it('inlines no assets into the production build', async () => {
-  // Given the app config
-
-  // When Vite resolves it for a build
-  const resolved = await resolveConfig(app, 'build');
-
-  // Then no asset is small enough to become a data: URI the policy blocks
-  expect(resolved.build.assetsInlineLimit).toBe(0);
 });

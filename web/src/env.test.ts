@@ -1,5 +1,4 @@
 import { afterEach, expect, it, vi } from 'vitest';
-import { z } from 'zod';
 
 afterEach(() => {
   vi.unstubAllEnvs();
@@ -15,21 +14,15 @@ it('exposes the validated supabase env vars', async () => {
   });
 });
 
-// csp.integration.test.ts also catches this, but there env.ts runs in Chromium,
-// where Stryker's mutants are never switched on.
-it('stops zod trying `new Function`, which the CSP reports as a violation', async () => {
-  await import('./env');
-
-  expect(z.config().jitless).toBe(true);
-});
-
 it('fails at import time when the url is not a url', async () => {
   // mock-reason: the invalid value is the input under test, and .env.test can
   // only hold one value per variable. The anon key still comes from there, so
   // only one variable is in play.
   vi.stubEnv('VITE_SUPABASE_URL', 'project-ref.supabase.co');
 
-  await expect(import('./env')).rejects.toThrow();
+  await expect(import('./env')).rejects.toThrow(
+    'VITE_SUPABASE_URL is not a URL',
+  );
 });
 
 it('fails at import time when the anon key is empty', async () => {
@@ -38,5 +31,7 @@ it('fails at import time when the anon key is empty', async () => {
   // one variable is in play.
   vi.stubEnv('VITE_SUPABASE_ANON_KEY', '');
 
-  await expect(import('./env')).rejects.toThrow();
+  await expect(import('./env')).rejects.toThrow(
+    'VITE_SUPABASE_ANON_KEY is empty',
+  );
 });
