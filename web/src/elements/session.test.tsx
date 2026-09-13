@@ -27,7 +27,7 @@ const { auth, unsubscribe } = vi.hoisted(() => {
 // mock-reason: the startup read and the auth listener are the contract under
 // test and must be driven by hand (held pending, failed, fired); the real
 // client would read a stored session this test cannot control.
-vi.mock('./supabase', () => ({ supabase: { auth } }));
+vi.mock('../supabase', () => ({ supabase: { auth } }));
 
 let finishStartupRead: (read: StartupRead) => void;
 

@@ -1,4 +1,3 @@
-import { Suspense } from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import './RootLayout.css';
 
@@ -11,9 +10,7 @@ export function RootLayout() {
         </Link>
       </header>
       <main className="root-layout-main">
-        <Suspense fallback="Loading…">
-          <Outlet />
-        </Suspense>
+        <Outlet />
       </main>
     </>
   );

@@ -6,7 +6,6 @@ const ROOT_EXCEPTIONS = [
   'env.ts',
   'main.tsx',
   'router.tsx',
-  'session.ts',
   'supabase.ts',
   'theme.css',
 ];

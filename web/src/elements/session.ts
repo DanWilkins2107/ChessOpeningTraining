@@ -1,6 +1,6 @@
 import type { Session, User } from '@supabase/supabase-js';
 import { use, useEffect, useEffectEvent, useState } from 'react';
-import { supabase } from './supabase';
+import { supabase } from '../supabase';
 
 const userFrom = (session: Session | null) => session?.user ?? null;
 
@@ -15,15 +15,14 @@ export function useUser(): User | null {
     setUser(userFrom(session)),
   );
 
-  // Stryker disable ArrayDeclaration: any constant dependency list subscribes
-  // once just like [], so no test can tell the mutant apart.
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((_event, session) =>
       onAuthChange(session),
     );
     return () => data.subscription.unsubscribe();
+    // Stryker disable next-line ArrayDeclaration: any constant dependency list
+    // subscribes once just like [], so no test can tell the mutant apart.
   }, []);
-  // Stryker restore ArrayDeclaration
 
   return user;
 }
