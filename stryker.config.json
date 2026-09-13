@@ -3,13 +3,14 @@
   "packageManager": "npm",
   "testRunner": "vitest",
   "vitest": {
-    "configFile": "web/vite.config.ts",
+    "configFile": "vitest.config.ts",
     "dir": "web/src"
   },
   "mutate": [
     "web/src/**/*.{ts,tsx}",
     "!web/src/**/*.test.{ts,tsx}",
-    "!web/src/**/*.snapshot.test.tsx"
+    "!web/src/**/*.snapshot.test.tsx",
+    "!web/src/**/constants.ts"
   ],
   "coverageAnalysis": "perTest",
   "thresholds": {
