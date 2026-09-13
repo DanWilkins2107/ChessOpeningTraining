@@ -12,6 +12,6 @@ export default defineConfig({
     setupFiles: ['./tests/setup.ts'],
     // The integration project in vitest.config.ts runs these against the test
     // stack.
-    exclude: [...configDefaults.exclude, '**/*.integration.test.tsx'],
+    exclude: [...configDefaults.exclude, '**/*.integration.test.{ts,tsx}'],
   },
 });

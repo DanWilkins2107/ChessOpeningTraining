@@ -33,6 +33,9 @@ describe('isPlaced', () => {
   it('accepts elements named after their folder, at any depth', () => {
     expect(isPlaced('elements/Widget.tsx', EXCEPTIONS)).toBe(true);
     expect(isPlaced('elements/useWidget.test.ts', EXCEPTIONS)).toBe(true);
+    expect(isPlaced('elements/useWidget.integration.test.ts', EXCEPTIONS)).toBe(
+      true,
+    );
     expect(isPlaced('pages/Alpha/elements/Widget.tsx', EXCEPTIONS)).toBe(true);
     expect(isPlaced('pages/Alpha/elements/Widget/Widget.tsx', EXCEPTIONS)).toBe(
       true,

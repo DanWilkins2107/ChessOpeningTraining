@@ -15,7 +15,7 @@ export default defineConfig({
         test: {
           ...web.test,
           name: 'integration',
-          include: ['src/**/*.integration.test.tsx'],
+          include: ['src/**/*.integration.test.{ts,tsx}'],
           exclude: configDefaults.exclude,
           env: {
             VITE_SUPABASE_URL: testStack.API_URL,
