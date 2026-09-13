@@ -9,8 +9,8 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: ['./tests/setup.ts'],
-    // These need a running local Supabase stack: vitest.integration.config.ts
-    // runs them.
+    // The integration project in vitest.config.ts runs these against the test
+    // stack.
     exclude: [...configDefaults.exclude, '**/*.integration.test.tsx'],
   },
 });

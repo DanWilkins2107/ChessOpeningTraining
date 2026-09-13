@@ -3,7 +3,7 @@
   "packageManager": "npm",
   "testRunner": "vitest",
   "vitest": {
-    "configFile": "web/vite.config.ts",
+    "configFile": "vitest.config.ts",
     "dir": "web/src"
   },
   "mutate": [
@@ -11,8 +11,6 @@
     "!web/src/**/*.test.{ts,tsx}",
     "!web/src/**/*.snapshot.test.tsx"
   ],
-  "appendPlugins": ["./meta/strykerIgnorers.js"],
-  "ignorers": ["empty-hook-dependencies"],
   "coverageAnalysis": "perTest",
   "thresholds": {
     "break": 100

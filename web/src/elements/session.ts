@@ -2,13 +2,16 @@ import type { Session, User } from '@supabase/supabase-js';
 import { use, useEffect, useEffectEvent, useState } from 'react';
 import { supabase } from '../supabase';
 
-const startupUser = supabase.auth.getSession().then(({ data, error }) => {
+export async function readUser(): Promise<User | null> {
+  const { data, error } = await supabase.auth.getSession();
   if (error) throw error;
   return data.session?.user ?? null;
-});
+}
 
-export function useUser(): User | null {
-  const [user, setUser] = useState(use(startupUser));
+export const startupUser = readUser();
+
+export function useUser(userRead: Promise<User | null>): User | null {
+  const [user, setUser] = useState(use(userRead));
   const onAuthChange = useEffectEvent((session: Session | null) =>
     setUser(session?.user ?? null),
   );
