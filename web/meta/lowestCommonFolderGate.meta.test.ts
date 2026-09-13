@@ -11,6 +11,7 @@ const ROOT_EXCEPTIONS = [
   'src/env.ts',
   'src/main.tsx',
   'src/router.tsx',
+  'src/session.ts',
   'src/supabase.ts',
   'src/theme.css',
 ];
