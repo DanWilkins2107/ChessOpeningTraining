@@ -12,7 +12,8 @@ export type TemporaryExclude = {
 export type ModuleSources = Record<string, string>;
 
 const SOURCE = /\.(tsx?|css)$/;
-const COMPANION_TEST = /\.test\.tsx?$/;
+const TEST = /\.test\.tsx?$/;
+const SHARED_FOLDERS = ['elements', 'tests-shared'];
 const RELATIVE_IMPORT = /\b(?:from|import)\s*\(?\s*['"](\.[^'"]*)['"]/g;
 const RESOLVED_EXTENSIONS = ['', '.ts', '.tsx'];
 
@@ -69,12 +70,17 @@ function misplacements(sources: ModuleSources): Record<string, string> {
   for (const modulePath of Object.keys(sources)) {
     if (!isPlaceable(modulePath)) continue;
 
+    const sharedFolder = sharedFolderOf(modulePath);
     const owners = [
-      ...new Set((consumers[modulePath] ?? []).map(owningFolder)),
+      ...new Set(
+        (consumers[modulePath] ?? [])
+          .filter((consumer) => consumerFolderOf(consumer) === sharedFolder)
+          .map(owningFolder),
+      ),
     ].sort();
     if (owners.length === 0) continue;
 
-    const required = requiredFolder(owners);
+    const required = requiredFolder(owners, sharedFolder);
     if (declaredFolder(modulePath) === required) continue;
 
     found[modulePath] =
@@ -113,23 +119,37 @@ function resolveModule(target: string, sources: ModuleSources): string | null {
 }
 
 const isPlaceable = (modulePath: string) =>
-  declaredFolder(modulePath) !== null || modulePath.split('/').length === 2;
+  !TEST.test(modulePath) &&
+  (declaredFolder(modulePath) !== null || modulePath.split('/').length === 2);
+
+const isSharedFolder = (folder: string | undefined) =>
+  SHARED_FOLDERS.some((shared) => shared === folder);
+
+const sharedFolderOf = (modulePath: string) =>
+  declaredFolder(modulePath)?.split('/').at(-1) ?? 'elements';
+
+// App code places what it imports into elements; tests and their helpers place
+// what they import into tests-shared.
+const consumerFolderOf = (consumer: string) =>
+  TEST.test(consumer) ? 'tests-shared' : sharedFolderOf(consumer);
 
 function declaredFolder(modulePath: string): string | null {
   const folders = modulePath.split('/').slice(0, -1);
-  const innermost = folders.lastIndexOf('elements');
+  const innermost = Math.max(
+    ...SHARED_FOLDERS.map((shared) => folders.lastIndexOf(shared)),
+  );
   return innermost === -1 ? null : folders.slice(0, innermost + 1).join('/');
 }
 
 function owningFolder(modulePath: string): string {
   const folders = modulePath.split('/').slice(0, -1);
-  while (folders.at(-1) === 'elements') folders.pop();
+  while (isSharedFolder(folders.at(-1))) folders.pop();
   return collapsePages(folders.join('/'));
 }
 
-function requiredFolder(owners: string[]): string {
+function requiredFolder(owners: string[], sharedFolder: string): string {
   const shared = owners.reduce(commonPrefix);
-  return `${collapsePages(shared)}/elements`;
+  return `${collapsePages(shared)}/${sharedFolder}`;
 }
 
 function commonPrefix(left: string, right: string): string {
@@ -146,5 +166,5 @@ function trackedModules(): string[] {
   return execFileSync('git', ['ls-files', '-z', 'src'], { cwd: repoRoot })
     .toString('utf8')
     .split('\0')
-    .filter((file) => SOURCE.test(file) && !COMPANION_TEST.test(file));
+    .filter((file) => SOURCE.test(file));
 }

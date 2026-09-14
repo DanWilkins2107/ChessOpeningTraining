@@ -30,7 +30,7 @@ export default defineConfig({
       provider: 'istanbul',
       reporter: ['text', 'json'],
       include: ['meta/**/*.ts', 'web/meta/**/*.ts', 'web/src/**/*.{ts,tsx}'],
-      exclude: ['**/*.test.{ts,tsx}'],
+      exclude: ['**/*.test.{ts,tsx}', '**/tests-shared/**'],
       thresholds: {
         statements: 100,
         branches: 100,
