@@ -40,19 +40,15 @@ export function SignIn() {
           name="email"
           type="email"
           autoComplete="email"
-          required
         />
         <TextInput
           label="Password"
           name="password"
           type="password"
           autoComplete="current-password"
-          required
         />
         {error && <p role="alert">{error}</p>}
-        <Button type="submit" disabled={pending}>
-          Sign in
-        </Button>
+        <Button disabled={pending}>Sign in</Button>
       </form>
     </section>
   );

@@ -1,6 +1,14 @@
-import type { ComponentProps } from 'react';
 import './Button.css';
 
-export function Button(props: Omit<ComponentProps<'button'>, 'className'>) {
-  return <button className="button" {...props} />;
+type ButtonProps = {
+  disabled: boolean;
+  children: string;
+};
+
+export function Button({ disabled, children }: ButtonProps) {
+  return (
+    <button className="button" type="submit" disabled={disabled}>
+      {children}
+    </button>
+  );
 }

@@ -5,7 +5,12 @@ import { TextInput } from './TextInput';
 describe('TextInput', () => {
   it('matches snapshot', () => {
     const { container } = render(
-      <TextInput label="Email" name="email" type="email" />,
+      <TextInput
+        label="Email"
+        name="email"
+        type="email"
+        autoComplete="email"
+      />,
     );
     expect(container).toMatchSnapshot();
   });

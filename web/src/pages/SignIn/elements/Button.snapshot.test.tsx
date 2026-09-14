@@ -4,7 +4,7 @@ import { Button } from './Button';
 
 describe('Button', () => {
   it('matches snapshot', () => {
-    const { container } = render(<Button type="submit">Sign in</Button>);
+    const { container } = render(<Button disabled={false}>Sign in</Button>);
     expect(container).toMatchSnapshot();
   });
 });

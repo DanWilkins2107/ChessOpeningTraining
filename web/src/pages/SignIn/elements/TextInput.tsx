@@ -1,15 +1,23 @@
-import type { ComponentProps } from 'react';
 import './TextInput.css';
 
-type TextInputProps = Omit<ComponentProps<'input'>, 'className'> & {
+type TextInputProps = {
   label: string;
+  name: string;
+  type: 'email' | 'password';
+  autoComplete: 'email' | 'current-password';
 };
 
-export function TextInput({ label, ...inputProps }: TextInputProps) {
+export function TextInput({ label, name, type, autoComplete }: TextInputProps) {
   return (
     <label className="text-input">
       {label}
-      <input className="text-input-field" {...inputProps} />
+      <input
+        className="text-input-field"
+        name={name}
+        type={type}
+        autoComplete={autoComplete}
+        required
+      />
     </label>
   );
 }
