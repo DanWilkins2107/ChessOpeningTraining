@@ -21,6 +21,30 @@ describe('testImportProblems', () => {
     ]);
   });
 
+  it('rejects app code importing from either meta folder', () => {
+    expect(
+      testImportProblems({
+        'web/src/elements/Foo.tsx': imports(
+          '../../../meta/expiry',
+          '../../meta/paletteGate',
+        ),
+      }),
+    ).toEqual([
+      'web/src/elements/Foo.tsx: imports meta/expiry, which only tests may import',
+      'web/src/elements/Foo.tsx: imports web/meta/paletteGate, which only tests may import',
+    ]);
+  });
+
+  it('accepts meta code importing meta, and app code importing an app folder named meta', () => {
+    expect(
+      testImportProblems({
+        'meta/todoGate.ts': imports('./expiry'),
+        'web/meta/placementGate.ts': imports('../../meta/expiry'),
+        'web/src/pages/Home/page.tsx': imports('../meta/Board'),
+      }),
+    ).toEqual([]);
+  });
+
   it('accepts tests and test helpers importing each other and app code', () => {
     expect(
       testImportProblems({

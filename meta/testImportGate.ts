@@ -7,6 +7,7 @@ type Sources = Record<string, string>;
 const SCANNED_FOLDERS = ['web/src', 'web/meta', 'meta'];
 const TYPESCRIPT_EXTENSION = /\.tsx?$/;
 const TEST = /\.test(\.tsx?)?$/;
+const META = /^(web\/)?meta\//;
 const RELATIVE_IMPORT = /\b(?:from|import)\s*\(?\s*['"](\.[^'"]*)['"]/g;
 
 const repoRoot = path.join(import.meta.dirname, '..');
@@ -25,7 +26,10 @@ export function testImportProblems(sources: Sources): string[] {
     .filter(([file]) => !isTestSide(file))
     .flatMap(([file, text]) =>
       importedPaths(file, text)
-        .filter(isTestSide)
+        .filter(
+          (imported) =>
+            isTestSide(imported) || (isAppCode(file) && isMeta(imported)),
+        )
         .map(
           (imported) =>
             `${file}: imports ${imported}, which only tests may import`,
@@ -63,6 +67,10 @@ const isTestHelper = (filePath: string) =>
 
 const isTestSide = (filePath: string) =>
   TEST.test(filePath) || isTestHelper(filePath);
+
+const isAppCode = (filePath: string) => filePath.startsWith('web/src/');
+
+const isMeta = (filePath: string) => META.test(filePath);
 
 function trackedModules(): string[] {
   return execFileSync('git', ['ls-files', '-z', ...SCANNED_FOLDERS], {

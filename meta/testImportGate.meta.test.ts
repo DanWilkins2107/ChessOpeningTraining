@@ -7,7 +7,7 @@ import {
 
 const sources = repoSources();
 
-it('no app code imports a test or a test helper', () => {
+it('no app code imports a test, a test helper or meta', () => {
   expect(Object.keys(sources).length).toBeGreaterThan(0);
   expect(testImportProblems(sources)).toEqual([]);
 });
