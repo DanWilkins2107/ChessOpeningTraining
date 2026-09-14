@@ -9,7 +9,7 @@ const admin = createClient(
   { auth: { persistSession: false, autoRefreshToken: false } },
 );
 
-export function registerTestUser() {
+export function registerTestUser({ emailConfirmed = true } = {}) {
   const credentials = {
     email: `test-${crypto.randomUUID()}@example.test`,
     password: crypto.randomUUID(),
@@ -19,7 +19,7 @@ export function registerTestUser() {
   beforeAll(async () => {
     const { data, error } = await admin.auth.admin.createUser({
       ...credentials,
-      email_confirm: true,
+      email_confirm: emailConfirmed,
     });
     if (error) throw error;
     user.id = data.user.id;
@@ -37,5 +37,5 @@ export function registerTestUser() {
     if (error) throw error;
   }
 
-  return { user, signIn };
+  return { user, credentials, signIn };
 }

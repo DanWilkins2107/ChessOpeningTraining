@@ -1,9 +1,9 @@
 import { RouterProvider, createMemoryRouter } from 'react-router-dom';
 import { act, cleanup, render, screen } from '@testing-library/react';
 import { afterEach, expect, it } from 'vitest';
+import { authSettled } from '../tests/authSettled';
 import { registerTestUser } from '../tests/testUser';
 import { router } from './router';
-import { supabase } from './supabase';
 
 const { signIn } = registerTestUser();
 
@@ -16,20 +16,6 @@ function renderAt(...entries: string[]) {
   render(<RouterProvider router={memoryRouter} />);
   return memoryRouter;
 }
-
-// supabase-js emits each subscription's first event in subscription order, so
-// this one's arrives after the page's.
-const authSettled = () =>
-  act(
-    () =>
-      new Promise<void>((resolve) => {
-        const { data } = supabase.auth.onAuthStateChange((event) => {
-          if (event !== 'INITIAL_SESSION') return;
-          data.subscription.unsubscribe();
-          resolve();
-        });
-      }),
-  );
 
 const pathOf = ({ state }: ReturnType<typeof renderAt>) =>
   state.location.pathname + state.location.search;
@@ -102,6 +88,18 @@ it('keeps unknown paths public for signed-out visitors', async () => {
 
   // Then they stay on it
   expect(pathOf(memoryRouter)).toBe('/no-such-page');
+});
+
+it('keeps sign in public for signed-out visitors', async () => {
+  // Given a signed-out visitor
+
+  // When they open sign in
+  const memoryRouter = renderAt('/sign-in');
+  await authSettled();
+
+  // Then they stay on it
+  expect(pathOf(memoryRouter)).toBe('/sign-in');
+  expect(screen.getByRole('heading', { name: 'Sign in' })).toBeInTheDocument();
 });
 
 it('shows the not-found page for an unknown path', () => {
