@@ -1,16 +1,17 @@
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { consumersByModule } from './importGraph';
-import type { ModuleSources } from './importGraph';
+
+type Sources = Record<string, string>;
 
 const SCANNED_FOLDERS = ['web/src', 'web/meta', 'meta'];
-const SOURCE = /\.tsx?$/;
-const TEST = /\.test\.tsx?$/;
+const TYPESCRIPT_EXTENSION = /\.tsx?$/;
+const TEST = /\.test(\.tsx?)?$/;
+const RELATIVE_IMPORT = /\b(?:from|import)\s*\(?\s*['"](\.[^'"]*)['"]/g;
 
 const repoRoot = path.join(import.meta.dirname, '..');
 
-export function repoSources(): ModuleSources {
+export function repoSources(): Sources {
   return Object.fromEntries(
     trackedModules().map((file) => [
       file,
@@ -19,36 +20,49 @@ export function repoSources(): ModuleSources {
   );
 }
 
-export function testImportProblems(sources: ModuleSources): string[] {
-  return Object.entries(consumersByModule(sources))
-    .filter(([modulePath]) => isTestSide(modulePath))
-    .flatMap(([modulePath, consumers]) =>
-      consumers
-        .filter((consumer) => !isTestSide(consumer))
+export function testImportProblems(sources: Sources): string[] {
+  return Object.entries(sources)
+    .filter(([file]) => !isTestSide(file))
+    .flatMap(([file, text]) =>
+      importedPaths(file, text)
+        .filter(isTestSide)
         .map(
-          (consumer) =>
-            `${consumer}: imports ${modulePath}, which only tests may import`,
+          (imported) =>
+            `${file}: imports ${imported}, which only tests may import`,
         ),
     );
 }
 
-export function singleImporterProblems(sources: ModuleSources): string[] {
-  return Object.entries(consumersByModule(sources))
-    .filter(
-      ([modulePath, consumers]) =>
-        isTestHelper(modulePath) && consumers.length === 1,
-    )
+export function singleImporterProblems(sources: Sources): string[] {
+  const importers: Record<string, string[]> = {};
+
+  for (const [file, text] of Object.entries(sources)) {
+    const helpers = importedPaths(file, text)
+      .filter(isTestHelper)
+      .map((helper) => helper.replace(TYPESCRIPT_EXTENSION, ''));
+    for (const helper of new Set(helpers)) {
+      (importers[helper] ??= []).push(file);
+    }
+  }
+
+  return Object.entries(importers)
+    .filter(([, files]) => files.length === 1)
     .map(
-      ([modulePath, [consumer]]) =>
-        `${modulePath}: only ${consumer} imports it, so inline it there`,
+      ([helper, [file]]) => `${helper}: only ${file} imports it, so inline it`,
     );
 }
 
-const isTestHelper = (modulePath: string) =>
-  modulePath.split('/').includes('tests-shared');
+function importedPaths(file: string, text: string): string[] {
+  return [...text.matchAll(RELATIVE_IMPORT)].map(([, specifier]) =>
+    path.posix.join(path.posix.dirname(file), specifier),
+  );
+}
 
-const isTestSide = (modulePath: string) =>
-  TEST.test(modulePath) || isTestHelper(modulePath);
+const isTestHelper = (filePath: string) =>
+  filePath.split('/').includes('tests-shared');
+
+const isTestSide = (filePath: string) =>
+  TEST.test(filePath) || isTestHelper(filePath);
 
 function trackedModules(): string[] {
   return execFileSync('git', ['ls-files', '-z', ...SCANNED_FOLDERS], {
@@ -56,5 +70,5 @@ function trackedModules(): string[] {
   })
     .toString('utf8')
     .split('\0')
-    .filter((file) => SOURCE.test(file));
+    .filter((file) => TYPESCRIPT_EXTENSION.test(file));
 }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { excludeProblems, placementProblems } from './lowestCommonFolderGate';
-import type { ModuleSources } from '../../meta/importGraph';
+import type { ModuleSources } from './lowestCommonFolderGate';
 
 const TODAY = new Date('2026-09-01T00:00:00Z');
 
@@ -58,10 +58,38 @@ describe('placementProblems', () => {
     ).toEqual([]);
   });
 
+  it('ignores an import of an asset the gate does not track', () => {
+    expect(
+      placementProblems(
+        { 'src/pages/Home/page.tsx': imports('../../elements/logo.svg') },
+        [],
+      ),
+    ).toEqual([]);
+  });
+
   it('leaves a module with no consumers alone', () => {
     expect(placementProblems({ 'src/elements/Foo/Foo.tsx': '' }, [])).toEqual(
       [],
     );
+  });
+
+  it('resolves extensionless and stylesheet imports', () => {
+    expect(
+      placementProblems(
+        {
+          'src/elements/theme.css': '',
+          'src/elements/useBoard.ts': '',
+          'src/pages/Home/page.tsx': imports(
+            '../../elements/theme.css',
+            '../../elements/useBoard',
+          ),
+        },
+        [],
+      ),
+    ).toEqual([
+      'src/elements/theme.css: consumed from src/pages/Home, so it belongs in src/pages/Home/elements',
+      'src/elements/useBoard.ts: consumed from src/pages/Home, so it belongs in src/pages/Home/elements',
+    ]);
   });
 
   it('sends a shared root module into the src elements folder', () => {
