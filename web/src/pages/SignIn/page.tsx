@@ -4,6 +4,7 @@ import { Navigate, useSearchParams } from 'react-router-dom';
 import { useUser } from '../../elements/session';
 import { supabase } from '../../supabase';
 import { Button } from './elements/Button';
+import { ErrorMessage } from './elements/ErrorMessage';
 import { TextInput } from './elements/TextInput';
 import { safeReturnPath } from './elements/safeReturnPath';
 import { signInErrorMessage } from './elements/signInErrorMessage';
@@ -47,7 +48,7 @@ export function SignIn() {
           type="password"
           autoComplete="current-password"
         />
-        {error && <p role="alert">{error}</p>}
+        {error && <ErrorMessage>{error}</ErrorMessage>}
         <Button disabled={pending}>Sign in</Button>
       </form>
     </section>

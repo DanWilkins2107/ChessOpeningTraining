@@ -1,0 +1,12 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ErrorMessage > matches snapshot 1`] = `
+<div>
+  <p
+    class="error-message"
+    role="alert"
+  >
+    Incorrect email or password
+  </p>
+</div>
+`;

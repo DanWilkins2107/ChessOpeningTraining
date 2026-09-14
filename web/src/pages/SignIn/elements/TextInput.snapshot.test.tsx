@@ -14,4 +14,16 @@ describe('TextInput', () => {
     );
     expect(container).toMatchSnapshot();
   });
+
+  it('matches snapshot as a password', () => {
+    const { container } = render(
+      <TextInput
+        label="Password"
+        name="password"
+        type="password"
+        autoComplete="current-password"
+      />,
+    );
+    expect(container).toMatchSnapshot();
+  });
 });
