@@ -1,4 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom';
+import { ProtectedLayout } from './ProtectedLayout';
 import { ROOT_ROUTE_PATH } from './router.constants';
 import { RootLayout } from './RootLayout';
 import { Home } from '../pages/Home/page';
@@ -9,7 +10,10 @@ export const router = createBrowserRouter([
     path: ROOT_ROUTE_PATH,
     element: <RootLayout />,
     children: [
-      { index: true, element: <Home /> },
+      {
+        element: <ProtectedLayout />,
+        children: [{ index: true, element: <Home /> }],
+      },
       { path: '*', element: <NotFound /> },
     ],
   },
