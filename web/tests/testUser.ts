@@ -32,8 +32,8 @@ export function registerTestUser() {
 
   afterEach(() => supabase.auth.signOut({ scope: 'local' }));
 
-  async function signIn() {
-    const { error } = await supabase.auth.signInWithPassword(credentials);
+  async function signIn(client = supabase) {
+    const { error } = await client.auth.signInWithPassword(credentials);
     if (error) throw error;
   }
 
