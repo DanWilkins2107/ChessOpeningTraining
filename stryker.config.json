@@ -10,6 +10,7 @@
     "web/src/**/*.{ts,tsx}",
     "!web/src/**/*.test.{ts,tsx}",
     "!web/src/**/*.snapshot.test.tsx",
+    "!web/src/**/tests-shared/**",
     "!web/src/**/*.constants.ts"
   ],
   "coverageAnalysis": "perTest",

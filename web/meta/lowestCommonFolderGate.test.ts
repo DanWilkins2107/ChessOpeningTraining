@@ -103,6 +103,59 @@ describe('placementProblems', () => {
     ]);
     expect(placementProblems(sources, ['src/shared.ts'])).toEqual([]);
   });
+
+  it('accepts a test helper at the lowest common folder of its tests', () => {
+    expect(
+      placementProblems(
+        {
+          'src/tests-shared/testUser.ts': '',
+          'src/elements/session.integration.test.tsx': imports(
+            '../tests-shared/testUser',
+          ),
+          'src/router.integration.test.tsx': imports('./tests-shared/testUser'),
+        },
+        [],
+      ),
+    ).toEqual([]);
+  });
+
+  it('rejects test helpers above the only tests and helpers using them', () => {
+    expect(
+      placementProblems(
+        {
+          'src/tests-shared/renderAt.ts': '',
+          'src/tests-shared/signIn.ts': '',
+          'src/pages/Home/page.test.tsx': imports(
+            '../../tests-shared/renderAt',
+          ),
+          'src/pages/Home/tests-shared/board.ts': imports(
+            '../../../tests-shared/signIn',
+          ),
+        },
+        [],
+      ),
+    ).toEqual([
+      'src/tests-shared/renderAt.ts: consumed from src/pages/Home, so it belongs in src/pages/Home/tests-shared',
+      'src/tests-shared/signIn.ts: consumed from src/pages/Home, so it belongs in src/pages/Home/tests-shared',
+    ]);
+  });
+
+  it('places elements by app code alone and test helpers by tests alone', () => {
+    expect(
+      placementProblems(
+        {
+          'src/elements/Foo.tsx': '',
+          'src/pages/Home/tests-shared/renderAt.ts': imports(
+            '../../../elements/Foo',
+          ),
+          'src/pages/Home/page.test.tsx': imports('../../elements/Foo'),
+          'src/tests-shared/testUser.ts': '',
+          'src/pages/Home/page.tsx': imports('../../tests-shared/testUser'),
+        },
+        [],
+      ),
+    ).toEqual([]);
+  });
 });
 
 describe('excludeProblems', () => {
