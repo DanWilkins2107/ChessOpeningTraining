@@ -91,6 +91,19 @@ it('signs in and returns to the return path', async () => {
   expect(pathOf(memoryRouter)).toBe('/?study=ab12');
 });
 
+it('signs in without the browser submitting the form', async () => {
+  // Given a signed-out visitor on sign in
+  renderAt('/sign-in');
+  await authSettled();
+
+  // When the form is submitted
+  const submitted = fireEvent.submit(signInButton().closest('form')!);
+
+  // Then the browser's own submission is cancelled
+  expect(submitted).toBe(false);
+  await screen.findByRole('alert');
+});
+
 it('disables the button until the attempt finishes', async () => {
   // Given a signed-out visitor on sign in
   renderAt('/sign-in');
