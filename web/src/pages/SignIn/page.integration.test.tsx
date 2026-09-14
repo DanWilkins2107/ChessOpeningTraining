@@ -7,9 +7,9 @@ import {
   screen,
 } from '@testing-library/react';
 import { afterEach, expect, it } from 'vitest';
-import { authSettled } from '../../../tests/authSettled';
-import { registerTestUser } from '../../../tests/testUser';
-import { router } from '../../router';
+import { authSettled } from '../../tests-shared/authSettled';
+import { registerTestUser } from '../../tests-shared/testUser';
+import { router } from '../../elements/router';
 
 const confirmed = registerTestUser();
 const unconfirmed = registerTestUser({ emailConfirmed: false });

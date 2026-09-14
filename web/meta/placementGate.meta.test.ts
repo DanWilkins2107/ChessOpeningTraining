@@ -5,16 +5,16 @@ import { isPlaced } from './placementGate';
 const ROOT_EXCEPTIONS = [
   'env.ts',
   'main.tsx',
-  'router.tsx',
   'supabase.ts',
   'theme.css',
+  'zod.ts',
 ];
 
 const modules = Object.keys(import.meta.glob('../src/**/*')).map((key) =>
   key.replace('../src/', ''),
 );
 
-it('every module sits in a page folder or an elements folder', () => {
+it('every module sits in a page, elements or tests-shared folder', () => {
   expect(modules.length).toBeGreaterThan(0);
   expect(modules.filter((path) => !isPlaced(path, ROOT_EXCEPTIONS))).toEqual(
     [],

@@ -1,6 +1,6 @@
 import { act, cleanup, render, screen } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
-import { registerTestUser } from '../../tests/testUser';
+import { registerTestUser } from '../tests-shared/testUser';
 import { supabase } from '../supabase';
 import { useUser } from './session';
 

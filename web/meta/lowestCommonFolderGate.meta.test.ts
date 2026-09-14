@@ -10,9 +10,9 @@ import type { TemporaryExclude } from './lowestCommonFolderGate';
 const ROOT_EXCEPTIONS = [
   'src/env.ts',
   'src/main.tsx',
-  'src/router.tsx',
   'src/supabase.ts',
   'src/theme.css',
+  'src/zod.ts',
 ];
 
 // Modules knowingly left above or below their lowest common folder, each only

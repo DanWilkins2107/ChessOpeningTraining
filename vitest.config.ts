@@ -15,7 +15,7 @@ export default defineConfig({
         test: {
           ...web.test,
           name: 'integration',
-          include: ['src/**/*.integration.test.tsx'],
+          include: ['src/**/*.integration.test.{ts,tsx}'],
           exclude: configDefaults.exclude,
           env: {
             VITE_SUPABASE_URL: testStack.API_URL,
@@ -30,7 +30,7 @@ export default defineConfig({
       provider: 'istanbul',
       reporter: ['text', 'json'],
       include: ['meta/**/*.ts', 'web/meta/**/*.ts', 'web/src/**/*.{ts,tsx}'],
-      exclude: ['**/*.test.{ts,tsx}'],
+      exclude: ['**/*.test.{ts,tsx}', '**/tests-shared/**'],
       thresholds: {
         statements: 100,
         branches: 100,

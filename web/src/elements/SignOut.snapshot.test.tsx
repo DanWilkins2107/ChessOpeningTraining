@@ -18,7 +18,7 @@ describe('SignOut', () => {
       }),
     );
     const { SignOut } = await import('./SignOut');
-    const { authSettled } = await import('../../tests/authSettled');
+    const { authSettled } = await import('../tests-shared/authSettled');
 
     const { container } = render(<SignOut />);
     await authSettled();

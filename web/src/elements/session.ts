@@ -1,7 +1,7 @@
 import type { Session, User } from '@supabase/supabase-js';
 import { useEffect, useEffectEvent, useState } from 'react';
 import { supabase } from '../supabase';
-import { SUBSCRIBE_ONCE } from './constants';
+import { SUBSCRIBE_ONCE } from './session.constants';
 
 export function useUser(): User | null | undefined {
   const [user, setUser] = useState<User | null>();
@@ -16,7 +16,7 @@ export function useUser(): User | null | undefined {
       );
       return () => data.subscription.unsubscribe();
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- an empty list from constants.ts, so Stryker skips its equivalent mutant
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- SUBSCRIBE_ONCE is empty, so the effect subscribes once, on mount
     SUBSCRIBE_ONCE,
   );
 

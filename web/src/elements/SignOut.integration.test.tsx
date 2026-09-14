@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
-import { authSettled } from '../../tests/authSettled';
-import { registerTestUser } from '../../tests/testUser';
+import { authSettled } from '../tests-shared/authSettled';
+import { registerTestUser } from '../tests-shared/testUser';
 import { env } from '../env';
 import { SignOut } from './SignOut';
 

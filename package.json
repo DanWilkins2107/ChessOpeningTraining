@@ -48,6 +48,7 @@
     "fallow": "3.23.0",
     "globals": "^17.12.0",
     "jsdom": "^29.1.1",
+    "playwright": "^1.63.0",
     "prettier": "^3.9.6",
     "supabase": "2.117.0",
     "typescript": "^5.9.3",

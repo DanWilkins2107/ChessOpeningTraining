@@ -33,6 +33,10 @@ describe('isPlaced', () => {
   it('accepts elements named after their folder, at any depth', () => {
     expect(isPlaced('elements/Widget.tsx', EXCEPTIONS)).toBe(true);
     expect(isPlaced('elements/useWidget.test.ts', EXCEPTIONS)).toBe(true);
+    expect(isPlaced('elements/useWidget.integration.test.ts', EXCEPTIONS)).toBe(
+      true,
+    );
+    expect(isPlaced('elements/useWidget.constants.ts', EXCEPTIONS)).toBe(true);
     expect(isPlaced('pages/Alpha/elements/Widget.tsx', EXCEPTIONS)).toBe(true);
     expect(isPlaced('pages/Alpha/elements/Widget/Widget.tsx', EXCEPTIONS)).toBe(
       true,
@@ -44,6 +48,21 @@ describe('isPlaced', () => {
       ),
     ).toBe(true);
     expect(isPlaced('pages/Alpha/elements/Widget/Knob.tsx', EXCEPTIONS)).toBe(
+      false,
+    );
+  });
+
+  it('accepts shared .ts test helpers at any depth', () => {
+    expect(isPlaced('tests-shared/testUser.ts', EXCEPTIONS)).toBe(true);
+    expect(isPlaced('pages/Alpha/tests-shared/renderAt.ts', EXCEPTIONS)).toBe(
+      true,
+    );
+    expect(
+      isPlaced('pages/Alpha/elements/Widget/tests-shared/knob.ts', EXCEPTIONS),
+    ).toBe(true);
+    expect(isPlaced('tests-shared/renderAt.tsx', EXCEPTIONS)).toBe(false);
+    expect(isPlaced('tests-shared/testUser.test.ts', EXCEPTIONS)).toBe(false);
+    expect(isPlaced('tests-shared/helpers/testUser.ts', EXCEPTIONS)).toBe(
       false,
     );
   });
