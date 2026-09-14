@@ -2,6 +2,8 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { expiryProblem, startOfTodayUtc } from '../../meta/expiry';
+import { consumersByModule } from '../../meta/importGraph';
+import type { ModuleSources } from '../../meta/importGraph';
 
 export type TemporaryExclude = {
   path: string;
@@ -9,13 +11,9 @@ export type TemporaryExclude = {
   reason: string;
 };
 
-export type ModuleSources = Record<string, string>;
-
 const SOURCE = /\.(tsx?|css)$/;
 const TEST = /\.test\.tsx?$/;
 const SHARED_FOLDERS = ['elements', 'tests-shared'];
-const RELATIVE_IMPORT = /\b(?:from|import)\s*\(?\s*['"](\.[^'"]*)['"]/g;
-const RESOLVED_EXTENSIONS = ['', '.ts', '.tsx'];
 
 const repoRoot = path.join(import.meta.dirname, '..');
 
@@ -88,34 +86,6 @@ function misplacements(sources: ModuleSources): Record<string, string> {
   }
 
   return found;
-}
-
-function consumersByModule(sources: ModuleSources): Record<string, string[]> {
-  const consumers: Record<string, string[]> = {};
-
-  for (const [file, text] of Object.entries(sources)) {
-    for (const target of importedModules(file, text)) {
-      const resolved = resolveModule(target, sources);
-      if (resolved === null) continue;
-      (consumers[resolved] ??= []).push(file);
-    }
-  }
-
-  return consumers;
-}
-
-function importedModules(file: string, text: string): string[] {
-  return [...text.matchAll(RELATIVE_IMPORT)].map(([, specifier]) =>
-    path.posix.join(path.posix.dirname(file), specifier),
-  );
-}
-
-function resolveModule(target: string, sources: ModuleSources): string | null {
-  return (
-    RESOLVED_EXTENSIONS.map((extension) => `${target}${extension}`).find(
-      (candidate) => candidate in sources,
-    ) ?? null
-  );
 }
 
 const isPlaceable = (modulePath: string) =>
