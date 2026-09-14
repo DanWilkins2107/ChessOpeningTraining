@@ -21,8 +21,11 @@ it('hides the password until shown', () => {
 
   // When nothing is clicked
 
-  // Then the password is hidden
+  // Then the password is hidden, with a button to show it
   expect(screen.getByLabelText('Password')).toHaveAttribute('type', 'password');
+  expect(
+    screen.getByRole('button', { name: 'Show password' }),
+  ).toHaveTextContent('Show');
 });
 
 it('shows the password', () => {
