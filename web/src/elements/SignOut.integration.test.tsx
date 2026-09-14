@@ -66,10 +66,10 @@ it('signs out this device only', async () => {
 it('shows the server error where the button was', async () => {
   // Given a signed-in user, and a server that fails to sign them out
   await renderSignedIn();
-  const realFetch = globalThis.fetch;
+  const realFetch = window.fetch;
   // mock-reason: the local auth server cannot be made to fail a logout on
   // demand. Only the logout request is failed; everything else is real.
-  vi.spyOn(globalThis, 'fetch').mockImplementation((input, init) =>
+  vi.spyOn(window, 'fetch').mockImplementation((input, init) =>
     String(input).includes('/logout')
       ? Promise.resolve(
           Response.json({ msg: 'Logout failed' }, { status: 500 }),
