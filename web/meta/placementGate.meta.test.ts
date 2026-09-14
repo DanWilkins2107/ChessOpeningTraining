@@ -5,9 +5,9 @@ import { isPlaced } from './placementGate';
 const ROOT_EXCEPTIONS = [
   'env.ts',
   'main.tsx',
-  'router.tsx',
   'supabase.ts',
   'theme.css',
+  'zod.ts',
 ];
 
 const modules = Object.keys(import.meta.glob('../src/**/*')).map((key) =>
