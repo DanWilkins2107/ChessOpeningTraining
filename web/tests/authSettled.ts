@@ -2,7 +2,7 @@ import { act } from '@testing-library/react';
 import { supabase } from '../src/supabase';
 
 // supabase-js emits each subscription's first event in subscription order, so
-// this one's arrives after the page's.
+// this one's arrives after the rendered component's.
 export const authSettled = () =>
   act(
     () =>
