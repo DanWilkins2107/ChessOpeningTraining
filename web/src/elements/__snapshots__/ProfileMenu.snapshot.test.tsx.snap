@@ -1,0 +1,54 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ProfileMenu > matches snapshot 1`] = `
+<div>
+  <div
+    class="profile-menu"
+  >
+    <button
+      aria-expanded="false"
+      class="profile-menu-button"
+      type="button"
+    >
+      Profile
+    </button>
+  </div>
+</div>
+`;
+
+exports[`ProfileMenu > matches snapshot when open 1`] = `
+<div>
+  <div
+    class="profile-menu"
+  >
+    <button
+      aria-expanded="true"
+      class="profile-menu-button"
+      type="button"
+    >
+      Profile
+    </button>
+    <ul
+      class="profile-menu-items"
+    >
+      <li>
+        <a
+          class="profile-menu-item"
+          data-discover="true"
+          href="/account"
+        >
+          Account
+        </a>
+      </li>
+      <li>
+        <button
+          class="profile-menu-item"
+          type="button"
+        >
+          Sign out
+        </button>
+      </li>
+    </ul>
+  </div>
+</div>
+`;
