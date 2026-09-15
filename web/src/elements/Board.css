@@ -5,7 +5,6 @@
   aspect-ratio: 1;
   overflow: hidden;
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
 }
 
 .board-row {
