@@ -1,0 +1,36 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Profile > matches snapshot 1`] = `
+<div>
+  <section
+    class="profile-card"
+  >
+    <h1
+      class="profile-heading"
+    >
+      Profile
+    </h1>
+    <ul
+      class="profile-actions"
+    >
+      <li>
+        <a
+          class="profile-action"
+          data-discover="true"
+          href="/account"
+        >
+          Account
+        </a>
+      </li>
+      <li>
+        <button
+          class="profile-action"
+          type="button"
+        >
+          Sign out
+        </button>
+      </li>
+    </ul>
+  </section>
+</div>
+`;

@@ -1,10 +1,11 @@
 import { render } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 import { env } from '../env';
 
 const storageKey = `sb-${new URL(env.VITE_SUPABASE_URL).hostname.split('.')[0]}-auth-token`;
 
-describe('SignOut', () => {
+describe('ProfileLink', () => {
   it('matches snapshot', async () => {
     localStorage.setItem(
       storageKey,
@@ -17,10 +18,14 @@ describe('SignOut', () => {
         user: { id: 'user-id' },
       }),
     );
-    const { SignOut } = await import('./SignOut');
+    const { ProfileLink } = await import('./ProfileLink');
     const { authSettled } = await import('../tests-shared/authSettled');
 
-    const { container } = render(<SignOut />);
+    const { container } = render(
+      <MemoryRouter>
+        <ProfileLink />
+      </MemoryRouter>,
+    );
     await authSettled();
 
     expect(container).toMatchSnapshot();
