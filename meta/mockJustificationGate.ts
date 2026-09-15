@@ -1,6 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
+import { gateFilePrefix, repoRoot } from './repoPaths';
 
 const MARKER = 'mock-reason';
 
@@ -11,12 +12,7 @@ const CALL = /\bvi\.(mock|doMock|stubEnv|stubGlobal|spyOn)\s*\(/;
 const COMMENT = /^\s*\/\/\s?(.*)$/;
 const REASON = new RegExp(String.raw`^${MARKER}: \S`);
 
-const toPosix = (value: string) => value.split(path.sep).join('/');
-
-const repoRoot = path.join(import.meta.dirname, '..');
-const gateFilePrefix = toPosix(
-  path.relative(repoRoot, import.meta.filename),
-).replace(/\.ts$/, '');
+const ownFiles = gateFilePrefix(import.meta.filename);
 
 export function unjustifiedCalls(text: string): string[] {
   const lines = text.split(/\r?\n/);
@@ -50,7 +46,7 @@ function scannedFiles(): string[] {
   return execFileSync('git', ['ls-files', '-z'], { cwd: repoRoot })
     .toString('utf8')
     .split('\0')
-    .filter((file) => SCANNED.test(file) && !file.startsWith(gateFilePrefix));
+    .filter((file) => SCANNED.test(file) && !file.startsWith(ownFiles));
 }
 
 function readTextFile(file: string): string {

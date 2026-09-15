@@ -1,36 +1,30 @@
 import { describe, expect, it, vi } from 'vitest';
 import { unjustifiedCalls, unjustifiedMocks } from './mockJustificationGate';
 
-const { execFileSync, readFileSync } = vi.hoisted(() => {
-  const NUL = '\0';
-  const tracked = [
-    'src/pages/Home/page.test.tsx',
-    'meta/mockJustificationGate.test.ts',
-    'src/logo.svg',
-    'meta/expiry.test.ts',
-  ];
-
-  return {
-    execFileSync: () =>
-      Buffer.from(tracked.map((file) => `${file}${NUL}`).join('')),
-    readFileSync: (file: string) =>
+const repo = await vi.hoisted(async () => {
+  const { fakeRepo } = await import('./tests-shared/fakeRepo');
+  return fakeRepo(
+    [
+      'src/pages/Home/page.test.tsx',
+      'meta/mockJustificationGate.test.ts',
+      'src/logo.svg',
+      'meta/expiry.test.ts',
+    ],
+    (file) =>
       file.endsWith('page.test.tsx')
         ? "vi.spyOn(console, 'error');"
         : "// mock-reason: the clock is the input\nvi.stubEnv('TZ', 'UTC');",
-  };
+  );
 });
 
 // mock-reason: unjustifiedMocks scans the real repo, which is green, so the
 // enumeration and formatting paths never see a violation. The stub hands it a
 // four-file repo with a known answer; the rule itself is untouched.
-vi.mock('node:child_process', () => ({
-  execFileSync,
-  default: { execFileSync },
-}));
+vi.mock('node:child_process', () => repo.childProcess);
 
 // mock-reason: the stubbed repo's files do not exist on disk, so the real
 // readFileSync would throw before the rule ran.
-vi.mock('node:fs', () => ({ readFileSync, default: { readFileSync } }));
+vi.mock('node:fs', () => repo.fs);
 
 const REASON = '// mock-reason: the real one talks to the network';
 
