@@ -1,5 +1,11 @@
 import { RouterProvider, createMemoryRouter } from 'react-router-dom';
-import { act, cleanup, render, screen } from '@testing-library/react';
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+} from '@testing-library/react';
 import { afterEach, expect, it } from 'vitest';
 import { authSettled } from '../tests-shared/authSettled';
 import { registerTestUser } from '../tests-shared/testUser';
@@ -66,6 +72,33 @@ it('shows the account page to a signed-in user', async () => {
 
   // Then it shows the account page
   expect(screen.getByRole('heading', { name: 'Account' })).toBeInTheDocument();
+});
+
+it('opens studies from the header link for a signed-in user', async () => {
+  // Given a signed-in user on the home page
+  await signIn();
+  const memoryRouter = renderAt('/');
+  await authSettled();
+
+  // When they follow the Studies link
+  fireEvent.click(screen.getByRole('link', { name: 'Studies' }));
+
+  // Then they are on the studies page
+  expect(pathOf(memoryRouter)).toBe('/studies');
+  expect(screen.getByRole('heading', { name: 'Studies' })).toBeInTheDocument();
+});
+
+it('hides the Studies link from a signed-out visitor', async () => {
+  // Given a signed-out visitor
+
+  // When they open a public page and the user loads
+  renderAt('/no-such-page');
+  await authSettled();
+
+  // Then the header has no Studies link
+  expect(
+    screen.queryByRole('link', { name: 'Studies' }),
+  ).not.toBeInTheDocument();
 });
 
 it('sends a signed-out visitor from the account page to sign in', async () => {

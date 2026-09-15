@@ -1,11 +1,16 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { ProtectedLayout } from './ProtectedLayout';
-import { ACCOUNT_ROUTE_PATH, ROOT_ROUTE_PATH } from './router.constants';
+import {
+  ACCOUNT_ROUTE_PATH,
+  ROOT_ROUTE_PATH,
+  STUDIES_ROUTE_PATH,
+} from './router.constants';
 import { RootLayout } from './RootLayout';
 import { Account } from '../pages/Account/page';
 import { Home } from '../pages/Home/page';
 import { NotFound } from '../pages/NotFound/page';
 import { SignIn } from '../pages/SignIn/page';
+import { Studies } from '../pages/Studies/page';
 
 export const router = createBrowserRouter([
   {
@@ -17,6 +22,7 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <Home /> },
           { path: ACCOUNT_ROUTE_PATH, element: <Account /> },
+          { path: STUDIES_ROUTE_PATH, element: <Studies /> },
         ],
       },
       { path: 'sign-in', element: <SignIn /> },
