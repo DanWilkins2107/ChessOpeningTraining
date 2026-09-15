@@ -36,11 +36,13 @@ jobs:
               const prPaths = new Set(prFiles.map((f) => f.filename));
               const overlap = sinceBranch.files.filter((f) => prPaths.has(f.filename)).length;
 
+              const commits = sinceBranch.commits.map((c) => `- ${c.sha.slice(0, 7)} ${c.commit.message.split('\n')[0]}`);
               const body = [
                 marker,
-                `**${sinceBranch.ahead_by}** commits behind \`main\`.`,
-                `**${sinceBranch.files.length}** files changed on \`main\` since branching, **${overlap}** also changed in this PR.`,
-              ].join('\n');
+                `**${sinceBranch.ahead_by}** commits behind \`main\`:`,
+                commits.join('\n'),
+                `**${overlap}** files overlap with this PR.`,
+              ].join('\n\n');
 
               const comments = await github.paginate(github.rest.issues.listComments, { owner, repo, issue_number: pr.number });
               const existing = comments.find((c) => c.user.login === 'github-actions[bot]' && c.body.startsWith(marker));
