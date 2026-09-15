@@ -1,11 +1,6 @@
 import { expect, it } from 'vitest';
+import { move } from '../tests-shared/move';
 import { playMove } from './playMove';
-import type { MoveNode } from './moveTree';
-
-const move = (san: string, ...children: MoveNode[]): MoveNode => ({
-  san,
-  children,
-});
 
 it('plays the first move into an empty tree', () => {
   // Given an empty tree
