@@ -1,0 +1,14 @@
+// Catches app files imported only by their own tests, which the default pass
+// counts as used. package.json runs it with --unused-files --stale-suppressions,
+// and .fallowrc.json turns unused-files off for the paths it covers.
+{
+  "$schema": "./node_modules/fallow/schema.json",
+  "production": true,
+  // The Vite plugin finds no entries in production mode.
+  "entry": ["web/src/main.tsx", "web/vite.config.ts"],
+  // Only tests consume these, so the default pass checks them.
+  "ignoreFindings": ["meta/**", "web/meta/**", "web/src/tests-shared/**"],
+  "rules": {
+    "stale-suppressions": "error",
+  },
+}
