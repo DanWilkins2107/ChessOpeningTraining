@@ -4,6 +4,9 @@ import { Board } from './Board';
 
 afterEach(cleanup);
 
+const EMPTY = '8/8/8/8/8/8/8/8';
+const START = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+
 const squareNames = () =>
   within(screen.getByRole('grid', { name: 'Chess board' }))
     .getAllByRole('row')
@@ -20,7 +23,7 @@ it('lays out rank 8 at the top from white', () => {
   // Given the board faces white
 
   // When it renders
-  render(<Board orientation="white" />);
+  render(<Board position={EMPTY} orientation="white" />);
 
   // Then rank 8 is the top row and the a-file is on the left
   expect(squareNames()).toEqual([
@@ -39,7 +42,7 @@ it('lays out rank 1 at the top from black', () => {
   // Given the board faces black
 
   // When it renders
-  render(<Board orientation="black" />);
+  render(<Board position={EMPTY} orientation="black" />);
 
   // Then rank 1 is the top row and the h-file is on the left
   expect(squareNames()).toEqual([
@@ -60,7 +63,7 @@ it.each(['white', 'black'] as const)(
     // Given the board faces either side
 
     // When it renders
-    render(<Board orientation={orientation} />);
+    render(<Board position={EMPTY} orientation={orientation} />);
 
     // Then a1 and h8 are dark, and h1 and a8 are light
     for (const name of ['a1', 'h8']) {
@@ -76,7 +79,7 @@ it('labels ranks on the left edge and files on the bottom edge from white', () =
   // Given the board faces white
 
   // When it renders
-  render(<Board orientation="white" />);
+  render(<Board position={EMPTY} orientation="white" />);
 
   // Then only the left column shows ranks and only the bottom row shows files
   expect(square('a8')).toHaveTextContent(/^8$/);
@@ -89,7 +92,7 @@ it('labels ranks on the left edge and files on the bottom edge from black', () =
   // Given the board faces black
 
   // When it renders
-  render(<Board orientation="black" />);
+  render(<Board position={EMPTY} orientation="black" />);
 
   // Then the h-file carries the ranks and rank 8 carries the files
   expect(square('h1')).toHaveTextContent(/^1$/);
@@ -100,7 +103,7 @@ it('labels ranks on the left edge and files on the bottom edge from black', () =
 
 it('keeps edge labels out of the accessibility tree', () => {
   // Given a rendered board
-  render(<Board orientation="white" />);
+  render(<Board position={EMPTY} orientation="white" />);
 
   // When its labels are read
   const labels = square('a1').querySelectorAll('span');
@@ -109,4 +112,56 @@ it('keeps edge labels out of the accessibility tree', () => {
   expect([...labels].map((label) => label.getAttribute('aria-hidden'))).toEqual(
     ['true', 'true'],
   );
+});
+
+it('announces the piece standing on a square', () => {
+  // Given the starting position
+
+  // When it renders
+  render(<Board position={START} orientation="white" />);
+
+  // Then e1 names the king on it
+  expect(square('e1, white king')).toBeInTheDocument();
+});
+
+it('announces an empty square by name alone', () => {
+  // Given the starting position
+
+  // When it renders
+  render(<Board position={START} orientation="white" />);
+
+  // Then e4 names no piece
+  expect(square('e4')).toBeInTheDocument();
+});
+
+it('shows each piece its own image', () => {
+  // Given the starting position
+  render(<Board position={START} orientation="white" />);
+
+  // When e1 is inspected
+  const image = square('e1, white king').querySelector('img');
+
+  // Then it holds the white king artwork
+  expect(image).toHaveAttribute('src', expect.stringContaining('wK'));
+});
+
+it('puts no image on an empty square', () => {
+  // Given the starting position
+  render(<Board position={START} orientation="white" />);
+
+  // When e4 is inspected
+  const image = square('e4').querySelector('img');
+
+  // Then there is nothing to show
+  expect(image).toBeNull();
+});
+
+it('keeps pieces on their own squares from black', () => {
+  // Given the starting position
+
+  // When it renders facing black
+  render(<Board position={START} orientation="black" />);
+
+  // Then the white king is still announced on e1
+  expect(square('e1, white king')).toBeInTheDocument();
 });
