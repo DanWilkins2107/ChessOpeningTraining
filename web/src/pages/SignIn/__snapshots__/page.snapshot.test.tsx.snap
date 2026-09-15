@@ -69,6 +69,13 @@ exports[`SignIn > matches snapshot 1`] = `
         Sign in
       </button>
     </form>
+    <a
+      class="sign-in-link"
+      data-discover="true"
+      href="/forgot-password"
+    >
+      Forgot password?
+    </a>
   </section>
 </div>
 `;
