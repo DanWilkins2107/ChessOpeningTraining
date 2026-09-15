@@ -1,49 +1,17 @@
-import { createClient } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { env } from 'node:process';
-import { afterAll, expect, it } from 'vitest';
+import { expect, it } from 'vitest';
+import {
+  admin,
+  anonClient,
+  deleteUser,
+  signedInUser,
+} from './tests-shared/testUsers';
 
 const PERMISSION_DENIED = '42501';
 const CHECK_VIOLATION = '23514';
 const NOT_NULL_VIOLATION = '23502';
 
 const STUDY = { name: 'Caro-Kann', side: 'black' };
-
-const noSession = { auth: { persistSession: false, autoRefreshToken: false } };
-const admin = createClient(
-  env.SUPABASE_URL!,
-  env.SUPABASE_SERVICE_ROLE_KEY!,
-  noSession,
-);
-const anonClient = () =>
-  createClient(env.SUPABASE_URL!, env.SUPABASE_ANON_KEY!, noSession);
-
-const userIds: string[] = [];
-
-afterAll(() => Promise.all(userIds.map(deleteUser)));
-
-async function deleteUser(id: string) {
-  const { error } = await admin.auth.admin.deleteUser(id);
-  if (error) throw error;
-}
-
-async function signedInUser() {
-  const credentials = {
-    email: `test-${crypto.randomUUID()}@example.test`,
-    password: crypto.randomUUID(),
-  };
-  const { data, error } = await admin.auth.admin.createUser({
-    ...credentials,
-    email_confirm: true,
-  });
-  if (error) throw error;
-  userIds.push(data.user.id);
-
-  const client = anonClient();
-  const signIn = await client.auth.signInWithPassword(credentials);
-  if (signIn.error) throw signIn.error;
-  return { id: data.user.id, client };
-}
 
 const createStudy = (client: SupabaseClient, study: object = STUDY) =>
   client.from('studies').insert(study).select().single();
@@ -325,7 +293,6 @@ it("deletes a user's studies with their account", async () => {
 
   // When their account is deleted
   await deleteUser(id);
-  userIds.splice(userIds.indexOf(id), 1);
 
   // Then the study is gone
   expect(await storedStudy(study.id)).toBeNull();
