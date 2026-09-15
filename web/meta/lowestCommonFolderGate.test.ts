@@ -61,7 +61,7 @@ describe('placementProblems', () => {
   it('ignores an import of an asset the gate does not track', () => {
     expect(
       placementProblems(
-        { 'src/pages/Home/page.tsx': imports('../../elements/logo.svg') },
+        { 'src/pages/Home/page.tsx': imports('../../elements/logo.png') },
         [],
       ),
     ).toEqual([]);
@@ -89,6 +89,20 @@ describe('placementProblems', () => {
     ).toEqual([
       'src/elements/theme.css: consumed from src/pages/Home, so it belongs in src/pages/Home/elements',
       'src/elements/useBoard.ts: consumed from src/pages/Home, so it belongs in src/pages/Home/elements',
+    ]);
+  });
+
+  it('places an svg at the lowest common folder of its importers', () => {
+    expect(
+      placementProblems(
+        {
+          'src/elements/wK.svg': '<svg />',
+          'src/pages/Home/page.tsx': imports('../../elements/wK.svg'),
+        },
+        [],
+      ),
+    ).toEqual([
+      'src/elements/wK.svg: consumed from src/pages/Home, so it belongs in src/pages/Home/elements',
     ]);
   });
 

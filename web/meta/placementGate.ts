@@ -1,10 +1,10 @@
 const NAME = String.raw`[\w-]+`;
-const EXT = String.raw`(?:tsx|ts|css|constants\.ts|test\.ts|test\.tsx|snapshot\.test\.tsx|integration\.test\.ts|integration\.test\.tsx)`;
+const EXT = String.raw`(?:tsx|ts|css|svg|constants\.ts|test\.ts|test\.tsx|snapshot\.test\.tsx|integration\.test\.ts|integration\.test\.tsx)`;
 const SNAP = String.raw`snapshot\.test\.tsx\.snap`;
 
 const IS_NAME = new RegExp(`^${NAME}$`);
 const LEAF = new RegExp(
-  String.raw`^(?:elements/(?:${NAME}\.${EXT}|__snapshots__/${NAME}\.${SNAP})|tests-shared/${NAME}\.ts)$`,
+  String.raw`^(?:elements/(?:${NAME}\.${EXT}|LICENSE\.txt|__snapshots__/${NAME}\.${SNAP})|tests-shared/${NAME}\.ts)$`,
 );
 const companionOf = (base: string) =>
   new RegExp(String.raw`^(?:${base}\.${EXT}|__snapshots__/${base}\.${SNAP})$`);
