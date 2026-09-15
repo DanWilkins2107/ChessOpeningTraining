@@ -2,6 +2,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import { ProtectedLayout } from './ProtectedLayout';
 import {
   ACCOUNT_ROUTE_PATH,
+  PROTECTED_ROUTE_HANDLE,
   ROOT_ROUTE_PATH,
   STUDIES_ROUTE_PATH,
 } from './router.constants';
@@ -19,6 +20,7 @@ export const router = createBrowserRouter([
     children: [
       {
         element: <ProtectedLayout />,
+        handle: PROTECTED_ROUTE_HANDLE,
         children: [
           { index: true, element: <Home /> },
           { path: ACCOUNT_ROUTE_PATH, element: <Account /> },
