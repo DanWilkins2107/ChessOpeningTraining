@@ -23,3 +23,6 @@ export const passwordRules = [
       [...password].some((char) => SYMBOLS.includes(char)),
   },
 ];
+
+export const meetsEveryRule = (password: string) =>
+  passwordRules.every(({ met }) => met(password));

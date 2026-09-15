@@ -94,6 +94,7 @@ exports[`SignUp > matches snapshot 1`] = `
       </ul>
       <button
         class="button"
+        disabled=""
         type="submit"
       >
         Sign up

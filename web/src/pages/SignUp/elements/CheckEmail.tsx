@@ -3,6 +3,7 @@ import type { FormEvent } from 'react';
 import { Button } from '../../../elements/Button';
 import { ErrorMessage } from '../../../elements/ErrorMessage';
 import { supabase } from '../../../supabase';
+import { SuccessMessage } from './SuccessMessage';
 import './CheckEmail.css';
 
 type CheckEmailProps = {
@@ -33,7 +34,7 @@ export function CheckEmail({ email }: CheckEmailProps) {
         {resent === false && (
           <ErrorMessage>Couldn&apos;t resend, try again</ErrorMessage>
         )}
-        {resent && <p role="status">Sent again</p>}
+        {resent && <SuccessMessage>Sent again</SuccessMessage>}
         <Button disabled={pending}>Resend email</Button>
       </form>
     </section>

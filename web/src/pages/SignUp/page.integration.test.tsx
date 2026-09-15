@@ -49,11 +49,15 @@ const unmetRules = () =>
     .map((item) => item.textContent)
     .filter((text) => !text?.endsWith('(done)'));
 
-function submit(details: { email: string; password: string }) {
+function fill(details: { email: string; password: string }) {
   fireEvent.change(screen.getByLabelText('Email'), {
     target: { value: details.email },
   });
   typePassword(details.password);
+}
+
+function submit(details: { email: string; password: string }) {
+  fill(details);
   fireEvent.click(signUpButton());
 }
 
@@ -147,11 +151,14 @@ it.each([
 ])(
   'shows the server message for a password missing "%s", the rule left unticked',
   async (rule, password) => {
-    // Given a signed-out visitor on sign up
+    // Given a signed-out visitor on sign up, with a password the checklist says
+    // misses just this rule
     await renderSignedOut();
+    fill({ email: newEmail, password });
 
-    // When they submit a password the checklist says misses just this rule
-    submit({ email: newEmail, password });
+    // When the form is submitted anyway, as it would be if the checklist
+    // drifted from the server
+    fireEvent.submit(signUpButton().closest('form')!);
 
     // Then the server refuses it too, and its reason is shown
     expect(unmetRules()).toEqual([rule]);
@@ -161,12 +168,48 @@ it.each([
   },
 );
 
+it('keeps sign up disabled while the password misses a rule', async () => {
+  // Given a signed-out visitor on sign up
+  await renderSignedOut();
+
+  // When they enter an email and a password missing a rule
+  fill({ email: newEmail, password: 'Abcdefg1' });
+
+  // Then they cannot sign up yet
+  expect(signUpButton()).toBeDisabled();
+});
+
+it('keeps sign up disabled while the email is not valid', async () => {
+  // Given a signed-out visitor on sign up
+  await renderSignedOut();
+
+  // When they enter a password meeting every rule but no valid email
+  fill({ email: 'not-an-email', password: strongPassword });
+
+  // Then they cannot sign up yet
+  expect(signUpButton()).toBeDisabled();
+});
+
+it('enables sign up once the email and password are complete', async () => {
+  // Given a signed-out visitor on sign up
+  await renderSignedOut();
+
+  // When they enter a valid email and a password meeting every rule
+  fill({ email: newEmail, password: strongPassword });
+
+  // Then they can sign up
+  expect(signUpButton()).toBeEnabled();
+});
+
 it('disables the button until the attempt finishes', async () => {
   // Given a signed-out visitor on sign up
   await renderSignedOut();
 
-  // When they submit
-  submit({ email: newEmail, password: 'Abcdefg1' });
+  // When they submit an email the browser accepts but the server finds too long
+  submit({
+    email: `${'a'.repeat(250)}@example.test`,
+    password: strongPassword,
+  });
 
   // Then the button is disabled until the error shows
   expect(signUpButton()).toBeDisabled();
