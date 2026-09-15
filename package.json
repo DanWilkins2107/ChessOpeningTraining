@@ -19,7 +19,7 @@
     "db:start": "supabase start",
     "db:stop": "supabase stop",
     "db:test": "node --env-file=supabase/.env.test node_modules/supabase/dist/supabase.js",
-    "db:test:start": "npm run db:test -- start -x realtime,storage-api,imgproxy,postgrest,postgres-meta,studio,edge-runtime,logflare,vector,supavisor",
+    "db:test:start": "npm run db:test -- start -x realtime,storage-api,imgproxy,postgres-meta,studio,edge-runtime,logflare,vector,supavisor",
     "db:test:stop": "npm run db:test -- stop",
     "check": "npm run typecheck && npm run lint && npm run format:check && npm run db:test:start && npm run test:coverage && npm run fallow"
   },
