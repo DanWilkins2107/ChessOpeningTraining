@@ -113,6 +113,18 @@ it('keeps unknown paths public for signed-out visitors', async () => {
   expect(pathOf(memoryRouter)).toBe('/no-such-page');
 });
 
+it('keeps sign in public for signed-out visitors', async () => {
+  // Given a signed-out visitor
+
+  // When they open sign in
+  const memoryRouter = renderAt('/sign-in');
+  await authSettled();
+
+  // Then they stay on it
+  expect(pathOf(memoryRouter)).toBe('/sign-in');
+  expect(screen.getByRole('heading', { name: 'Sign in' })).toBeInTheDocument();
+});
+
 it('shows the not-found page for an unknown path', () => {
   // Given the router
 
