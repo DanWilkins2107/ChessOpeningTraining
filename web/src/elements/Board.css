@@ -1,0 +1,42 @@
+.board {
+  display: grid;
+  grid-template-rows: repeat(8, 1fr);
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.board-row {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+}
+
+.board-square {
+  position: relative;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.board-square-dark {
+  background: var(--accent);
+  color: var(--surface-page);
+}
+
+.board-square-light {
+  background: var(--surface-page);
+  color: var(--accent);
+}
+
+.board-rank {
+  position: absolute;
+  top: 0.2em;
+  left: 0.25em;
+}
+
+.board-file {
+  position: absolute;
+  right: 0.25em;
+  bottom: 0.2em;
+}
