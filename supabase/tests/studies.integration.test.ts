@@ -88,72 +88,120 @@ it('creates a study owned by the signed-in user', async () => {
   });
 });
 
-it('lets the owner read, rename and delete their study', async () => {
+it('lets the owner read their study', async () => {
   // Given a user with a study
   const { client } = await signedInUser();
   const study = await existingStudy(client);
 
-  // When they read it, rename it, then delete it
-  const read = await client.from('studies').select().eq('id', study.id);
-  const renamed = await client
+  // When they read it
+  const { data } = await client.from('studies').select().eq('id', study.id);
+
+  // Then they see it
+  expect(data).toEqual([study]);
+});
+
+it('lets the owner rename their study', async () => {
+  // Given a user with a study
+  const { client } = await signedInUser();
+  const study = await existingStudy(client);
+
+  // When they change its name and side
+  const { data } = await client
     .from('studies')
     .update({ name: 'Slav', side: 'white' })
     .eq('id', study.id)
     .select()
     .single();
-  const deleted = await client.from('studies').delete().eq('id', study.id);
 
-  // Then each succeeds, and the study is gone
-  expect(read.data).toEqual([study]);
-  expect(renamed.data).toEqual({ ...study, name: 'Slav', side: 'white' });
-  expect(deleted.error).toBeNull();
+  // Then the study is updated
+  expect(data).toEqual({ ...study, name: 'Slav', side: 'white' });
+});
+
+it('lets the owner delete their study', async () => {
+  // Given a user with a study
+  const { client } = await signedInUser();
+  const study = await existingStudy(client);
+
+  // When they delete it
+  const { error } = await client.from('studies').delete().eq('id', study.id);
+
+  // Then the study is gone
+  expect(error).toBeNull();
   expect(await storedStudy(study.id)).toBeNull();
 });
 
-it('hides a study from other users, who cannot change or delete it', async () => {
+it('hides a study from other users', async () => {
+  // Given a study, and a different signed-in user
+  const owner = await signedInUser();
+  await existingStudy(owner.client);
+  const { client } = await signedInUser();
+
+  // When the other user reads studies
+  const { data } = await client.from('studies').select();
+
+  // Then they see nothing
+  expect(data).toEqual([]);
+});
+
+it('stops other users renaming a study', async () => {
   // Given a study, and a different signed-in user
   const owner = await signedInUser();
   const study = await existingStudy(owner.client);
   const { client } = await signedInUser();
 
-  // When the other user reads, renames and deletes it
-  const read = await client.from('studies').select();
-  const renamed = await client
+  // When the other user renames it
+  const { data } = await client
     .from('studies')
     .update({ name: 'Mine now' })
     .eq('id', study.id)
     .select();
-  const deleted = await client
+
+  // Then nothing is updated, and the study is untouched
+  expect(data).toEqual([]);
+  expect(await storedStudy(study.id)).toEqual(study);
+});
+
+it('stops other users deleting a study', async () => {
+  // Given a study, and a different signed-in user
+  const owner = await signedInUser();
+  const study = await existingStudy(owner.client);
+  const { client } = await signedInUser();
+
+  // When the other user deletes it
+  const { data } = await client
     .from('studies')
     .delete()
     .eq('id', study.id)
     .select();
 
-  // Then they see nothing, and the study is untouched
-  expect(read.data).toEqual([]);
-  expect(renamed.data).toEqual([]);
-  expect(deleted.data).toEqual([]);
+  // Then nothing is deleted, and the study is untouched
+  expect(data).toEqual([]);
   expect(await storedStudy(study.id)).toEqual(study);
 });
 
-it('gives signed-out visitors no access at all', async () => {
+it.each([
+  ['read', (anon: SupabaseClient) => anon.from('studies').select()],
+  ['create', (anon: SupabaseClient) => createStudy(anon)],
+  [
+    'rename',
+    (anon: SupabaseClient, id: string) =>
+      anon.from('studies').update({ name: 'Mine now' }).eq('id', id),
+  ],
+  [
+    'delete',
+    (anon: SupabaseClient, id: string) =>
+      anon.from('studies').delete().eq('id', id),
+  ],
+])('refuses a %s by a signed-out visitor', async (_, request) => {
   // Given a study, and a signed-out visitor
   const owner = await signedInUser();
   const study = await existingStudy(owner.client);
-  const anon = anonClient();
 
-  // When the visitor reads, creates, renames and deletes studies
-  const results = await Promise.all([
-    anon.from('studies').select(),
-    createStudy(anon),
-    anon.from('studies').update({ name: 'Mine now' }).eq('id', study.id),
-    anon.from('studies').delete().eq('id', study.id),
-  ]);
+  // When the visitor makes the request
+  const { error } = await request(anonClient(), study.id);
 
-  // Then every request is refused, and the study is untouched
-  expect(results.map(({ error }) => error?.code)).toEqual(
-    Array(4).fill(PERMISSION_DENIED),
-  );
+  // Then it is refused, and the study is untouched
+  expect(error?.code).toBe(PERMISSION_DENIED);
   expect(await storedStudy(study.id)).toEqual(study);
 });
 

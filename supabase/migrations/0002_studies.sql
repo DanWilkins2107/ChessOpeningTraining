@@ -8,22 +8,23 @@ create table public.studies (
 
 create index studies_owner_id_idx on public.studies (owner_id);
 
-grant select, delete on table public.studies to authenticated;
-grant insert (name, side), update (name, side) on table public.studies to authenticated;
-
+grant select on table public.studies to authenticated;
 create policy "Owners read their studies" on public.studies
   for select to authenticated
   using (owner_id = (select auth.uid()));
 
+grant insert (name, side) on table public.studies to authenticated;
 create policy "Owners create their studies" on public.studies
   for insert to authenticated
   with check (owner_id = (select auth.uid()));
 
+grant update (name, side) on table public.studies to authenticated;
 create policy "Owners update their studies" on public.studies
   for update to authenticated
   using (owner_id = (select auth.uid()))
   with check (owner_id = (select auth.uid()));
 
+grant delete on table public.studies to authenticated;
 create policy "Owners delete their studies" on public.studies
   for delete to authenticated
   using (owner_id = (select auth.uid()));
