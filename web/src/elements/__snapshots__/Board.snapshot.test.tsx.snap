@@ -1,0 +1,483 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Board > matches snapshot 1`] = `
+<div>
+  <div
+    aria-label="Chess board"
+    class="board"
+    role="grid"
+  >
+    <div
+      class="board-row"
+      role="row"
+    >
+      <div
+        aria-label="a8"
+        class="board-square board-square-light"
+        role="gridcell"
+      >
+        <span
+          aria-hidden="true"
+          class="board-rank"
+        >
+          8
+        </span>
+      </div>
+      <div
+        aria-label="b8"
+        class="board-square board-square-dark"
+        role="gridcell"
+      />
+      <div
+        aria-label="c8"
+        class="board-square board-square-light"
+        role="gridcell"
+      />
+      <div
+        aria-label="d8"
+        class="board-square board-square-dark"
+        role="gridcell"
+      />
+      <div
+        aria-label="e8"
+        class="board-square board-square-light"
+        role="gridcell"
+      />
+      <div
+        aria-label="f8"
+        class="board-square board-square-dark"
+        role="gridcell"
+      />
+      <div
+        aria-label="g8"
+        class="board-square board-square-light"
+        role="gridcell"
+      />
+      <div
+        aria-label="h8"
+        class="board-square board-square-dark"
+        role="gridcell"
+      />
+    </div>
+    <div
+      class="board-row"
+      role="row"
+    >
+      <div
+        aria-label="a7"
+        class="board-square board-square-dark"
+        role="gridcell"
+      >
+        <span
+          aria-hidden="true"
+          class="board-rank"
+        >
+          7
+        </span>
+      </div>
+      <div
+        aria-label="b7"
+        class="board-square board-square-light"
+        role="gridcell"
+      />
+      <div
+        aria-label="c7"
+        class="board-square board-square-dark"
+        role="gridcell"
+      />
+      <div
+        aria-label="d7"
+        class="board-square board-square-light"
+        role="gridcell"
+      />
+      <div
+        aria-label="e7"
+        class="board-square board-square-dark"
+        role="gridcell"
+      />
+      <div
+        aria-label="f7"
+        class="board-square board-square-light"
+        role="gridcell"
+      />
+      <div
+        aria-label="g7"
+        class="board-square board-square-dark"
+        role="gridcell"
+      />
+      <div
+        aria-label="h7"
+        class="board-square board-square-light"
+        role="gridcell"
+      />
+    </div>
+    <div
+      class="board-row"
+      role="row"
+    >
+      <div
+        aria-label="a6"
+        class="board-square board-square-light"
+        role="gridcell"
+      >
+        <span
+          aria-hidden="true"
+          class="board-rank"
+        >
+          6
+        </span>
+      </div>
+      <div
+        aria-label="b6"
+        class="board-square board-square-dark"
+        role="gridcell"
+      />
+      <div
+        aria-label="c6"
+        class="board-square board-square-light"
+        role="gridcell"
+      />
+      <div
+        aria-label="d6"
+        class="board-square board-square-dark"
+        role="gridcell"
+      />
+      <div
+        aria-label="e6"
+        class="board-square board-square-light"
+        role="gridcell"
+      />
+      <div
+        aria-label="f6"
+        class="board-square board-square-dark"
+        role="gridcell"
+      />
+      <div
+        aria-label="g6"
+        class="board-square board-square-light"
+        role="gridcell"
+      />
+      <div
+        aria-label="h6"
+        class="board-square board-square-dark"
+        role="gridcell"
+      />
+    </div>
+    <div
+      class="board-row"
+      role="row"
+    >
+      <div
+        aria-label="a5"
+        class="board-square board-square-dark"
+        role="gridcell"
+      >
+        <span
+          aria-hidden="true"
+          class="board-rank"
+        >
+          5
+        </span>
+      </div>
+      <div
+        aria-label="b5"
+        class="board-square board-square-light"
+        role="gridcell"
+      />
+      <div
+        aria-label="c5"
+        class="board-square board-square-dark"
+        role="gridcell"
+      />
+      <div
+        aria-label="d5"
+        class="board-square board-square-light"
+        role="gridcell"
+      />
+      <div
+        aria-label="e5"
+        class="board-square board-square-dark"
+        role="gridcell"
+      />
+      <div
+        aria-label="f5"
+        class="board-square board-square-light"
+        role="gridcell"
+      />
+      <div
+        aria-label="g5"
+        class="board-square board-square-dark"
+        role="gridcell"
+      />
+      <div
+        aria-label="h5"
+        class="board-square board-square-light"
+        role="gridcell"
+      />
+    </div>
+    <div
+      class="board-row"
+      role="row"
+    >
+      <div
+        aria-label="a4"
+        class="board-square board-square-light"
+        role="gridcell"
+      >
+        <span
+          aria-hidden="true"
+          class="board-rank"
+        >
+          4
+        </span>
+      </div>
+      <div
+        aria-label="b4"
+        class="board-square board-square-dark"
+        role="gridcell"
+      />
+      <div
+        aria-label="c4"
+        class="board-square board-square-light"
+        role="gridcell"
+      />
+      <div
+        aria-label="d4"
+        class="board-square board-square-dark"
+        role="gridcell"
+      />
+      <div
+        aria-label="e4"
+        class="board-square board-square-light"
+        role="gridcell"
+      />
+      <div
+        aria-label="f4"
+        class="board-square board-square-dark"
+        role="gridcell"
+      />
+      <div
+        aria-label="g4"
+        class="board-square board-square-light"
+        role="gridcell"
+      />
+      <div
+        aria-label="h4"
+        class="board-square board-square-dark"
+        role="gridcell"
+      />
+    </div>
+    <div
+      class="board-row"
+      role="row"
+    >
+      <div
+        aria-label="a3"
+        class="board-square board-square-dark"
+        role="gridcell"
+      >
+        <span
+          aria-hidden="true"
+          class="board-rank"
+        >
+          3
+        </span>
+      </div>
+      <div
+        aria-label="b3"
+        class="board-square board-square-light"
+        role="gridcell"
+      />
+      <div
+        aria-label="c3"
+        class="board-square board-square-dark"
+        role="gridcell"
+      />
+      <div
+        aria-label="d3"
+        class="board-square board-square-light"
+        role="gridcell"
+      />
+      <div
+        aria-label="e3"
+        class="board-square board-square-dark"
+        role="gridcell"
+      />
+      <div
+        aria-label="f3"
+        class="board-square board-square-light"
+        role="gridcell"
+      />
+      <div
+        aria-label="g3"
+        class="board-square board-square-dark"
+        role="gridcell"
+      />
+      <div
+        aria-label="h3"
+        class="board-square board-square-light"
+        role="gridcell"
+      />
+    </div>
+    <div
+      class="board-row"
+      role="row"
+    >
+      <div
+        aria-label="a2"
+        class="board-square board-square-light"
+        role="gridcell"
+      >
+        <span
+          aria-hidden="true"
+          class="board-rank"
+        >
+          2
+        </span>
+      </div>
+      <div
+        aria-label="b2"
+        class="board-square board-square-dark"
+        role="gridcell"
+      />
+      <div
+        aria-label="c2"
+        class="board-square board-square-light"
+        role="gridcell"
+      />
+      <div
+        aria-label="d2"
+        class="board-square board-square-dark"
+        role="gridcell"
+      />
+      <div
+        aria-label="e2"
+        class="board-square board-square-light"
+        role="gridcell"
+      />
+      <div
+        aria-label="f2"
+        class="board-square board-square-dark"
+        role="gridcell"
+      />
+      <div
+        aria-label="g2"
+        class="board-square board-square-light"
+        role="gridcell"
+      />
+      <div
+        aria-label="h2"
+        class="board-square board-square-dark"
+        role="gridcell"
+      />
+    </div>
+    <div
+      class="board-row"
+      role="row"
+    >
+      <div
+        aria-label="a1"
+        class="board-square board-square-dark"
+        role="gridcell"
+      >
+        <span
+          aria-hidden="true"
+          class="board-rank"
+        >
+          1
+        </span>
+        <span
+          aria-hidden="true"
+          class="board-file"
+        >
+          a
+        </span>
+      </div>
+      <div
+        aria-label="b1"
+        class="board-square board-square-light"
+        role="gridcell"
+      >
+        <span
+          aria-hidden="true"
+          class="board-file"
+        >
+          b
+        </span>
+      </div>
+      <div
+        aria-label="c1"
+        class="board-square board-square-dark"
+        role="gridcell"
+      >
+        <span
+          aria-hidden="true"
+          class="board-file"
+        >
+          c
+        </span>
+      </div>
+      <div
+        aria-label="d1"
+        class="board-square board-square-light"
+        role="gridcell"
+      >
+        <span
+          aria-hidden="true"
+          class="board-file"
+        >
+          d
+        </span>
+      </div>
+      <div
+        aria-label="e1"
+        class="board-square board-square-dark"
+        role="gridcell"
+      >
+        <span
+          aria-hidden="true"
+          class="board-file"
+        >
+          e
+        </span>
+      </div>
+      <div
+        aria-label="f1"
+        class="board-square board-square-light"
+        role="gridcell"
+      >
+        <span
+          aria-hidden="true"
+          class="board-file"
+        >
+          f
+        </span>
+      </div>
+      <div
+        aria-label="g1"
+        class="board-square board-square-dark"
+        role="gridcell"
+      >
+        <span
+          aria-hidden="true"
+          class="board-file"
+        >
+          g
+        </span>
+      </div>
+      <div
+        aria-label="h1"
+        class="board-square board-square-light"
+        role="gridcell"
+      >
+        <span
+          aria-hidden="true"
+          class="board-file"
+        >
+          h
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+`;
