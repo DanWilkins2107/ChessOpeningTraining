@@ -1,14 +1,21 @@
 {
   "$schema": "./node_modules/fallow/schema.json",
-  "production": { "deadCode": true },
-  "entry": ["web/src/main.tsx", "web/vite.config.ts", "web/tests/setup.ts"],
-  "ignoreFindings": ["meta/**", "web/meta/**", "web/src/tests-shared/**"],
+  "entry": ["web/tests/setup.ts"],
   "health": {
     "maxCyclomatic": 6,
     "maxCognitive": 8
   },
   "rules": {
+    "unused-dev-dependencies": "error",
+    "unused-optional-dependencies": "error",
     "stale-suppressions": "error",
     "require-suppression-reason": "error"
-  }
+  },
+  "overrides": [
+    { "files": ["web/src/**"], "rules": { "unused-files": "off" } },
+    {
+      "files": ["web/src/tests-shared/**"],
+      "rules": { "unused-files": "error" }
+    }
+  ]
 }
