@@ -1,0 +1,15 @@
+// Second pass with tests counted as consumers, for what the production pass
+// can't see: meta/, tests-shared/ and dev dependencies.
+{
+  "$schema": "./node_modules/fallow/schema.json",
+  "extends": ["./.fallowrc.json"],
+  "production": { "deadCode": false },
+  "ignoreFindings": [],
+  "rules": {
+    "unused-dev-dependencies": "error",
+    "unused-optional-dependencies": "error",
+    // Test-only files are used here, so their production-pass ignores would
+    // all read as stale.
+    "stale-suppressions": "off",
+  },
+}
