@@ -1,0 +1,74 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SignIn > matches snapshot 1`] = `
+<div>
+  <section
+    class="sign-in-card"
+  >
+    <h1
+      class="sign-in-heading"
+    >
+      Sign in
+    </h1>
+    <form
+      class="sign-in-form"
+    >
+      <div
+        class="text-input"
+      >
+        <label
+          for="_r_0_"
+        >
+          Email
+        </label>
+        <div
+          class="text-input-control"
+        >
+          <input
+            autocomplete="email"
+            class="text-input-field"
+            id="_r_0_"
+            name="email"
+            required=""
+            type="email"
+          />
+        </div>
+      </div>
+      <div
+        class="text-input"
+      >
+        <label
+          for="_r_1_"
+        >
+          Password
+        </label>
+        <div
+          class="text-input-control"
+        >
+          <input
+            autocomplete="current-password"
+            class="text-input-field"
+            id="_r_1_"
+            name="password"
+            required=""
+            type="password"
+          />
+          <button
+            aria-label="Show password"
+            class="text-input-reveal"
+            type="button"
+          >
+            Show
+          </button>
+        </div>
+      </div>
+      <button
+        class="button"
+        type="submit"
+      >
+        Sign in
+      </button>
+    </form>
+  </section>
+</div>
+`;

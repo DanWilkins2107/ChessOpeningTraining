@@ -56,6 +56,29 @@ it('shows a protected page to a signed-in user', async () => {
   ).toBeInTheDocument();
 });
 
+it('shows the account page to a signed-in user', async () => {
+  // Given a signed-in user
+  await signIn();
+
+  // When the router renders the account page and the user loads
+  renderAt('/account');
+  await authSettled();
+
+  // Then it shows the account page
+  expect(screen.getByRole('heading', { name: 'Account' })).toBeInTheDocument();
+});
+
+it('sends a signed-out visitor from the account page to sign in', async () => {
+  // Given a signed-out visitor
+
+  // When they open the account page
+  const memoryRouter = renderAt('/account');
+  await authSettled();
+
+  // Then they are at sign in, carrying the account path
+  expect(pathOf(memoryRouter)).toBe('/sign-in?next=%2Faccount');
+});
+
 it('sends a signed-out visitor to sign in with their path and query', async () => {
   // Given a signed-out visitor
 
@@ -88,6 +111,18 @@ it('keeps unknown paths public for signed-out visitors', async () => {
 
   // Then they stay on it
   expect(pathOf(memoryRouter)).toBe('/no-such-page');
+});
+
+it('keeps sign in public for signed-out visitors', async () => {
+  // Given a signed-out visitor
+
+  // When they open sign in
+  const memoryRouter = renderAt('/sign-in');
+  await authSettled();
+
+  // Then they stay on it
+  expect(pathOf(memoryRouter)).toBe('/sign-in');
+  expect(screen.getByRole('heading', { name: 'Sign in' })).toBeInTheDocument();
 });
 
 it('shows the not-found page for an unknown path', () => {
