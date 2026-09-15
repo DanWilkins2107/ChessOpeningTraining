@@ -23,3 +23,20 @@ export function mapMoveTreeToLineArray(tree: MoveTree): string[][] {
   walk(tree);
   return found;
 }
+
+export function deleteMoveFromMoveTree(
+  tree: MoveTree,
+  path: string[],
+): MoveTree {
+  const [san, ...rest] = path;
+  if (!tree.some((node) => node.san === san)) {
+    throw new Error(`No move ${san} in the tree`);
+  }
+  if (rest.length === 0) return tree.filter((node) => node.san !== san);
+
+  return tree.map((node) =>
+    node.san === san
+      ? { ...node, children: deleteMoveFromMoveTree(node.children, rest) }
+      : node,
+  );
+}
