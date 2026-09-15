@@ -1,4 +1,5 @@
 import { execSync } from 'node:child_process';
+import { inspect } from 'node:util';
 import { configDefaults, defineConfig } from 'vitest/config';
 import web from './web/vite.config.ts';
 
@@ -8,6 +9,10 @@ const testStack = JSON.parse(
 
 export default defineConfig({
   test: {
+    // Vitest hands unhandled errors over as null-prototype objects, which Stryker's String(error) throws on, hiding the real error.
+    onUnhandledError: (error) => {
+      Object.defineProperty(error, 'toString', { value: () => inspect(error) });
+    },
     projects: [
       './web/vite.config.ts',
       {
@@ -25,6 +30,17 @@ export default defineConfig({
         },
       },
       { test: { root: './meta' } },
+      {
+        test: {
+          name: 'supabase',
+          root: './supabase',
+          env: {
+            SUPABASE_URL: testStack.API_URL,
+            SUPABASE_ANON_KEY: testStack.ANON_KEY,
+            SUPABASE_SERVICE_ROLE_KEY: testStack.SERVICE_ROLE_KEY,
+          },
+        },
+      },
     ],
     coverage: {
       provider: 'istanbul',

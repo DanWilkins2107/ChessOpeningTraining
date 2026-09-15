@@ -11,7 +11,7 @@ export type TemporaryExclude = {
 
 export type ModuleSources = Record<string, string>;
 
-const SOURCE = /\.(tsx?|css)$/;
+const SOURCE = /\.(tsx?|css|svg)$/;
 const TEST = /\.test\.tsx?$/;
 const SHARED_FOLDERS = ['elements', 'tests-shared'];
 const RELATIVE_IMPORT = /\b(?:from|import)\s*\(?\s*['"](\.[^'"]*)['"]/g;
