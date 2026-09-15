@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { lines } from './moveTree';
+import { mapMoveTreeToLineArray } from './moveTree';
 import type { MoveNode } from './moveTree';
 
 const move = (san: string, ...children: MoveNode[]): MoveNode => ({
@@ -11,7 +11,7 @@ it('has no lines when no moves are played', () => {
   // Given an empty tree
 
   // When its lines are listed
-  const found = lines([]);
+  const found = mapMoveTreeToLineArray([]);
 
   // Then there are none
   expect(found).toEqual([]);
@@ -22,7 +22,7 @@ it('has one line for a tree with no variations', () => {
   const tree = [move('e4', move('e5', move('Nf3')))];
 
   // When its lines are listed
-  const found = lines(tree);
+  const found = mapMoveTreeToLineArray(tree);
 
   // Then it is the only line
   expect(found).toEqual([['e4', 'e5', 'Nf3']]);
@@ -36,7 +36,7 @@ it('lists the main line first, then each variation in child order', () => {
   ];
 
   // When its lines are listed
-  const found = lines(tree);
+  const found = mapMoveTreeToLineArray(tree);
 
   // Then every start-to-leaf path appears, main line first
   expect(found).toEqual([

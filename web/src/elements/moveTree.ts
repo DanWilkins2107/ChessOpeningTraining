@@ -5,7 +5,7 @@ export type MoveNode = {
 
 export type MoveTree = MoveNode[];
 
-export function lines(tree: MoveTree): string[][] {
+export function mapMoveTreeToLineArray(tree: MoveTree): string[][] {
   const found: string[][] = [];
   const path: string[] = [];
 
