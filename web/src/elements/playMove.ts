@@ -1,3 +1,4 @@
+// fallow-ignore-file unused-file -- 5f46d3ff 2026-10-15 landed ahead of the study page, its first consumer.
 import { Chess } from 'chess.ts';
 import type { PartialMove } from 'chess.ts';
 import type { MoveNode, MoveTree } from './moveTree';
