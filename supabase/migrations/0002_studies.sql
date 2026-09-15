@@ -8,10 +8,6 @@ create table public.studies (
 
 create index studies_owner_id_idx on public.studies (owner_id);
 
-alter table public.studies enable row level security;
-
--- Clients only ever supply name and side; the rest comes from the defaults.
-revoke all on table public.studies from anon, authenticated;
 grant select, delete on table public.studies to authenticated;
 grant insert (name, side), update (name, side) on table public.studies to authenticated;
 
