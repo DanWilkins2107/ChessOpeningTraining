@@ -1,4 +1,4 @@
-.sign-in-card {
+.sign-up-card {
   max-width: 24rem;
   margin-inline: auto;
   padding: var(--gap-lg);
@@ -8,18 +8,12 @@
   box-shadow: var(--shadow);
 }
 
-.sign-in-heading {
+.sign-up-heading {
   margin-bottom: var(--gap-md);
   font-size: var(--text-lg);
 }
 
-.sign-in-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--gap-md);
-}
-
-.sign-in-switch {
+.sign-up-switch {
   display: flex;
   gap: var(--gap-sm);
   margin-top: var(--gap-md);

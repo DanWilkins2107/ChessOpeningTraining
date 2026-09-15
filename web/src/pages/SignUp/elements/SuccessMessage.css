@@ -1,0 +1,7 @@
+.success-message {
+  padding: var(--gap-sm) var(--gap-md);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: var(--accent-surface);
+  color: var(--accent-hover);
+}
