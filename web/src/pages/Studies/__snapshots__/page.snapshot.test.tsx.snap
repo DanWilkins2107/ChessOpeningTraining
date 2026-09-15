@@ -1,0 +1,18 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Studies > matches snapshot 1`] = `
+<div>
+  <section
+    class="studies"
+  >
+    <h1>
+      Studies
+    </h1>
+    <div
+      aria-label="Loading studies"
+      class="studies-spinner"
+      role="status"
+    />
+  </section>
+</div>
+`;

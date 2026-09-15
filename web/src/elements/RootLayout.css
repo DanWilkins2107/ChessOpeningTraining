@@ -13,6 +13,17 @@
   text-decoration: none;
 }
 
+.root-layout-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-md);
+}
+
+.root-layout-nav-link {
+  color: var(--ink);
+  text-decoration: none;
+}
+
 .root-layout-main {
   max-width: var(--content-width);
   margin-inline: auto;

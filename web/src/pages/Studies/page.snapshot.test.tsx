@@ -1,10 +1,10 @@
 import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { SignOut } from './SignOut';
+import { Studies } from './page';
 
-describe('SignOut', () => {
+describe('Studies', () => {
   it('matches snapshot', () => {
-    const { container } = render(<SignOut showButton />);
+    const { container } = render(<Studies />);
     expect(container).toMatchSnapshot();
   });
 });

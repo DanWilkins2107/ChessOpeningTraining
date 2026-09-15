@@ -1,11 +1,9 @@
 import type { AuthError } from '@supabase/supabase-js';
 import { useState } from 'react';
 import { supabase } from '../supabase';
-import { useUser } from './session';
 import './SignOut.css';
 
-export function SignOut() {
-  const user = useUser();
+export function SignOut({ showButton }: { showButton: boolean }) {
   const [error, setError] = useState<AuthError | null>(null);
 
   async function signOut() {
@@ -13,7 +11,7 @@ export function SignOut() {
     setError(error);
   }
 
-  if (user) {
+  if (showButton) {
     return (
       <button type="button" className="sign-out" onClick={signOut}>
         Sign out
