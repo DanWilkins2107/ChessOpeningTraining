@@ -1,4 +1,5 @@
--- move_tree holds a MoveTree from web/src/elements/moveTree.ts; if either shape changes, change the other.
+-- move_tree holds a MoveTree from web/src/elements/moveTree.ts. A later migration that changes the shape
+-- validate_chapter_move_tree checks must change that type too.
 create table public.chapters (
   id uuid primary key default gen_random_uuid(),
   study_id uuid not null references public.studies on delete cascade,

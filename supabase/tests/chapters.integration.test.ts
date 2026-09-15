@@ -1,8 +1,8 @@
-import { createClient } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { env } from 'node:process';
-import { afterAll, expect, it } from 'vitest';
+import { expect, it } from 'vitest';
 import type { MoveNode } from '../../web/src/elements/moveTree';
+import { admin, anonClient, signedInUser } from './tests-shared/testUsers';
 
 const PERMISSION_DENIED = '42501';
 const CHECK_VIOLATION = '23514';
@@ -16,42 +16,6 @@ const move = (san: string, ...children: MoveNode[]): MoveNode => ({
 
 const TREE = [move('e4', move('c6', move('d4'), move('Nc3')))];
 
-const noSession = { auth: { persistSession: false, autoRefreshToken: false } };
-const admin = createClient(
-  env.SUPABASE_URL!,
-  env.SUPABASE_SERVICE_ROLE_KEY!,
-  noSession,
-);
-const anonClient = () =>
-  createClient(env.SUPABASE_URL!, env.SUPABASE_ANON_KEY!, noSession);
-
-const userIds: string[] = [];
-
-afterAll(() => Promise.all(userIds.map(deleteUser)));
-
-async function deleteUser(id: string) {
-  const { error } = await admin.auth.admin.deleteUser(id);
-  if (error) throw error;
-}
-
-async function signedInUser() {
-  const credentials = {
-    email: `test-${crypto.randomUUID()}@example.test`,
-    password: crypto.randomUUID(),
-  };
-  const { data, error } = await admin.auth.admin.createUser({
-    ...credentials,
-    email_confirm: true,
-  });
-  if (error) throw error;
-  userIds.push(data.user.id);
-
-  const client = anonClient();
-  const signIn = await client.auth.signInWithPassword(credentials);
-  if (signIn.error) throw signIn.error;
-  return client;
-}
-
 async function existingStudyId(client: SupabaseClient) {
   const { data, error } = await client
     .from('studies')
@@ -63,7 +27,7 @@ async function existingStudyId(client: SupabaseClient) {
 }
 
 async function studyOwner() {
-  const client = await signedInUser();
+  const { client } = await signedInUser();
   return { client, studyId: await existingStudyId(client) };
 }
 
@@ -103,7 +67,8 @@ const chapters = (studyId: string, count: number) =>
     name: `Chapter ${index}`,
   }));
 
-// supabase-js serialises bodies recursively, which overflows the stack on lines this deep.
+// Node's JSON.stringify recurses per nesting level and overflows its default stack at about 670 plies
+// (578 through supabase-js), so deep lines are sent as a prebuilt body. Chromium stringifies 100,000.
 async function createChapterWithLine(
   client: SupabaseClient,
   studyId: string,
@@ -198,7 +163,7 @@ it('hides a chapter from other users', async () => {
   // Given a chapter, and a different signed-in user
   const owner = await studyOwner();
   await existingChapter(owner.client, owner.studyId);
-  const client = await signedInUser();
+  const { client } = await signedInUser();
 
   // When the other user reads chapters
   const { data } = await client.from('chapters').select();
@@ -211,7 +176,7 @@ it('stops other users changing a chapter', async () => {
   // Given a chapter, and a different signed-in user
   const owner = await studyOwner();
   const chapter = await existingChapter(owner.client, owner.studyId);
-  const client = await signedInUser();
+  const { client } = await signedInUser();
 
   // When the other user renames it
   const { data } = await client
@@ -229,7 +194,7 @@ it('stops other users deleting a chapter', async () => {
   // Given a chapter, and a different signed-in user
   const owner = await studyOwner();
   const chapter = await existingChapter(owner.client, owner.studyId);
-  const client = await signedInUser();
+  const { client } = await signedInUser();
 
   // When the other user deletes it
   const { data } = await client
@@ -246,7 +211,7 @@ it('stops other users deleting a chapter', async () => {
 it('refuses a chapter in another user’s study', async () => {
   // Given a study, and a different signed-in user
   const owner = await studyOwner();
-  const client = await signedInUser();
+  const { client } = await signedInUser();
 
   // When the other user adds a chapter to it
   const { error } = await createChapter(client, owner.studyId);
