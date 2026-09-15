@@ -1,3 +1,4 @@
+// chapters.move_tree in supabase/migrations/0003_chapters.sql checks this shape; if either changes, change the other.
 export type MoveNode = {
   san: string;
   children: MoveNode[];
