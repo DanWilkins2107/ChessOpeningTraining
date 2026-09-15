@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { Navigate, useSearchParams } from 'react-router-dom';
+import { Link, Navigate, useSearchParams } from 'react-router-dom';
+import { Button } from '../../elements/Button';
+import { ErrorMessage } from '../../elements/ErrorMessage';
+import { TextInput } from '../../elements/TextInput';
 import { useUser } from '../../elements/session';
 import { supabase } from '../../supabase';
-import { Button } from './elements/Button';
-import { ErrorMessage } from './elements/ErrorMessage';
-import { TextInput } from './elements/TextInput';
 import { safeReturnPath } from './elements/safeReturnPath';
 import { signInErrorMessage } from './elements/signInErrorMessage';
 import './page.css';
@@ -51,6 +51,9 @@ export function SignIn() {
         {error && <ErrorMessage>{error}</ErrorMessage>}
         <Button disabled={pending}>Sign in</Button>
       </form>
+      <p className="sign-in-switch">
+        No account? <Link to="/sign-up">Sign up</Link>
+      </p>
     </section>
   );
 }

@@ -144,6 +144,18 @@ it.each([
   );
 });
 
+it('links to sign up', async () => {
+  // Given a signed-out visitor on sign in
+  const memoryRouter = renderAt('/sign-in');
+  await authSettled();
+
+  // When they follow the sign up link
+  fireEvent.click(screen.getByRole('link', { name: 'Sign up' }));
+
+  // Then they are at sign up
+  expect(pathOf(memoryRouter)).toBe('/sign-up');
+});
+
 it('asks for email confirmation when the password matches', async () => {
   // Given a signed-out visitor on sign in
   renderAt('/sign-in');

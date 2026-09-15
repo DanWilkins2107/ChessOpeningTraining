@@ -5,7 +5,7 @@ type TextInputProps = {
   label: string;
   name: string;
   type: 'email' | 'password';
-  autoComplete: 'email' | 'current-password';
+  autoComplete: 'email' | 'current-password' | 'new-password';
 };
 
 export function TextInput({ label, name, type, autoComplete }: TextInputProps) {

@@ -1,17 +1,17 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`SignIn > matches snapshot 1`] = `
+exports[`SignUp > matches snapshot 1`] = `
 <div>
   <section
-    class="sign-in-card"
+    class="sign-up-card"
   >
     <h1
-      class="sign-in-heading"
+      class="sign-up-heading"
     >
-      Sign in
+      Sign up
     </h1>
     <form
-      class="sign-in-form"
+      class="sign-up-form"
     >
       <div
         class="text-input"
@@ -46,7 +46,7 @@ exports[`SignIn > matches snapshot 1`] = `
           class="text-input-control"
         >
           <input
-            autocomplete="current-password"
+            autocomplete="new-password"
             class="text-input-field"
             id="_r_1_"
             name="password"
@@ -66,18 +66,18 @@ exports[`SignIn > matches snapshot 1`] = `
         class="button"
         type="submit"
       >
-        Sign in
+        Sign up
       </button>
     </form>
     <p
-      class="sign-in-switch"
+      class="sign-up-switch"
     >
-      No account? 
+      Have an account? 
       <a
         data-discover="true"
-        href="/sign-up"
+        href="/sign-in"
       >
-        Sign up
+        Sign in
       </a>
     </p>
   </section>
