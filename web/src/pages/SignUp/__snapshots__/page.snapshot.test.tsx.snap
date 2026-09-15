@@ -62,6 +62,36 @@ exports[`SignUp > matches snapshot 1`] = `
           </button>
         </div>
       </div>
+      <ul
+        aria-label="Password needs"
+        class="password-checklist"
+      >
+        <li
+          class="password-rule"
+        >
+          At least 8 characters
+        </li>
+        <li
+          class="password-rule"
+        >
+          A lowercase letter
+        </li>
+        <li
+          class="password-rule"
+        >
+          An uppercase letter
+        </li>
+        <li
+          class="password-rule"
+        >
+          A number
+        </li>
+        <li
+          class="password-rule"
+        >
+          A symbol
+        </li>
+      </ul>
       <button
         class="button"
         type="submit"

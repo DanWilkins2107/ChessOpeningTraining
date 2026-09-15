@@ -7,6 +7,7 @@ import { TextInput } from '../../elements/TextInput';
 import { useUser } from '../../elements/session';
 import { supabase } from '../../supabase';
 import { CheckEmail } from './elements/CheckEmail';
+import { PasswordChecklist } from './elements/PasswordChecklist';
 import { signUpErrorMessage } from './elements/signUpErrorMessage';
 import './page.css';
 
@@ -15,6 +16,7 @@ export function SignUp() {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string>();
   const [signedUpEmail, setSignedUpEmail] = useState<string>();
+  const [password, setPassword] = useState('');
 
   if (user) return <Navigate to="/" replace />;
   if (signedUpEmail) return <CheckEmail email={signedUpEmail} />;
@@ -49,7 +51,9 @@ export function SignUp() {
           name="password"
           type="password"
           autoComplete="new-password"
+          onChange={setPassword}
         />
+        <PasswordChecklist password={password} />
         {error && <ErrorMessage>{error}</ErrorMessage>}
         <Button disabled={pending}>Sign up</Button>
       </form>

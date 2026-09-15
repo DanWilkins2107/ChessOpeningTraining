@@ -6,9 +6,16 @@ type TextInputProps = {
   name: string;
   type: 'email' | 'password';
   autoComplete: 'email' | 'current-password' | 'new-password';
+  onChange?: (value: string) => void;
 };
 
-export function TextInput({ label, name, type, autoComplete }: TextInputProps) {
+export function TextInput({
+  label,
+  name,
+  type,
+  autoComplete,
+  onChange,
+}: TextInputProps) {
   const id = useId();
   const [revealed, setRevealed] = useState(false);
 
@@ -22,6 +29,7 @@ export function TextInput({ label, name, type, autoComplete }: TextInputProps) {
           name={name}
           type={revealed ? 'text' : type}
           autoComplete={autoComplete}
+          onChange={(event) => onChange?.(event.target.value)}
           required
         />
         {type === 'password' && (

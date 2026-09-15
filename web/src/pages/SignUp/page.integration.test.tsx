@@ -5,6 +5,7 @@ import {
   fireEvent,
   render,
   screen,
+  within,
 } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
 import { authSettled } from '../../tests-shared/authSettled';
@@ -17,7 +18,7 @@ import { supabase } from '../../supabase';
 
 const existing = registerTestUser();
 const newEmail = registerSignUpEmail();
-const strongPassword = crypto.randomUUID();
+const strongPassword = `Aa1!${crypto.randomUUID()}`;
 
 afterEach(() => {
   cleanup();
@@ -37,13 +38,22 @@ const pathOf = ({ state }: ReturnType<typeof renderAt>) =>
 
 const signUpButton = () => screen.getByRole('button', { name: 'Sign up' });
 
+const typePassword = (password: string) =>
+  fireEvent.change(screen.getByLabelText('Password'), {
+    target: { value: password },
+  });
+
+const unmetRules = () =>
+  within(screen.getByRole('list', { name: 'Password needs' }))
+    .getAllByRole('listitem')
+    .map((item) => item.textContent)
+    .filter((text) => !text?.endsWith('(done)'));
+
 function submit(details: { email: string; password: string }) {
   fireEvent.change(screen.getByLabelText('Email'), {
     target: { value: details.email },
   });
-  fireEvent.change(screen.getByLabelText('Password'), {
-    target: { value: details.password },
-  });
+  typePassword(details.password);
   fireEvent.click(signUpButton());
 }
 
@@ -86,8 +96,9 @@ it('signs up a new email and asks them to check it', async () => {
   // cannot show it. The spy still calls the real client.
   const signUp = vi.spyOn(supabase.auth, 'signUp');
 
-  // When they submit a new email and a strong password
+  // When they submit a new email and a password meeting every rule
   submit({ email: newEmail, password: strongPassword });
+  expect(unmetRules()).toEqual([]);
 
   // Then they are asked to check that email, whose link returns to this site
   expect(
@@ -115,25 +126,47 @@ it('treats an already registered email the same as a new one', async () => {
   expect(screen.queryByRole('alert')).not.toBeInTheDocument();
 });
 
-it('shows the server message for a weak password', async () => {
-  // Given a signed-out visitor on sign up
+it('ticks off the password rules as they type', async () => {
+  // Given a signed-out visitor on sign up, with every rule still to meet
   await renderSignedOut();
+  expect(unmetRules()).toHaveLength(5);
 
-  // When they submit a password shorter than the server allows
-  submit({ email: newEmail, password: 'short12' });
+  // When they type a password meeting some of the rules
+  typePassword('abcdefg1');
 
-  // Then the server's reason is shown
-  expect(await screen.findByRole('alert')).toHaveTextContent(
-    'Password should be at least 8 characters.',
-  );
+  // Then only the rules it misses are left
+  expect(unmetRules()).toEqual(['An uppercase letter', 'A symbol']);
 });
+
+it.each([
+  ['At least 8 characters', 'Abcde1!'],
+  ['A lowercase letter', 'ABCDEF1!'],
+  ['An uppercase letter', 'abcdef1!'],
+  ['A number', 'Abcdefg!'],
+  ['A symbol', 'Abcdefg1'],
+])(
+  'shows the server message for a password missing "%s", the rule left unticked',
+  async (rule, password) => {
+    // Given a signed-out visitor on sign up
+    await renderSignedOut();
+
+    // When they submit a password the checklist says misses just this rule
+    submit({ email: newEmail, password });
+
+    // Then the server refuses it too, and its reason is shown
+    expect(unmetRules()).toEqual([rule]);
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      /^Password should /,
+    );
+  },
+);
 
 it('disables the button until the attempt finishes', async () => {
   // Given a signed-out visitor on sign up
   await renderSignedOut();
 
   // When they submit
-  submit({ email: newEmail, password: 'short12' });
+  submit({ email: newEmail, password: 'Abcdefg1' });
 
   // Then the button is disabled until the error shows
   expect(signUpButton()).toBeDisabled();
