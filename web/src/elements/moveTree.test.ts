@@ -1,11 +1,6 @@
 import { expect, it } from 'vitest';
+import { move } from '../tests-shared/move';
 import { deleteMoveFromMoveTree, mapMoveTreeToLineArray } from './moveTree';
-import type { MoveNode } from './moveTree';
-
-const move = (san: string, ...children: MoveNode[]): MoveNode => ({
-  san,
-  children,
-});
 
 it('has no lines when no moves are played', () => {
   // Given an empty tree
