@@ -5,6 +5,7 @@ import { RootLayout } from './RootLayout';
 import { Account } from '../pages/Account/page';
 import { Home } from '../pages/Home/page';
 import { NotFound } from '../pages/NotFound/page';
+import { SignIn } from '../pages/SignIn/page';
 
 export const router = createBrowserRouter([
   {
@@ -18,6 +19,7 @@ export const router = createBrowserRouter([
           { path: ACCOUNT_ROUTE_PATH, element: <Account /> },
         ],
       },
+      { path: 'sign-in', element: <SignIn /> },
       { path: '*', element: <NotFound /> },
     ],
   },
