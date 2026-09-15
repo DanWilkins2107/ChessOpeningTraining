@@ -14,6 +14,8 @@
 }
 
 .sign-up-switch {
+  display: flex;
+  gap: var(--gap-sm);
   margin-top: var(--gap-md);
   color: var(--ink-muted);
 }

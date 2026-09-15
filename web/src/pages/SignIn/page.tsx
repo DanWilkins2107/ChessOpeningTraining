@@ -15,6 +15,9 @@ export function SignIn() {
   const [searchParams] = useSearchParams();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string>();
+  // Both inputs are required, so the browser's validity means a well-formed
+  // email and a non-empty password. Sign in stays disabled until then.
+  const [fieldsValid, setFieldsValid] = useState<boolean>();
 
   if (user) {
     return <Navigate to={safeReturnPath(searchParams.get('next'))} replace />;
@@ -35,7 +38,13 @@ export function SignIn() {
   return (
     <section className="sign-in-card">
       <h1 className="sign-in-heading">Sign in</h1>
-      <form className="sign-in-form" onSubmit={signIn}>
+      <form
+        className="sign-in-form"
+        onSubmit={signIn}
+        onChange={(event) =>
+          setFieldsValid(event.currentTarget.checkValidity())
+        }
+      >
         <TextInput
           label="Email"
           name="email"
@@ -49,7 +58,7 @@ export function SignIn() {
           autoComplete="current-password"
         />
         {error && <ErrorMessage>{error}</ErrorMessage>}
-        <Button disabled={pending}>Sign in</Button>
+        <Button disabled={pending || !fieldsValid}>Sign in</Button>
       </form>
       <p className="sign-in-switch">
         No account? <Link to="/sign-up">Sign up</Link>
