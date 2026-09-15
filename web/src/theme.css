@@ -23,6 +23,7 @@
 
   --font-sans:
     'Plus Jakarta Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --text-xs: 0.625rem;
   --text-sm: 0.75rem;
   --text-base: 1rem;
   --text-lg: 1.375rem;
