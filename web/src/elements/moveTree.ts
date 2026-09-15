@@ -1,3 +1,4 @@
+// fallow-ignore-file unused-file -- ef93ff81 2026-10-15 landed ahead of the study page, its first consumer.
 import { z } from '../zod';
 
 // chapters.move_tree is checked against this shape by validate_chapter_move_tree (supabase/migrations/0003_chapters.sql).
