@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { imports } from './tests-shared/imports';
 import { singleImporterProblems, testImportProblems } from './testImportGate';
+
+const imports = (...targets: string[]) =>
+  targets.map((target) => `import { x } from '${target}';`).join('\n');
 
 describe('testImportProblems', () => {
   it('rejects app and meta code importing a test helper or a test', () => {

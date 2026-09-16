@@ -2,10 +2,10 @@ import { describe, expect, it, vi } from 'vitest';
 import { unjustifiedCalls, unjustifiedMocks } from './mockJustificationGate';
 
 // mock-reason: the vi.mock factories below run while the module graph is still
-// loading, before anything in this module body exists, so `mockRepo` has to be
+// loading, before anything in this module body exists, so `repo` has to be
 // built inside vi.hoisted - and static imports are not evaluated by then
 // either, hence the dynamic import of the shared helper.
-const mockRepo = await vi.hoisted(async () => {
+const repo = await vi.hoisted(async () => {
   const { fakeRepo } = await import('./tests-shared/fakeRepo');
   return fakeRepo(
     [
@@ -24,11 +24,11 @@ const mockRepo = await vi.hoisted(async () => {
 // mock-reason: unjustifiedMocks scans the real repo, which is green, so the
 // enumeration and formatting paths never see a violation. The stub hands it a
 // four-file repo with a known answer; the rule itself is untouched.
-vi.mock('node:child_process', () => mockRepo.childProcess);
+vi.mock('node:child_process', () => repo.childProcess);
 
 // mock-reason: the stubbed repo's files do not exist on disk, so the real
 // readFileSync would throw before the rule ran.
-vi.mock('node:fs', () => mockRepo.fs);
+vi.mock('node:fs', () => repo.fs);
 
 const REASON = '// mock-reason: the real one talks to the network';
 

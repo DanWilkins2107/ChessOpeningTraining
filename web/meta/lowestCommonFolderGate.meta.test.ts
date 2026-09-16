@@ -5,28 +5,34 @@ import {
   placementProblems,
 } from './lowestCommonFolderGate';
 import type { TemporaryExclude } from './lowestCommonFolderGate';
-import { ROOT_EXCEPTIONS } from './tests-shared/rootExceptions';
 
-const rootModules = ROOT_EXCEPTIONS.map((name) => `src/${name}`);
+// App-wide singletons owned by no page or element, so they sit at the src root.
+const ROOT_EXCEPTIONS = [
+  'src/env.ts',
+  'src/main.tsx',
+  'src/supabase.ts',
+  'src/theme.css',
+  'src/zod.ts',
+];
 
 // Modules knowingly left above or below their lowest common folder, each only
 // until its expiry.
 const TEMPORARY_EXCLUDES: TemporaryExclude[] = [];
 
-const srcModules = moduleSources();
+const sources = moduleSources();
 
 it('every module sits at the lowest common folder of its consumers', () => {
-  expect(Object.keys(srcModules).length).toBeGreaterThan(0);
+  expect(Object.keys(sources).length).toBeGreaterThan(0);
   expect(
-    placementProblems(srcModules, [
-      ...rootModules,
+    placementProblems(sources, [
+      ...ROOT_EXCEPTIONS,
       ...TEMPORARY_EXCLUDES.map((exclude) => exclude.path),
     ]),
   ).toEqual([]);
 });
 
 it('every exclude is live, well-formed and still needed', () => {
-  expect(excludeProblems(srcModules, rootModules, TEMPORARY_EXCLUDES)).toEqual(
+  expect(excludeProblems(sources, ROOT_EXCEPTIONS, TEMPORARY_EXCLUDES)).toEqual(
     [],
   );
 });

@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { excludeProblems, placementProblems } from './lowestCommonFolderGate';
 import type { ModuleSources } from './lowestCommonFolderGate';
-import { imports } from '../../meta/tests-shared/imports';
 
 const TODAY = new Date('2026-09-01T00:00:00Z');
+
+const imports = (...targets: string[]) =>
+  targets.map((target) => `import { x } from '${target}';`).join('\n');
 
 const MISPLACED: ModuleSources = {
   'src/elements/Foo/Foo.tsx': '',

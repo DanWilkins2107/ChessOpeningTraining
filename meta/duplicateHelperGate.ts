@@ -5,6 +5,9 @@ import { repoRoot } from './repoPaths';
 
 export type TestSources = Record<string, string>;
 
+// The gates in meta/ and web/meta/ are their own ecosystem, so they are left
+// out: a name shared with an app test says nothing about either.
+const SCANNED_FOLDERS = ['web/src', 'supabase'];
 const TYPESCRIPT = /\.tsx?$/;
 const TEST = /\.test\.tsx?$/;
 const DECLARATION =
@@ -43,7 +46,9 @@ function declaredNames(text: string): Set<string> {
 }
 
 function scannedFiles(): string[] {
-  return execFileSync('git', ['ls-files', '-z'], { cwd: repoRoot })
+  return execFileSync('git', ['ls-files', '-z', ...SCANNED_FOLDERS], {
+    cwd: repoRoot,
+  })
     .toString('utf8')
     .split('\0')
     .filter(isScanned);
