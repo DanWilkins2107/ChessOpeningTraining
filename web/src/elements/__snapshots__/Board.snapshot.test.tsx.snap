@@ -12,10 +12,15 @@ exports[`Board > matches snapshot 1`] = `
       role="row"
     >
       <div
-        aria-label="a8"
+        aria-label="a8, black rook"
         class="board-square board-square-light"
         role="gridcell"
       >
+        <img
+          alt=""
+          class="board-piece"
+          src="/src/elements/bR.svg"
+        />
         <span
           aria-hidden="true"
           class="board-rank"
@@ -24,50 +29,97 @@ exports[`Board > matches snapshot 1`] = `
         </span>
       </div>
       <div
-        aria-label="b8"
+        aria-label="b8, black knight"
         class="board-square board-square-dark"
         role="gridcell"
-      />
+      >
+        <img
+          alt=""
+          class="board-piece"
+          src="/src/elements/bN.svg"
+        />
+      </div>
       <div
-        aria-label="c8"
+        aria-label="c8, black bishop"
         class="board-square board-square-light"
         role="gridcell"
-      />
+      >
+        <img
+          alt=""
+          class="board-piece"
+          src="/src/elements/bB.svg"
+        />
+      </div>
       <div
-        aria-label="d8"
+        aria-label="d8, black queen"
         class="board-square board-square-dark"
         role="gridcell"
-      />
+      >
+        <img
+          alt=""
+          class="board-piece"
+          src="/src/elements/bQ.svg"
+        />
+      </div>
       <div
-        aria-label="e8"
+        aria-label="e8, black king"
         class="board-square board-square-light"
         role="gridcell"
-      />
+      >
+        <img
+          alt=""
+          class="board-piece"
+          src="/src/elements/bK.svg"
+        />
+      </div>
       <div
-        aria-label="f8"
+        aria-label="f8, black bishop"
         class="board-square board-square-dark"
         role="gridcell"
-      />
+      >
+        <img
+          alt=""
+          class="board-piece"
+          src="/src/elements/bB.svg"
+        />
+      </div>
       <div
-        aria-label="g8"
+        aria-label="g8, black knight"
         class="board-square board-square-light"
         role="gridcell"
-      />
+      >
+        <img
+          alt=""
+          class="board-piece"
+          src="/src/elements/bN.svg"
+        />
+      </div>
       <div
-        aria-label="h8"
+        aria-label="h8, black rook"
         class="board-square board-square-dark"
         role="gridcell"
-      />
+      >
+        <img
+          alt=""
+          class="board-piece"
+          src="/src/elements/bR.svg"
+        />
+      </div>
     </div>
     <div
       class="board-row"
       role="row"
     >
       <div
-        aria-label="a7"
+        aria-label="a7, black pawn"
         class="board-square board-square-dark"
         role="gridcell"
       >
+        <img
+          alt=""
+          class="board-piece"
+          src="/src/elements/bP.svg"
+        />
         <span
           aria-hidden="true"
           class="board-rank"
@@ -76,40 +128,82 @@ exports[`Board > matches snapshot 1`] = `
         </span>
       </div>
       <div
-        aria-label="b7"
+        aria-label="b7, black pawn"
         class="board-square board-square-light"
         role="gridcell"
-      />
+      >
+        <img
+          alt=""
+          class="board-piece"
+          src="/src/elements/bP.svg"
+        />
+      </div>
       <div
-        aria-label="c7"
+        aria-label="c7, black pawn"
         class="board-square board-square-dark"
         role="gridcell"
-      />
+      >
+        <img
+          alt=""
+          class="board-piece"
+          src="/src/elements/bP.svg"
+        />
+      </div>
       <div
-        aria-label="d7"
+        aria-label="d7, black pawn"
         class="board-square board-square-light"
         role="gridcell"
-      />
+      >
+        <img
+          alt=""
+          class="board-piece"
+          src="/src/elements/bP.svg"
+        />
+      </div>
       <div
-        aria-label="e7"
+        aria-label="e7, black pawn"
         class="board-square board-square-dark"
         role="gridcell"
-      />
+      >
+        <img
+          alt=""
+          class="board-piece"
+          src="/src/elements/bP.svg"
+        />
+      </div>
       <div
-        aria-label="f7"
+        aria-label="f7, black pawn"
         class="board-square board-square-light"
         role="gridcell"
-      />
+      >
+        <img
+          alt=""
+          class="board-piece"
+          src="/src/elements/bP.svg"
+        />
+      </div>
       <div
-        aria-label="g7"
+        aria-label="g7, black pawn"
         class="board-square board-square-dark"
         role="gridcell"
-      />
+      >
+        <img
+          alt=""
+          class="board-piece"
+          src="/src/elements/bP.svg"
+        />
+      </div>
       <div
-        aria-label="h7"
+        aria-label="h7, black pawn"
         class="board-square board-square-light"
         role="gridcell"
-      />
+      >
+        <img
+          alt=""
+          class="board-piece"
+          src="/src/elements/bP.svg"
+        />
+      </div>
     </div>
     <div
       class="board-row"
@@ -324,10 +418,15 @@ exports[`Board > matches snapshot 1`] = `
       role="row"
     >
       <div
-        aria-label="a2"
+        aria-label="a2, white pawn"
         class="board-square board-square-light"
         role="gridcell"
       >
+        <img
+          alt=""
+          class="board-piece"
+          src="/src/elements/wP.svg"
+        />
         <span
           aria-hidden="true"
           class="board-rank"
@@ -336,50 +435,97 @@ exports[`Board > matches snapshot 1`] = `
         </span>
       </div>
       <div
-        aria-label="b2"
+        aria-label="b2, white pawn"
         class="board-square board-square-dark"
         role="gridcell"
-      />
+      >
+        <img
+          alt=""
+          class="board-piece"
+          src="/src/elements/wP.svg"
+        />
+      </div>
       <div
-        aria-label="c2"
+        aria-label="c2, white pawn"
         class="board-square board-square-light"
         role="gridcell"
-      />
+      >
+        <img
+          alt=""
+          class="board-piece"
+          src="/src/elements/wP.svg"
+        />
+      </div>
       <div
-        aria-label="d2"
+        aria-label="d2, white pawn"
         class="board-square board-square-dark"
         role="gridcell"
-      />
+      >
+        <img
+          alt=""
+          class="board-piece"
+          src="/src/elements/wP.svg"
+        />
+      </div>
       <div
-        aria-label="e2"
+        aria-label="e2, white pawn"
         class="board-square board-square-light"
         role="gridcell"
-      />
+      >
+        <img
+          alt=""
+          class="board-piece"
+          src="/src/elements/wP.svg"
+        />
+      </div>
       <div
-        aria-label="f2"
+        aria-label="f2, white pawn"
         class="board-square board-square-dark"
         role="gridcell"
-      />
+      >
+        <img
+          alt=""
+          class="board-piece"
+          src="/src/elements/wP.svg"
+        />
+      </div>
       <div
-        aria-label="g2"
+        aria-label="g2, white pawn"
         class="board-square board-square-light"
         role="gridcell"
-      />
+      >
+        <img
+          alt=""
+          class="board-piece"
+          src="/src/elements/wP.svg"
+        />
+      </div>
       <div
-        aria-label="h2"
+        aria-label="h2, white pawn"
         class="board-square board-square-dark"
         role="gridcell"
-      />
+      >
+        <img
+          alt=""
+          class="board-piece"
+          src="/src/elements/wP.svg"
+        />
+      </div>
     </div>
     <div
       class="board-row"
       role="row"
     >
       <div
-        aria-label="a1"
+        aria-label="a1, white rook"
         class="board-square board-square-dark"
         role="gridcell"
       >
+        <img
+          alt=""
+          class="board-piece"
+          src="/src/elements/wR.svg"
+        />
         <span
           aria-hidden="true"
           class="board-rank"
@@ -394,10 +540,15 @@ exports[`Board > matches snapshot 1`] = `
         </span>
       </div>
       <div
-        aria-label="b1"
+        aria-label="b1, white knight"
         class="board-square board-square-light"
         role="gridcell"
       >
+        <img
+          alt=""
+          class="board-piece"
+          src="/src/elements/wN.svg"
+        />
         <span
           aria-hidden="true"
           class="board-file"
@@ -406,10 +557,15 @@ exports[`Board > matches snapshot 1`] = `
         </span>
       </div>
       <div
-        aria-label="c1"
+        aria-label="c1, white bishop"
         class="board-square board-square-dark"
         role="gridcell"
       >
+        <img
+          alt=""
+          class="board-piece"
+          src="/src/elements/wB.svg"
+        />
         <span
           aria-hidden="true"
           class="board-file"
@@ -418,10 +574,15 @@ exports[`Board > matches snapshot 1`] = `
         </span>
       </div>
       <div
-        aria-label="d1"
+        aria-label="d1, white queen"
         class="board-square board-square-light"
         role="gridcell"
       >
+        <img
+          alt=""
+          class="board-piece"
+          src="/src/elements/wQ.svg"
+        />
         <span
           aria-hidden="true"
           class="board-file"
@@ -430,10 +591,15 @@ exports[`Board > matches snapshot 1`] = `
         </span>
       </div>
       <div
-        aria-label="e1"
+        aria-label="e1, white king"
         class="board-square board-square-dark"
         role="gridcell"
       >
+        <img
+          alt=""
+          class="board-piece"
+          src="/src/elements/wK.svg"
+        />
         <span
           aria-hidden="true"
           class="board-file"
@@ -442,10 +608,15 @@ exports[`Board > matches snapshot 1`] = `
         </span>
       </div>
       <div
-        aria-label="f1"
+        aria-label="f1, white bishop"
         class="board-square board-square-light"
         role="gridcell"
       >
+        <img
+          alt=""
+          class="board-piece"
+          src="/src/elements/wB.svg"
+        />
         <span
           aria-hidden="true"
           class="board-file"
@@ -454,10 +625,15 @@ exports[`Board > matches snapshot 1`] = `
         </span>
       </div>
       <div
-        aria-label="g1"
+        aria-label="g1, white knight"
         class="board-square board-square-dark"
         role="gridcell"
       >
+        <img
+          alt=""
+          class="board-piece"
+          src="/src/elements/wN.svg"
+        />
         <span
           aria-hidden="true"
           class="board-file"
@@ -466,10 +642,15 @@ exports[`Board > matches snapshot 1`] = `
         </span>
       </div>
       <div
-        aria-label="h1"
+        aria-label="h1, white rook"
         class="board-square board-square-light"
         role="gridcell"
       >
+        <img
+          alt=""
+          class="board-piece"
+          src="/src/elements/wR.svg"
+        />
         <span
           aria-hidden="true"
           class="board-file"
