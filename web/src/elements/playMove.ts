@@ -23,18 +23,28 @@ export function playMove(
   const played = chess.move(move);
   if (played === null) return null;
 
-  const playedLine = [...line, played.san];
-  return { tree: addLine(tree, playedLine), line: playedLine };
+  return {
+    tree: addMove(tree, line, played.san),
+    line: [...line, played.san],
+  };
 }
 
-function addLine(nodes: MoveNode[], line: string[]): MoveNode[] {
-  if (line.length === 0) return nodes;
+function addMove(nodes: MoveNode[], line: string[], san: string): MoveNode[] {
+  const [next, ...rest] = line;
+  if (next === undefined) {
+    return nodes.some((node) => node.san === san)
+      ? nodes
+      : [...nodes, { san, children: [] }];
+  }
 
-  const [san, ...rest] = line;
-  const index = nodes.findIndex((node) => node.san === san);
-  if (index === -1) return [...nodes, { san, children: addLine([], rest) }];
+  const index = nodes.findIndex((node) => node.san === next);
+  if (index === -1) {
+    throw new Error(`${next} is not in the tree`);
+  }
 
   return nodes.map((node, i) =>
-    i === index ? { ...node, children: addLine(node.children, rest) } : node,
+    i === index
+      ? { ...node, children: addMove(node.children, rest, san) }
+      : node,
   );
 }

@@ -58,6 +58,17 @@ it('rejects an illegal move', () => {
   expect(played).toBeNull();
 });
 
+it('throws when the line it plays from is not in the tree', () => {
+  // Given a tree holding only 1. e4
+  const tree = [move('e4')];
+
+  // When a move is played after 1. d4
+  const play = () => playMove(tree, ['d4'], 'd5');
+
+  // Then the missing move is reported
+  expect(play).toThrow('d4 is not in the tree');
+});
+
 it('throws when the line it plays from is illegal', () => {
   // Given a line where white moves twice
 
