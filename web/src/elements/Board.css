@@ -1,11 +1,16 @@
 /* fallow-ignore-file unused-file -- ef93ff81 2026-10-15 landed ahead of the study page, its first consumer. */
 .board {
-  display: grid;
-  grid-template-rows: repeat(8, 1fr);
+  position: relative;
   width: 100%;
   aspect-ratio: 1;
   overflow: hidden;
   border: 1px solid var(--border);
+}
+
+.board-grid {
+  display: grid;
+  grid-template-rows: repeat(8, 1fr);
+  height: 100%;
 }
 
 .board-row {
@@ -30,22 +35,37 @@
   color: var(--accent);
 }
 
-/* Absolute so the edge labels, which come later in the square, paint over it. */
+/* One square wide, placed by a transform on the board rather than inside a
+   square, so changing squares is a slide rather than a re-parent. */
 .board-piece {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  top: 0;
+  left: 0;
+  width: 12.5%;
+  height: 12.5%;
+  transition: transform 180ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .board-piece {
+    transition: none;
+  }
+}
+
+/* The transform gives each piece its own stacking context, so the edge labels
+   need a z-index to keep painting over them. */
+.board-rank,
+.board-file {
+  position: absolute;
+  z-index: 1;
 }
 
 .board-rank {
-  position: absolute;
   top: 0.2em;
   left: 0.25em;
 }
 
 .board-file {
-  position: absolute;
   right: 0.25em;
   bottom: 0.2em;
 }
