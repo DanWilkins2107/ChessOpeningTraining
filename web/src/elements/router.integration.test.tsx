@@ -1,22 +1,10 @@
-import { RouterProvider, createMemoryRouter } from 'react-router-dom';
-import { act, render, screen } from '@testing-library/react';
+import { act, screen } from '@testing-library/react';
 import { expect, it } from 'vitest';
 import { authSettled } from '../tests-shared/authSettled';
+import { pathOf, renderAt } from '../tests-shared/renderAt';
 import { registerTestUser } from '../tests-shared/testUser';
-import { router } from './router';
 
 const { signIn } = registerTestUser();
-
-function renderAt(...entries: string[]) {
-  const memoryRouter = createMemoryRouter(router.routes, {
-    initialEntries: entries,
-  });
-  render(<RouterProvider router={memoryRouter} />);
-  return memoryRouter;
-}
-
-const pathOf = ({ state }: ReturnType<typeof renderAt>) =>
-  state.location.pathname + state.location.search;
 
 it('wraps pages in the root layout', () => {
   // Given the router

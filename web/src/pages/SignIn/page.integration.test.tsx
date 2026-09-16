@@ -1,23 +1,11 @@
-import { RouterProvider, createMemoryRouter } from 'react-router-dom';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, screen } from '@testing-library/react';
 import { expect, it } from 'vitest';
 import { authSettled } from '../../tests-shared/authSettled';
+import { pathOf, renderAt } from '../../tests-shared/renderAt';
 import { registerTestUser } from '../../tests-shared/testUser';
-import { router } from '../../elements/router';
 
 const confirmed = registerTestUser();
 const unconfirmed = registerTestUser({ emailConfirmed: false });
-
-function renderAt(...entries: string[]) {
-  const memoryRouter = createMemoryRouter(router.routes, {
-    initialEntries: entries,
-  });
-  render(<RouterProvider router={memoryRouter} />);
-  return memoryRouter;
-}
-
-const pathOf = ({ state }: ReturnType<typeof renderAt>) =>
-  state.location.pathname + state.location.search;
 
 const signInButton = () => screen.getByRole('button', { name: 'Sign in' });
 

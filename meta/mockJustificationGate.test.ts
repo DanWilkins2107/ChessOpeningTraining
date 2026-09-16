@@ -1,36 +1,34 @@
 import { describe, expect, it, vi } from 'vitest';
 import { unjustifiedCalls, unjustifiedMocks } from './mockJustificationGate';
 
-const { execFileSync, readFileSync } = vi.hoisted(() => {
-  const NUL = '\0';
-  const tracked = [
-    'src/pages/Home/page.test.tsx',
-    'meta/mockJustificationGate.test.ts',
-    'src/logo.svg',
-    'meta/expiry.test.ts',
-  ];
-
-  return {
-    execFileSync: () =>
-      Buffer.from(tracked.map((file) => `${file}${NUL}`).join('')),
-    readFileSync: (file: string) =>
+// mock-reason: the vi.mock factories below run while the module graph is still
+// loading, before anything in this module body exists, so `repo` has to be
+// built inside vi.hoisted - and static imports are not evaluated by then
+// either, hence the dynamic import of the shared helper.
+const repo = await vi.hoisted(async () => {
+  const { fakeRepo } = await import('./tests-shared/fakeRepo');
+  return fakeRepo(
+    [
+      'src/pages/Home/page.test.tsx',
+      'meta/mockJustificationGate.test.ts',
+      'src/logo.svg',
+      'meta/expiry.test.ts',
+    ],
+    (file) =>
       file.endsWith('page.test.tsx')
         ? "vi.spyOn(console, 'error');"
         : "// mock-reason: the clock is the input\nvi.stubEnv('TZ', 'UTC');",
-  };
+  );
 });
 
 // mock-reason: unjustifiedMocks scans the real repo, which is green, so the
 // enumeration and formatting paths never see a violation. The stub hands it a
 // four-file repo with a known answer; the rule itself is untouched.
-vi.mock('node:child_process', () => ({
-  execFileSync,
-  default: { execFileSync },
-}));
+vi.mock('node:child_process', () => repo.childProcess);
 
 // mock-reason: the stubbed repo's files do not exist on disk, so the real
 // readFileSync would throw before the rule ran.
-vi.mock('node:fs', () => ({ readFileSync, default: { readFileSync } }));
+vi.mock('node:fs', () => repo.fs);
 
 const REASON = '// mock-reason: the real one talks to the network';
 
@@ -52,10 +50,11 @@ describe('mock justification gate call rules', () => {
       true,
     ],
     [
-      'vi.hoisted is not gated',
-      'const { f } = vi.hoisted(() => ({ f: 1 }));',
+      'reason above vi.hoisted',
+      `${REASON}\nconst f = vi.hoisted(() => 1);`,
       true,
     ],
+    ['vi.hoisted without a reason', 'const f = vi.hoisted(() => 1);', false],
     ['vi.mock only mentioned in prose', '// vi.mock is discussed here', true],
     ['no comment at all', "vi.mock('node:fs');", false],
     ['comment without the marker', `// stubbed\nvi.mock('node:fs');`, false],
