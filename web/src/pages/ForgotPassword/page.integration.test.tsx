@@ -1,19 +1,10 @@
-import { RouterProvider, createMemoryRouter } from 'react-router-dom';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
 import { authSettled } from '../../tests-shared/authSettled';
-import { router } from '../../elements/router';
+import { pathOf, renderAt } from '../../tests-shared/renderAt';
 import { supabase } from '../../supabase';
 
 afterEach(() => vi.restoreAllMocks());
-
-function renderAt(path: string) {
-  const memoryRouter = createMemoryRouter(router.routes, {
-    initialEntries: [path],
-  });
-  render(<RouterProvider router={memoryRouter} />);
-  return memoryRouter;
-}
 
 const sendButton = () =>
   screen.getByRole('button', { name: 'Send reset link' });
@@ -35,7 +26,7 @@ it('is open to a signed-out visitor', async () => {
   await authSettled();
 
   // Then they stay on it
-  expect(memoryRouter.state.location.pathname).toBe('/forgot-password');
+  expect(pathOf(memoryRouter)).toBe('/forgot-password');
   expect(
     screen.getByRole('heading', { name: 'Forgot password' }),
   ).toBeInTheDocument();
@@ -117,5 +108,5 @@ it('links back to sign in', async () => {
   fireEvent.click(screen.getByRole('link', { name: 'Back to sign in' }));
 
   // Then they are at sign in
-  expect(memoryRouter.state.location.pathname).toBe('/sign-in');
+  expect(pathOf(memoryRouter)).toBe('/sign-in');
 });

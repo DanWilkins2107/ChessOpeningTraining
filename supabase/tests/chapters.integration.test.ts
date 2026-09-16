@@ -146,6 +146,26 @@ it('lets the owner rename a chapter and change its move tree', async () => {
   expect(data).toEqual({ ...chapter, name: 'Sidelines', move_tree: tree });
 });
 
+it.each([
+  ['id', async () => crypto.randomUUID()],
+  ['created_at', async () => '2000-01-01T00:00:00+00:00'],
+  ['study_id', existingStudyId],
+])('refuses changing a chapter’s %s', async (column, newValue) => {
+  // Given a user with a chapter
+  const { client, studyId } = await studyOwner();
+  const chapter = await existingChapter(client, studyId);
+
+  // When they change the column
+  const { error } = await client
+    .from('chapters')
+    .update({ [column]: await newValue(client) })
+    .eq('id', chapter.id);
+
+  // Then it is refused, and the chapter is untouched
+  expect(error?.code).toBe(PERMISSION_DENIED);
+  expect(await storedChapter(chapter.id)).toEqual(chapter);
+});
+
 it('lets the owner delete their chapter', async () => {
   // Given a user with a chapter
   const { client, studyId } = await studyOwner();
@@ -172,38 +192,27 @@ it('hides a chapter from other users', async () => {
   expect(data).toEqual([]);
 });
 
-it('stops other users changing a chapter', async () => {
+it.each([
+  [
+    'renaming',
+    (other: SupabaseClient, id: string) =>
+      other.from('chapters').update({ name: 'Mine now' }).eq('id', id).select(),
+  ],
+  [
+    'deleting',
+    (other: SupabaseClient, id: string) =>
+      other.from('chapters').delete().eq('id', id).select(),
+  ],
+])('stops other users %s a chapter', async (_, request) => {
   // Given a chapter, and a different signed-in user
   const owner = await studyOwner();
   const chapter = await existingChapter(owner.client, owner.studyId);
   const { client } = await signedInUser();
 
-  // When the other user renames it
-  const { data } = await client
-    .from('chapters')
-    .update({ name: 'Mine now' })
-    .eq('id', chapter.id)
-    .select();
+  // When the other user makes the request
+  const { data } = await request(client, chapter.id);
 
-  // Then nothing is updated, and the chapter is untouched
-  expect(data).toEqual([]);
-  expect(await storedChapter(chapter.id)).toEqual(chapter);
-});
-
-it('stops other users deleting a chapter', async () => {
-  // Given a chapter, and a different signed-in user
-  const owner = await studyOwner();
-  const chapter = await existingChapter(owner.client, owner.studyId);
-  const { client } = await signedInUser();
-
-  // When the other user deletes it
-  const { data } = await client
-    .from('chapters')
-    .delete()
-    .eq('id', chapter.id)
-    .select();
-
-  // Then nothing is deleted, and the chapter is untouched
+  // Then nothing is changed, and the chapter is untouched
   expect(data).toEqual([]);
   expect(await storedChapter(chapter.id)).toEqual(chapter);
 });
@@ -263,42 +272,6 @@ it.each([
 
   // Then it is refused
   expect(error?.code).toBe(PERMISSION_DENIED);
-});
-
-it.each([
-  ['id', crypto.randomUUID()],
-  ['created_at', '2000-01-01T00:00:00+00:00'],
-])('refuses a client-supplied %s on update', async (column, value) => {
-  // Given a user with a chapter
-  const { client, studyId } = await studyOwner();
-  const chapter = await existingChapter(client, studyId);
-
-  // When they change the column
-  const { error } = await client
-    .from('chapters')
-    .update({ [column]: value })
-    .eq('id', chapter.id);
-
-  // Then it is refused, and the chapter is untouched
-  expect(error?.code).toBe(PERMISSION_DENIED);
-  expect(await storedChapter(chapter.id)).toEqual(chapter);
-});
-
-it('refuses moving a chapter to another of the owner’s studies', async () => {
-  // Given a user with a chapter, and a second study
-  const { client, studyId } = await studyOwner();
-  const chapter = await existingChapter(client, studyId);
-  const otherStudyId = await existingStudyId(client);
-
-  // When they move the chapter to the second study
-  const { error } = await client
-    .from('chapters')
-    .update({ study_id: otherStudyId })
-    .eq('id', chapter.id);
-
-  // Then it is refused, and the chapter stays where it was
-  expect(error?.code).toBe(PERMISSION_DENIED);
-  expect(await storedChapter(chapter.id)).toEqual(chapter);
 });
 
 it.each([

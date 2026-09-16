@@ -1,4 +1,4 @@
-.sign-in-card {
+.check-email-card {
   max-width: 24rem;
   margin-inline: auto;
   padding: var(--gap-lg);
@@ -8,26 +8,14 @@
   box-shadow: var(--shadow);
 }
 
-.sign-in-heading {
+.check-email-heading {
   margin-bottom: var(--gap-md);
   font-size: var(--text-lg);
 }
 
-.sign-in-form {
+.check-email-form {
   display: flex;
   flex-direction: column;
   gap: var(--gap-md);
-}
-
-.sign-in-link {
-  display: block;
   margin-top: var(--gap-md);
-  font-size: var(--text-sm);
-}
-
-.sign-in-switch {
-  display: flex;
-  gap: var(--gap-sm);
-  margin-top: var(--gap-md);
-  color: var(--ink-muted);
 }
