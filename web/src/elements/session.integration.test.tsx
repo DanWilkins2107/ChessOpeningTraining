@@ -1,4 +1,4 @@
-import { act, cleanup, render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
 import { registerTestUser } from '../tests-shared/testUser';
 import { supabase } from '../supabase';
@@ -7,7 +7,6 @@ import { useUser } from './session';
 const { user, signIn } = registerTestUser();
 
 afterEach(() => {
-  cleanup();
   vi.restoreAllMocks();
 });
 
