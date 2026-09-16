@@ -1,8 +1,6 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { afterEach, expect, it } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { expect, it } from 'vitest';
 import { TextInput } from './TextInput';
-
-afterEach(cleanup);
 
 function renderPassword() {
   render(
