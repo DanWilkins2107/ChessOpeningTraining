@@ -1,12 +1,5 @@
 import { RouterProvider, createMemoryRouter } from 'react-router-dom';
-import {
-  act,
-  cleanup,
-  fireEvent,
-  render,
-  screen,
-  within,
-} from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
 import { authSettled } from '../../tests-shared/authSettled';
 import {
@@ -21,7 +14,6 @@ const newEmail = registerSignUpEmail();
 const strongPassword = `Aa1!${crypto.randomUUID()}`;
 
 afterEach(() => {
-  cleanup();
   vi.restoreAllMocks();
 });
 

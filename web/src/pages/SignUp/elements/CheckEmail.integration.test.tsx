@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
 import { registerTestUser } from '../../../tests-shared/testUser';
 import { supabase } from '../../../supabase';
@@ -10,7 +10,6 @@ const resentTo = registerTestUser({ emailConfirmed: false });
 const pendingFor = registerTestUser({ emailConfirmed: false });
 
 afterEach(() => {
-  cleanup();
   vi.restoreAllMocks();
 });
 
