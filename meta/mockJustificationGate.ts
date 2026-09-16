@@ -8,7 +8,7 @@ const MARKER = 'mock-reason';
 const FORMAT = `// ${MARKER}: <why the real thing can't be used>`;
 
 const SCANNED = /\.tsx?$/;
-const CALL = /\bvi\.(mock|doMock|stubEnv|stubGlobal|spyOn)\s*\(/;
+const CALL = /\bvi\.(mock|doMock|stubEnv|stubGlobal|spyOn|hoisted)\s*\(/;
 const COMMENT = /^\s*\/\/\s?(.*)$/;
 const REASON = new RegExp(String.raw`^${MARKER}: \S`);
 

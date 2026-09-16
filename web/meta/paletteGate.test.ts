@@ -1,6 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 import { colourLiteralsIn, strayColourLiterals } from './paletteGate';
 
+// mock-reason: a vi.mock factory runs before this module body, so `repo` only
+// exists in time if vi.hoisted builds it; the helper import is dynamic because
+// static imports have not been evaluated that early either.
 const repo = await vi.hoisted(async () => {
   const { fakeRepo } = await import('../../meta/tests-shared/fakeRepo');
   return fakeRepo(

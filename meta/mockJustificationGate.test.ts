@@ -1,6 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
 import { unjustifiedCalls, unjustifiedMocks } from './mockJustificationGate';
 
+// mock-reason: the vi.mock factories below run while the module graph is still
+// loading, before anything in this module body exists, so `repo` has to be
+// built inside vi.hoisted - and static imports are not evaluated by then
+// either, hence the dynamic import of the shared helper.
 const repo = await vi.hoisted(async () => {
   const { fakeRepo } = await import('./tests-shared/fakeRepo');
   return fakeRepo(
@@ -46,10 +50,11 @@ describe('mock justification gate call rules', () => {
       true,
     ],
     [
-      'vi.hoisted is not gated',
-      'const { f } = vi.hoisted(() => ({ f: 1 }));',
+      'reason above vi.hoisted',
+      `${REASON}\nconst f = vi.hoisted(() => 1);`,
       true,
     ],
+    ['vi.hoisted without a reason', 'const f = vi.hoisted(() => 1);', false],
     ['vi.mock only mentioned in prose', '// vi.mock is discussed here', true],
     ['no comment at all', "vi.mock('node:fs');", false],
     ['comment without the marker', `// stubbed\nvi.mock('node:fs');`, false],
