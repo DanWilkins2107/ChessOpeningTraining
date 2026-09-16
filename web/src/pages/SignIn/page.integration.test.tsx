@@ -1,13 +1,11 @@
-import { act, cleanup, fireEvent, screen } from '@testing-library/react';
-import { afterEach, expect, it } from 'vitest';
+import { act, fireEvent, screen } from '@testing-library/react';
+import { expect, it } from 'vitest';
 import { authSettled } from '../../tests-shared/authSettled';
 import { pathOf, renderAt } from '../../tests-shared/renderAt';
 import { registerTestUser } from '../../tests-shared/testUser';
 
 const confirmed = registerTestUser();
 const unconfirmed = registerTestUser({ emailConfirmed: false });
-
-afterEach(cleanup);
 
 const signInButton = () => screen.getByRole('button', { name: 'Sign in' });
 

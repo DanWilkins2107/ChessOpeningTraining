@@ -1,12 +1,10 @@
-import { act, cleanup, screen } from '@testing-library/react';
-import { afterEach, expect, it } from 'vitest';
+import { act, screen } from '@testing-library/react';
+import { expect, it } from 'vitest';
 import { authSettled } from '../tests-shared/authSettled';
 import { pathOf, renderAt } from '../tests-shared/renderAt';
 import { registerTestUser } from '../tests-shared/testUser';
 
 const { signIn } = registerTestUser();
-
-afterEach(cleanup);
 
 it('wraps pages in the root layout', () => {
   // Given the router
