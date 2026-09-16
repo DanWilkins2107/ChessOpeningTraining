@@ -11,6 +11,10 @@ export default defineConfig({
   build: { assetsInlineLimit: 0 },
   test: {
     environment: 'jsdom',
+    // Testing Library only registers its auto-cleanup when a global afterEach
+    // exists. Without it, renders stay mounted past the test and their async
+    // callbacks land after jsdom teardown.
+    globals: true,
     setupFiles: ['./tests/setup.ts'],
     // The integration project in vitest.config.ts runs these against the test
     // stack.

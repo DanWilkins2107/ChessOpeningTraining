@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { act, cleanup, render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import { afterEach, beforeAll, expect, it, vi } from 'vitest';
 import { authSettled } from '../../tests-shared/authSettled';
 import { registerTestUser } from '../../tests-shared/testUser';
@@ -26,7 +26,6 @@ beforeAll(async () => {
 });
 
 afterEach(() => {
-  cleanup();
   vi.restoreAllMocks();
 });
 

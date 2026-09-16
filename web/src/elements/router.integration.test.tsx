@@ -1,19 +1,11 @@
 import { RouterProvider, createMemoryRouter } from 'react-router-dom';
-import {
-  act,
-  cleanup,
-  fireEvent,
-  render,
-  screen,
-} from '@testing-library/react';
-import { afterEach, expect, it, vi } from 'vitest';
+import { act, fireEvent, render, screen } from '@testing-library/react';
+import { expect, it, vi } from 'vitest';
 import { authSettled } from '../tests-shared/authSettled';
 import { registerTestUser } from '../tests-shared/testUser';
 import { router } from './router';
 
 const { signIn } = registerTestUser();
-
-afterEach(cleanup);
 
 function renderAt(...entries: string[]) {
   const memoryRouter = createMemoryRouter(router.routes, {

@@ -1,11 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import {
-  act,
-  cleanup,
-  fireEvent,
-  render,
-  screen,
-} from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
 import { registerTestUser } from '../tests-shared/testUser';
 import { env } from '../env';
@@ -15,7 +9,6 @@ import { SignOut } from './SignOut';
 const { signIn } = registerTestUser();
 
 afterEach(() => {
-  cleanup();
   vi.restoreAllMocks();
 });
 
