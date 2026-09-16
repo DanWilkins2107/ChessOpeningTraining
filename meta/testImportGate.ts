@@ -4,7 +4,7 @@ import path from 'node:path';
 
 type Sources = Record<string, string>;
 
-const SCANNED_FOLDERS = ['web/src', 'web/meta', 'meta'];
+const SCANNED_FOLDERS = ['web/src', 'web/meta', 'meta', 'supabase'];
 const TYPESCRIPT_EXTENSION = /\.tsx?$/;
 const TEST = /\.test(\.tsx?)?$/;
 const META = /^(web\/)?meta\//;

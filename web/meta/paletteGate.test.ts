@@ -1,10 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
 import { colourLiteralsIn, strayColourLiterals } from './paletteGate';
 
-// mock-reason: a vi.mock factory runs before this module body, so `repo` only
+// mock-reason: a vi.mock factory runs before this module body, so `paletteRepo` only
 // exists in time if vi.hoisted builds it; the helper import is dynamic because
 // static imports have not been evaluated that early either.
-const repo = await vi.hoisted(async () => {
+const paletteRepo = await vi.hoisted(async () => {
   const { fakeRepo } = await import('../../meta/tests-shared/fakeRepo');
   return fakeRepo(
     [
@@ -23,11 +23,11 @@ const repo = await vi.hoisted(async () => {
 // mock-reason: strayColourLiterals scans the real repo, which is green, so the
 // formatting and file-filtering paths never run. The stub hands it a four-file
 // repo with a known answer; the rule itself is untouched.
-vi.mock('node:child_process', () => repo.childProcess);
+vi.mock('node:child_process', () => paletteRepo.childProcess);
 
 // mock-reason: the stubbed repo's files do not exist on disk, so the real
 // readFileSync would throw before the rule ran.
-vi.mock('node:fs', () => repo.fs);
+vi.mock('node:fs', () => paletteRepo.fs);
 
 describe('palette gate colour rules', () => {
   const cases: [string, string, string[]][] = [
