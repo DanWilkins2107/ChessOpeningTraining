@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { RouterProvider, createMemoryRouter } from 'react-router-dom';
 import { afterEach, expect, it, vi } from 'vitest';
 import { authSettled } from '../../tests-shared/authSettled';
@@ -10,7 +10,6 @@ import { router } from '../../elements/router';
 const { signIn } = registerTestUser();
 
 afterEach(() => {
-  cleanup();
   vi.restoreAllMocks();
 });
 
