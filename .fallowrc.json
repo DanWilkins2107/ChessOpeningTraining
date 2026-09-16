@@ -1,6 +1,7 @@
 {
   "$schema": "./node_modules/fallow/schema.json",
   "entry": ["web/tests/setup.ts"],
+  "duplicates": { "ignoreDefaults": false, "threshold": 0.001 },
   "health": {
     "maxCyclomatic": 6,
     "maxCognitive": 8

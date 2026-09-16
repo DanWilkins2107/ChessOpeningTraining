@@ -1,0 +1,30 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CheckEmail > matches snapshot 1`] = `
+<div>
+  <section
+    class="check-email-card"
+  >
+    <h1
+      class="check-email-heading"
+    >
+      Check your email
+    </h1>
+    <p>
+      Follow the link we sent to 
+      player@example.test
+       to finish signing up.
+    </p>
+    <form
+      class="check-email-form"
+    >
+      <button
+        class="button"
+        type="submit"
+      >
+        Resend email
+      </button>
+    </form>
+  </section>
+</div>
+`;

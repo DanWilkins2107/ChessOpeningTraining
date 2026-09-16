@@ -1,5 +1,7 @@
 import { beforeEach, expect, it, vi } from 'vitest';
 
+// mock-reason: the vi.mock factory below runs before this module body, so the
+// createRoot/render spies have to be built inside vi.hoisted to exist in time.
 const { createRoot, render } = vi.hoisted(() => {
   const render = vi.fn();
   return { render, createRoot: vi.fn(() => ({ render })) };

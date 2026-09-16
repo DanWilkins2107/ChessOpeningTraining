@@ -3,16 +3,12 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { startOfTodayUtc } from './expiry';
+import { gateFilePrefix, repoRoot } from './repoPaths';
 import { lineProblems } from './todoGate';
 
 const LOCKFILE = /(^|\/)(package-lock\.json|npm-shrinkwrap\.json|[^/]*\.lock)$/;
 
-const toPosix = (value: string) => value.split(path.sep).join('/');
-
-const repoRoot = path.join(import.meta.dirname, '..');
-const gateFilePrefix = toPosix(
-  path.relative(repoRoot, import.meta.filename),
-).replace(/\.meta\.test\.ts$/, '');
+const ownFiles = gateFilePrefix(import.meta.filename);
 
 describe('todo gate', () => {
   it('finds no rotten TODOs in tracked files', () => {
@@ -44,7 +40,7 @@ function scannedFiles(): string[] {
     .split('\0')
     .filter(
       (file) =>
-        file !== '' && !file.startsWith(gateFilePrefix) && !LOCKFILE.test(file),
+        file !== '' && !file.startsWith(ownFiles) && !LOCKFILE.test(file),
     );
 }
 

@@ -1,36 +1,33 @@
 import { describe, expect, it, vi } from 'vitest';
 import { colourLiteralsIn, strayColourLiterals } from './paletteGate';
 
-const { execFileSync, readFileSync } = vi.hoisted(() => {
-  const NUL = '\0';
-  const tracked = [
-    'src/pages/Home/page.css',
-    'src/pages/Home/page.tsx',
-    'src/logo.svg',
-    'src/theme.css',
-  ];
-
-  return {
-    execFileSync: () =>
-      Buffer.from(tracked.map((file) => `${file}${NUL}`).join('')),
-    readFileSync: (file: string) =>
+// mock-reason: a vi.mock factory runs before this module body, so `repo` only
+// exists in time if vi.hoisted builds it; the helper import is dynamic because
+// static imports have not been evaluated that early either.
+const repo = await vi.hoisted(async () => {
+  const { fakeRepo } = await import('../../meta/tests-shared/fakeRepo');
+  return fakeRepo(
+    [
+      'src/pages/Home/page.css',
+      'src/pages/Home/page.tsx',
+      'src/logo.svg',
+      'src/theme.css',
+    ],
+    (file) =>
       file.endsWith('.css')
         ? '  color: #fff;\n  border: 1px solid red;'
         : "const label = 'red';",
-  };
+  );
 });
 
 // mock-reason: strayColourLiterals scans the real repo, which is green, so the
 // formatting and file-filtering paths never run. The stub hands it a four-file
 // repo with a known answer; the rule itself is untouched.
-vi.mock('node:child_process', () => ({
-  execFileSync,
-  default: { execFileSync },
-}));
+vi.mock('node:child_process', () => repo.childProcess);
 
 // mock-reason: the stubbed repo's files do not exist on disk, so the real
 // readFileSync would throw before the rule ran.
-vi.mock('node:fs', () => ({ readFileSync, default: { readFileSync } }));
+vi.mock('node:fs', () => repo.fs);
 
 describe('palette gate colour rules', () => {
   const cases: [string, string, string[]][] = [

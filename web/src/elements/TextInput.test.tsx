@@ -63,3 +63,25 @@ it('offers no show button for an email', () => {
   // Then there is no button to show it
   expect(screen.queryByRole('button')).not.toBeInTheDocument();
 });
+
+it('reports what is typed', () => {
+  // Given a field reporting its changes
+  const reported: string[] = [];
+  render(
+    <TextInput
+      label="Password"
+      name="password"
+      type="password"
+      autoComplete="new-password"
+      onChange={(value) => reported.push(value)}
+    />,
+  );
+
+  // When something is typed
+  fireEvent.change(screen.getByLabelText('Password'), {
+    target: { value: 'typed' },
+  });
+
+  // Then the new value is reported
+  expect(reported).toEqual(['typed']);
+});
