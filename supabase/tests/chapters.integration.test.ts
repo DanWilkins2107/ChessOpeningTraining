@@ -2,17 +2,13 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { env } from 'node:process';
 import { expect, it } from 'vitest';
 import type { MoveNode } from '../../web/src/elements/moveTree';
+import { move } from '../../web/src/tests-shared/move';
 import { admin, anonClient, signedInUser } from './tests-shared/testUsers';
 
 const PERMISSION_DENIED = '42501';
 const CHECK_VIOLATION = '23514';
 const NOT_NULL_VIOLATION = '23502';
 const MAX_TREE_BYTES = 512 * 1024;
-
-const move = (san: string, ...children: MoveNode[]): MoveNode => ({
-  san,
-  children,
-});
 
 const TREE = [move('e4', move('c6', move('d4'), move('Nc3')))];
 
