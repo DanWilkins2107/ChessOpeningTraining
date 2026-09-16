@@ -1,8 +1,6 @@
-import { cleanup, render, screen, within } from '@testing-library/react';
-import { afterEach, expect, it } from 'vitest';
+import { render, screen, within } from '@testing-library/react';
+import { expect, it } from 'vitest';
 import { Board } from './Board';
-
-afterEach(cleanup);
 
 const EMPTY = '8/8/8/8/8/8/8/8';
 const START = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
