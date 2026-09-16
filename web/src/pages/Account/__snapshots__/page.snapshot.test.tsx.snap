@@ -2,8 +2,20 @@
 
 exports[`Account > matches snapshot 1`] = `
 <div>
-  <h1>
-    Account
-  </h1>
+  <section
+    class="account-card"
+  >
+    <h1
+      class="account-heading"
+    >
+      Account
+    </h1>
+    <button
+      class="account-action"
+      type="button"
+    >
+      Sign out
+    </button>
+  </section>
 </div>
 `;

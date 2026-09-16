@@ -79,17 +79,6 @@ it('sends a signed-out visitor from the account page to sign in', async () => {
   expect(pathOf(memoryRouter)).toBe('/sign-in?next=%2Faccount');
 });
 
-it('sends a signed-out visitor from the profile page to sign in', async () => {
-  // Given a signed-out visitor
-
-  // When they open the profile page
-  const memoryRouter = renderAt('/profile');
-  await authSettled();
-
-  // Then they are at sign in, carrying the profile path
-  expect(pathOf(memoryRouter)).toBe('/sign-in?next=%2Fprofile');
-});
-
 it('sends a signed-out visitor to sign in with their path and query', async () => {
   // Given a signed-out visitor
 

@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Link, Outlet } from 'react-router-dom';
-import { ProfileLink } from './ProfileLink';
+import { ACCOUNT_ROUTE_PATH } from './router.constants';
+import { useUser } from './session';
 import './RootLayout.css';
 
 export function RootLayout() {
   const [signOutError, setSignOutError] = useState<string>();
+  const user = useUser();
 
   return (
     <>
@@ -12,7 +14,15 @@ export function RootLayout() {
         <Link to="/" className="root-layout-wordmark">
           Chess Opening Training
         </Link>
-        <ProfileLink signOutError={signOutError} />
+        {user ? (
+          <Link to={ACCOUNT_ROUTE_PATH}>Account</Link>
+        ) : (
+          signOutError && (
+            <p role="alert" className="root-layout-error">
+              {signOutError}
+            </p>
+          )
+        )}
       </header>
       <main className="root-layout-main">
         <Outlet context={setSignOutError} />

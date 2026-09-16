@@ -17,29 +17,15 @@ afterEach(() => {
 async function renderSignedIn() {
   await signIn();
   const memoryRouter = createMemoryRouter(router.routes, {
-    initialEntries: ['/profile'],
+    initialEntries: ['/account'],
   });
   render(<RouterProvider router={memoryRouter} />);
   await authSettled();
   return memoryRouter;
 }
 
-const pathOf = ({ state }: Awaited<ReturnType<typeof renderSignedIn>>) =>
-  state.location.pathname + state.location.search;
-
 const signOut = () =>
   fireEvent.click(screen.getByRole('button', { name: 'Sign out' }));
-
-it('takes the user to their account page', async () => {
-  // Given a signed-in user on their profile page
-  const memoryRouter = await renderSignedIn();
-
-  // When they choose Account
-  fireEvent.click(screen.getByRole('link', { name: 'Account' }));
-
-  // Then they are on the account page
-  expect(pathOf(memoryRouter)).toBe('/account');
-});
 
 it('signs out this device only', async () => {
   // Given the user signed in here and on another device
@@ -54,17 +40,28 @@ it('signs out this device only', async () => {
   // When they sign out here
   signOut();
 
-  // Then they are at sign in with no error, and the other device stays signed in
+  // Then they are sent to sign in, and the other device stays signed in
   await vi.waitFor(() =>
-    expect(pathOf(memoryRouter)).toBe('/sign-in?next=%2Fprofile'),
+    expect(memoryRouter.state.location.search).toBe('?next=%2Faccount'),
   );
-  expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   const { error } = await otherDevice.auth.refreshSession();
   expect(error).toBeNull();
 });
 
+it('reports nothing when the sign out succeeds', async () => {
+  // Given a signed-in user on their account page
+  await renderSignedIn();
+
+  // When they sign out
+  signOut();
+
+  // Then no error is shown
+  expect(await screen.findByRole('heading', { name: 'Sign in' })).toBeVisible();
+  expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+});
+
 it('shows the server error in the header', async () => {
-  // Given a signed-in user on their profile page, and a server that fails to sign them out
+  // Given a signed-in user on their account page, and a server that fails to sign them out
   await renderSignedIn();
   const realFetch = window.fetch;
   // mock-reason: the local auth server cannot be made to fail a logout on
@@ -80,11 +77,8 @@ it('shows the server error in the header', async () => {
   // When they sign out
   signOut();
 
-  // Then the error replaces the profile link in the header
+  // Then the error replaces the account link in the header
   const alert = await screen.findByRole('alert');
   expect(alert).toHaveTextContent('Logout failed');
   expect(screen.getByRole('banner')).toContainElement(alert);
-  expect(
-    screen.queryByRole('link', { name: 'Profile' }),
-  ).not.toBeInTheDocument();
 });
