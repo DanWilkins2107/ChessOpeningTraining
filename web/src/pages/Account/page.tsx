@@ -3,11 +3,11 @@ import { supabase } from '../../supabase';
 import './page.css';
 
 export function Account() {
-  const setSignOutError = useOutletContext<(message?: string) => void>();
+  const setSignOutMessage = useOutletContext<(message: string) => void>();
 
   async function signOut() {
     const { error } = await supabase.auth.signOut({ scope: 'local' });
-    setSignOutError(error?.message);
+    setSignOutMessage(error ? error.message : 'Sign out successful');
   }
 
   return (

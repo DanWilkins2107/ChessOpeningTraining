@@ -5,7 +5,7 @@ import { useUser } from './session';
 import './RootLayout.css';
 
 export function RootLayout() {
-  const [signOutError, setSignOutError] = useState<string>();
+  const [signOutMessage, setSignOutMessage] = useState<string>();
   const user = useUser();
 
   return (
@@ -17,15 +17,15 @@ export function RootLayout() {
         {user ? (
           <Link to={ACCOUNT_ROUTE_PATH}>Account</Link>
         ) : (
-          signOutError && (
-            <p role="alert" className="root-layout-error">
-              {signOutError}
+          signOutMessage && (
+            <p role="status" className="root-layout-message">
+              {signOutMessage}
             </p>
           )
         )}
       </header>
       <main className="root-layout-main">
-        <Outlet context={setSignOutError} />
+        <Outlet context={setSignOutMessage} />
       </main>
     </>
   );

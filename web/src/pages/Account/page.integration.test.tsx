@@ -47,16 +47,17 @@ it('signs out this device only', async () => {
   expect(error).toBeNull();
 });
 
-it('reports nothing when the sign out succeeds', async () => {
+it('confirms a successful sign out in the header', async () => {
   // Given a signed-in user on their account page
   await renderSignedIn();
 
   // When they sign out
   signOut();
 
-  // Then no error is shown
-  expect(await screen.findByRole('heading', { name: 'Sign in' })).toBeVisible();
-  expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  // Then the header says so
+  expect(await screen.findByRole('status')).toHaveTextContent(
+    'Sign out successful',
+  );
 });
 
 it('shows the server error in the header', async () => {
@@ -77,7 +78,7 @@ it('shows the server error in the header', async () => {
   signOut();
 
   // Then the error replaces the account link in the header
-  const alert = await screen.findByRole('alert');
-  expect(alert).toHaveTextContent('Logout failed');
-  expect(screen.getByRole('banner')).toContainElement(alert);
+  const message = await screen.findByRole('status');
+  expect(message).toHaveTextContent('Logout failed');
+  expect(screen.getByRole('banner')).toContainElement(message);
 });

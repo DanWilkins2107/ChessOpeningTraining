@@ -13,7 +13,7 @@
   text-decoration: none;
 }
 
-.root-layout-error {
+.root-layout-message {
   color: var(--ink-muted);
 }
 
