@@ -1,11 +1,10 @@
 import { RouterProvider, createMemoryRouter } from 'react-router-dom';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
 import { authSettled } from '../../tests-shared/authSettled';
 import { router } from '../../elements/router';
 import { supabase } from '../../supabase';
 
-afterEach(cleanup);
 afterEach(() => vi.restoreAllMocks());
 
 function renderAt(path: string) {
