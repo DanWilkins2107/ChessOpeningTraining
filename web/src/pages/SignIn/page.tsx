@@ -55,7 +55,6 @@ export function SignIn() {
   return (
     <section className="sign-in-card">
       <h1 className="sign-in-heading">Sign in</h1>
-      <SignOutNotice outcome={outcome} />
       <form
         className="sign-in-form"
         onSubmit={signIn}
@@ -63,6 +62,8 @@ export function SignIn() {
           setFieldsValid(event.currentTarget.checkValidity())
         }
       >
+        {/* Inside the form so the column's gap spaces it like the error. */}
+        <SignOutNotice outcome={outcome} />
         <TextInput
           label="Email"
           name="email"
