@@ -92,6 +92,24 @@ it('requests studies only once the user has loaded', async () => {
   ).toHaveLength(1);
 });
 
+it('asks for the columns the list renders and no others', async () => {
+  // Given a signed-in user
+  await withoutStudies.signIn();
+  // mock-reason: what the request asks the server for is the assertion, and
+  // the rows come back the same either way. Every call is real.
+  const fetch = vi.spyOn(window, 'fetch');
+
+  // When the page renders and loads
+  render(<Studies />);
+  await screen.findByText('No studies yet');
+
+  // Then the studies request selects those three columns alone
+  const [input] = fetch.mock.calls.find(([input]) => isStudiesRequest(input))!;
+  expect(new URL(String(input)).searchParams.get('select')).toBe(
+    'id,name,side',
+  );
+});
+
 it('shows a generic message when studies fail to load', async () => {
   // Given a signed-in user, and a server that fails the studies request
   await withStudies.signIn();
