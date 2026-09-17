@@ -1,0 +1,5 @@
+.sign-out-notice {
+  margin-bottom: var(--gap-md);
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+}

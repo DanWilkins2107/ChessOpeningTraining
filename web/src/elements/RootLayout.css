@@ -13,10 +13,6 @@
   text-decoration: none;
 }
 
-.root-layout-message {
-  color: var(--ink-muted);
-}
-
 .root-layout-main {
   max-width: var(--content-width);
   margin-inline: auto;

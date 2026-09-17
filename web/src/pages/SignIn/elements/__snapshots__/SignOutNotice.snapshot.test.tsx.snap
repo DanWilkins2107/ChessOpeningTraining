@@ -1,0 +1,12 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SignOutNotice > matches snapshot 1`] = `
+<div>
+  <p
+    class="sign-out-notice"
+    role="status"
+  >
+    Sign out successful
+  </p>
+</div>
+`;

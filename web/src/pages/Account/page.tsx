@@ -1,13 +1,24 @@
-import { useOutletContext } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import {
+  SIGNED_OUT_DONE,
+  SIGNED_OUT_FAILED,
+  SIGNED_OUT_PARAM,
+} from '../../elements/signOut.constants';
 import { supabase } from '../../supabase';
 import './page.css';
 
 export function Account() {
-  const setSignOutMessage = useOutletContext<(message: string) => void>();
+  const navigate = useNavigate();
 
   async function signOut() {
+    const leaveWith = (outcome: string) =>
+      navigate(`/sign-in?${SIGNED_OUT_PARAM}=${outcome}`, { replace: true });
+
+    // Leaving first, while this page still owns the route: once the session
+    // goes, ProtectedLayout redirects to its own sign-in URL and would win.
+    leaveWith(SIGNED_OUT_DONE);
     const { error } = await supabase.auth.signOut({ scope: 'local' });
-    setSignOutMessage(error ? error.message : 'Sign out successful');
+    if (error) leaveWith(SIGNED_OUT_FAILED);
   }
 
   return (
