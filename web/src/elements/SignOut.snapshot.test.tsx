@@ -4,7 +4,7 @@ import { SignOut } from './SignOut';
 
 describe('SignOut', () => {
   it('matches snapshot', () => {
-    const { container } = render(<SignOut showButton />);
+    const { container } = render(<SignOut />);
     expect(container).toMatchSnapshot();
   });
 });

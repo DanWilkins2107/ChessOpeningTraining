@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { supabase } from '../supabase';
 import './SignOut.css';
 
-export function SignOut({ showButton }: { showButton: boolean }) {
+export function SignOut() {
   const [error, setError] = useState<AuthError | null>(null);
 
   async function signOut() {
@@ -11,19 +11,16 @@ export function SignOut({ showButton }: { showButton: boolean }) {
     setError(error);
   }
 
-  if (showButton) {
-    return (
+  return (
+    <>
       <button type="button" className="sign-out" onClick={signOut}>
         Sign out
       </button>
-    );
-  }
-
-  return (
-    error && (
-      <p role="alert" className="sign-out-error">
-        {error.message}
-      </p>
-    )
+      {error && (
+        <p role="alert" className="sign-out-error">
+          {error.message}
+        </p>
+      )}
+    </>
   );
 }

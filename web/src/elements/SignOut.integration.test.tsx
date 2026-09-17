@@ -27,16 +27,6 @@ async function clickSignOut() {
   await act(() => done);
 }
 
-it('renders nothing when the button is hidden', () => {
-  // Given no reason to show the button
-
-  // When it renders
-  const { container } = render(<SignOut showButton={false} />);
-
-  // Then it is empty
-  expect(container).toBeEmptyDOMElement();
-});
-
 it('signs out this device only', async () => {
   // Given the user signed in here and on another device
   const otherDevice = createClient(
@@ -46,24 +36,24 @@ it('signs out this device only', async () => {
   );
   await signIn(otherDevice);
   await signIn();
-  const { container, rerender } = render(<SignOut showButton />);
+  render(<SignOut />);
 
-  // When they sign out here and the button is hidden
+  // When they sign out here
   await clickSignOut();
-  rerender(<SignOut showButton={false} />);
 
-  // Then this device is signed out, with no error, and the other device stays signed in
-  const { data } = await supabase.auth.getSession();
-  expect(data.session).toBeNull();
-  expect(container).toBeEmptyDOMElement();
+  // Then this device is signed out and the other device stays signed in
+  await vi.waitFor(async () => {
+    const { data } = await supabase.auth.getSession();
+    expect(data.session).toBeNull();
+  });
   const { error } = await otherDevice.auth.refreshSession();
   expect(error).toBeNull();
 });
 
-it('shows the server error once the button is hidden', async () => {
+it('shows the server error beside the button', async () => {
   // Given a signed-in user, and a server that fails to sign them out
   await signIn();
-  const { rerender } = render(<SignOut showButton />);
+  render(<SignOut />);
   const realFetch = window.fetch;
   // mock-reason: the local auth server cannot be made to fail a logout on
   // demand. Only the logout request is failed; everything else is real.
@@ -75,11 +65,9 @@ it('shows the server error once the button is hidden', async () => {
       : realFetch(input, init),
   );
 
-  // When they sign out and the button is hidden
+  // When they sign out
   await clickSignOut();
-  rerender(<SignOut showButton={false} />);
 
-  // Then the error shows where the button was
+  // Then the error shows
   expect(await screen.findByRole('alert')).toHaveTextContent('Logout failed');
-  expect(screen.queryByRole('button')).not.toBeInTheDocument();
 });

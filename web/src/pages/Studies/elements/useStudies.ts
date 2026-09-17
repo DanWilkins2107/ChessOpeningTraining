@@ -18,9 +18,9 @@ export function useStudies(): StudiesResponse | undefined {
     response?: StudiesResponse;
   }>({});
 
-  // Non-reactive, so it reads the user of the moment the response lands: a
-  // response for a user who has since changed is dropped here, rather than by
-  // the effect carrying a flag its cleanup has to flip.
+  // Called from the response, not from the effect, so it reads the user of that
+  // later moment: a response for a user who has since changed is dropped here,
+  // rather than by the effect carrying a flag its cleanup has to flip.
   const onResponse = useEffectEvent(
     (requestedFor: string, response: StudiesResponse) => {
       if (requestedFor === userId) setLoaded({ userId, response });

@@ -79,21 +79,7 @@ it('shows the header links on a protected page while the user is loading', () =>
   expect(screen.getByRole('button', { name: 'Sign out' })).toBeInTheDocument();
 });
 
-it('holds the header links on a public page until the user loads', async () => {
-  // Given a signed-in user not yet loaded
-  await signIn();
-
-  // When the router renders a public page
-  renderAt('/no-such-page');
-
-  // Then the header has no links yet
-  expect(
-    screen.queryByRole('link', { name: 'Studies' }),
-  ).not.toBeInTheDocument();
-  expect(screen.queryByRole('button')).not.toBeInTheDocument();
-});
-
-it('shows the header links on a public page to a signed-in user', async () => {
+it('leaves the nav off a public page, signed in or not', async () => {
   // Given a signed-in user
   await signIn();
 
@@ -101,23 +87,8 @@ it('shows the header links on a public page to a signed-in user', async () => {
   renderAt('/no-such-page');
   await authSettled();
 
-  // Then the header has its links
-  expect(screen.getByRole('link', { name: 'Studies' })).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: 'Sign out' })).toBeInTheDocument();
-});
-
-it('hides the header links from a signed-out visitor', async () => {
-  // Given a signed-out visitor
-
-  // When they open a public page and the user loads
-  renderAt('/no-such-page');
-  await authSettled();
-
-  // Then the header has no links
-  expect(
-    screen.queryByRole('link', { name: 'Studies' }),
-  ).not.toBeInTheDocument();
-  expect(screen.queryByRole('button')).not.toBeInTheDocument();
+  // Then the header carries no nav at all
+  expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
 });
 
 it('takes a user who signs out to sign in, without the header links', async () => {

@@ -12,9 +12,6 @@ exports[`RootLayout > matches snapshot 1`] = `
     >
       Chess Opening Training
     </a>
-    <nav
-      class="header-nav"
-    />
   </header>
   <main
     class="root-layout-main"
