@@ -8,24 +8,41 @@ import { TextInput } from '../../elements/TextInput';
 import { supabase } from '../../supabase';
 import { safeReturnPath } from './elements/safeReturnPath';
 import { signInErrorMessage } from './elements/signInErrorMessage';
+import { SignOutNotice } from './elements/SignOutNotice';
+import {
+  signOutNotice,
+  signOutOutcome,
+  withoutSignOutNotice,
+} from './elements/signOutOutcome';
 import './page.css';
+
+// A signed-in visitor has no business on the form and is sent on, unless they
+// have just signed out here: signing out lands them on this page before the
+// session has finished clearing, and bouncing them would lose the notice.
+const sendsUserOn = (
+  user: ReturnType<typeof useUser>,
+  outcome: string | null,
+) => Boolean(user) && signOutNotice(outcome) === undefined;
 
 export function SignIn() {
   const user = useUser();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string>();
   // Both inputs are required, so the browser's validity means a well-formed
   // email and a non-empty password. Sign in stays disabled until then.
   const [fieldsValid, setFieldsValid] = useState<boolean>();
 
-  if (user) {
+  const outcome = signOutOutcome(searchParams);
+
+  if (sendsUserOn(user, outcome)) {
     return <Navigate to={safeReturnPath(searchParams.get('next'))} replace />;
   }
 
   async function signIn(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
+    setSearchParams(withoutSignOutNotice, { replace: true });
     setPending(true);
     const { error } = await supabase.auth.signInWithPassword({
       email: String(form.get('email')),
@@ -45,6 +62,8 @@ export function SignIn() {
           setFieldsValid(event.currentTarget.checkValidity())
         }
       >
+        {/* Inside the form so the column's gap spaces it like the error. */}
+        <SignOutNotice outcome={outcome} />
         <TextInput
           label="Email"
           name="email"
