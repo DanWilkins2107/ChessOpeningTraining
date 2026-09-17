@@ -6,10 +6,11 @@ import {
   deleteUser,
   signedInUser,
 } from './tests-shared/testUsers';
-
-const PERMISSION_DENIED = '42501';
-const CHECK_VIOLATION = '23514';
-const NOT_NULL_VIOLATION = '23502';
+import {
+  CHECK_VIOLATION,
+  NOT_NULL_VIOLATION,
+  PERMISSION_DENIED,
+} from './tests-shared/pgErrorCodes';
 
 const STUDY = { name: 'Caro-Kann', side: 'black' };
 

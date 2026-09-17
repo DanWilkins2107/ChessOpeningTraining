@@ -1,0 +1,53 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ForgotPassword > matches snapshot 1`] = `
+<div>
+  <section
+    class="forgot-password-card"
+  >
+    <h1
+      class="forgot-password-heading"
+    >
+      Forgot password
+    </h1>
+    <form
+      class="forgot-password-form"
+    >
+      <div
+        class="text-input"
+      >
+        <label
+          for="_r_0_"
+        >
+          Email
+        </label>
+        <div
+          class="text-input-control"
+        >
+          <input
+            autocomplete="email"
+            class="text-input-field"
+            id="_r_0_"
+            name="email"
+            required=""
+            type="email"
+          />
+        </div>
+      </div>
+      <button
+        class="button"
+        type="submit"
+      >
+        Send reset link
+      </button>
+    </form>
+    <a
+      class="forgot-password-link"
+      data-discover="true"
+      href="/sign-in"
+    >
+      Back to sign in
+    </a>
+  </section>
+</div>
+`;

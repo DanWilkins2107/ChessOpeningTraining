@@ -2,17 +2,15 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { env } from 'node:process';
 import { expect, it } from 'vitest';
 import type { MoveNode } from '../../web/src/elements/moveTree';
+import { leaves, move } from '../../web/src/tests-shared/moveNode';
 import { admin, anonClient, signedInUser } from './tests-shared/testUsers';
+import {
+  CHECK_VIOLATION,
+  NOT_NULL_VIOLATION,
+  PERMISSION_DENIED,
+} from './tests-shared/pgErrorCodes';
 
-const PERMISSION_DENIED = '42501';
-const CHECK_VIOLATION = '23514';
-const NOT_NULL_VIOLATION = '23502';
 const MAX_TREE_BYTES = 512 * 1024;
-
-const move = (san: string, ...children: MoveNode[]): MoveNode => ({
-  san,
-  children,
-});
 
 const TREE = [move('e4', move('c6', move('d4'), move('Nc3')))];
 
@@ -88,9 +86,6 @@ async function createChapterWithLine(
   });
   return response.ok ? null : ((await response.json()) as { code: string });
 }
-
-const leaves = (count: number) =>
-  Array.from({ length: count }, (_, index) => move(`m${index}`));
 
 const treeOfTextLength = (bytes: number) => {
   const padding = JSON.stringify([{ san: '', children: [] }]).length + 3;
