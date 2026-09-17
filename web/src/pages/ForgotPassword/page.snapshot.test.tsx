@@ -1,14 +1,14 @@
 import { render } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
-import { Board } from './Board';
+import { ForgotPassword } from './page';
 
-describe('Board', () => {
+describe('ForgotPassword', () => {
   it('matches snapshot', () => {
     const { container } = render(
-      <Board
-        position="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-        orientation="white"
-      />,
+      <MemoryRouter>
+        <ForgotPassword />
+      </MemoryRouter>,
     );
     expect(container).toMatchSnapshot();
   });
