@@ -9,14 +9,20 @@ import { supabase } from '../../supabase';
 import { safeReturnPath } from './elements/safeReturnPath';
 import { signInErrorMessage } from './elements/signInErrorMessage';
 import { SignOutNotice } from './elements/SignOutNotice';
-import { signOutNotice, withoutSignOutNotice } from './elements/signOutOutcome';
+import {
+  signOutNotice,
+  signOutOutcome,
+  withoutSignOutNotice,
+} from './elements/signOutOutcome';
 import './page.css';
 
 // A signed-in visitor has no business on the form and is sent on, unless they
 // have just signed out here: signing out lands them on this page before the
 // session has finished clearing, and bouncing them would lose the notice.
-const sendsUserOn = (user: ReturnType<typeof useUser>, notice?: string) =>
-  Boolean(user) && notice === undefined;
+const sendsUserOn = (
+  user: ReturnType<typeof useUser>,
+  outcome: string | null,
+) => Boolean(user) && signOutNotice(outcome) === undefined;
 
 export function SignIn() {
   const user = useUser();
@@ -27,9 +33,9 @@ export function SignIn() {
   // email and a non-empty password. Sign in stays disabled until then.
   const [fieldsValid, setFieldsValid] = useState<boolean>();
 
-  const notice = signOutNotice(searchParams);
+  const outcome = signOutOutcome(searchParams);
 
-  if (sendsUserOn(user, notice)) {
+  if (sendsUserOn(user, outcome)) {
     return <Navigate to={safeReturnPath(searchParams.get('next'))} replace />;
   }
 
@@ -49,7 +55,7 @@ export function SignIn() {
   return (
     <section className="sign-in-card">
       <h1 className="sign-in-heading">Sign in</h1>
-      <SignOutNotice notice={notice} />
+      <SignOutNotice outcome={outcome} />
       <form
         className="sign-in-form"
         onSubmit={signIn}

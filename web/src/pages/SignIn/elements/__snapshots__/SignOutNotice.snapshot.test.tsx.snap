@@ -3,7 +3,7 @@
 exports[`SignOutNotice > matches snapshot 1`] = `
 <div>
   <p
-    class="sign-out-notice"
+    class="success-message"
     role="status"
   >
     Sign out successful

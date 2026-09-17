@@ -22,10 +22,10 @@ const pressSignOut = () =>
 
 // Sign out reports twice: in progress, then the outcome once the server has
 // answered. Waiting for the wording pins the test to the settled one.
-const noticeSays = (text: string) =>
-  vi.waitFor(() => expect(screen.getByRole('status')).toHaveTextContent(text));
+const noticeSays = (role: string, text: string) =>
+  vi.waitFor(() => expect(screen.getByRole(role)).toHaveTextContent(text));
 
-const signOutSettles = () => noticeSays('Sign out successful');
+const signOutSettles = () => noticeSays('status', 'Sign out successful');
 
 function failTheLogoutRequest() {
   const realFetch = window.fetch;
@@ -102,8 +102,11 @@ it('says a failed sign out was not confirmed by the server', async () => {
   // When they sign out
   pressSignOut();
 
-  // Then the sign-in page says the session was only cleared here
-  await noticeSays('Signed out on this device. The server did not confirm it.');
+  // Then the sign-in page flags that the session was only cleared here
+  await noticeSays(
+    'alert',
+    'Signed out on this device. The server did not confirm it.',
+  );
 });
 
 async function signBackIn() {
