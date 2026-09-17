@@ -3,8 +3,8 @@ import type { FormEvent } from 'react';
 import { Link, Navigate, useSearchParams } from 'react-router-dom';
 import { Button } from '../../elements/Button';
 import { ErrorMessage } from '../../elements/ErrorMessage';
-import { TextInput } from '../../elements/TextInput';
 import { useUser } from '../../elements/session';
+import { TextInput } from '../../elements/TextInput';
 import { supabase } from '../../supabase';
 import { safeReturnPath } from './elements/safeReturnPath';
 import { signInErrorMessage } from './elements/signInErrorMessage';
@@ -60,6 +60,9 @@ export function SignIn() {
         {error && <ErrorMessage>{error}</ErrorMessage>}
         <Button disabled={pending || !fieldsValid}>Sign in</Button>
       </form>
+      <Link to="/forgot-password" className="sign-in-link">
+        Forgot password?
+      </Link>
       <p className="sign-in-switch">
         No account? <Link to="/sign-up">Sign up</Link>
       </p>
