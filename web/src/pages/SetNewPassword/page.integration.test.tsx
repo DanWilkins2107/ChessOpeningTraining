@@ -41,6 +41,29 @@ async function savePassword(password: string) {
   fireEvent.click(await saveButton());
 }
 
+it('says it is checking the link while the session resolves', () => {
+  // Given a visitor arriving from a recovery link
+
+  // When set new password opens, before the session resolves
+  renderAt('/set-new-password');
+
+  // Then it says it is checking
+  expect(screen.getByText('Checking your reset link')).toBeInTheDocument();
+});
+
+it('stops saying it is checking once the session resolves', async () => {
+  // Given a visitor on set new password
+
+  // When the session resolves to none
+  await renderSettledAt('/set-new-password');
+  await spentNotice();
+
+  // Then it no longer says it is checking
+  expect(
+    screen.queryByText('Checking your reset link'),
+  ).not.toBeInTheDocument();
+});
+
 it('is open to a visitor with no session', async () => {
   // Given a visitor whose recovery link gave them no session
 
@@ -94,6 +117,33 @@ it('shows the password rules to a user with a session', async () => {
 
   // Then the rules their password must meet are listed
   expect(await ruleList()).toBeInTheDocument();
+});
+
+it('tells a user with a session nothing about a spent link', async () => {
+  // Given a user whose recovery link signed them in
+  await rejecting.signIn();
+
+  // When they open set new password
+  await renderSettledAt('/set-new-password');
+  await ruleList();
+
+  // Then the spent-link notice is not there
+  expect(
+    screen.queryByText('That reset link is invalid or has expired'),
+  ).not.toBeInTheDocument();
+});
+
+it('opens the form with the password field empty', async () => {
+  // Given a user whose recovery link signed them in
+  await rejecting.signIn();
+
+  // When they open set new password
+  await renderSettledAt('/set-new-password');
+
+  // Then nothing is typed for them
+  expect(await screen.findByLabelText('New password', {}, SERVER)).toHaveValue(
+    '',
+  );
 });
 
 it('keeps save disabled while the password misses a rule', async () => {
