@@ -1,0 +1,10 @@
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-md);
+}
+
+.header-nav-link {
+  color: var(--ink);
+  text-decoration: none;
+}
