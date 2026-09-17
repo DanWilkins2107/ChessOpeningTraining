@@ -2,10 +2,10 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Button } from '../../../elements/Button';
 import { ErrorMessage } from '../../../elements/ErrorMessage';
+import { meetsEveryRule } from '../../../elements/meetsEveryRule';
+import { PasswordChecklist } from '../../../elements/PasswordChecklist';
 import { TextInput } from '../../../elements/TextInput';
 import { supabase } from '../../../supabase';
-import { PasswordChecklist } from './PasswordChecklist';
-import { meetsEveryRule } from './passwordRules';
 import { signUpErrorMessage } from './signUpErrorMessage';
 import './SignUpForm.css';
 

@@ -1,5 +1,6 @@
 import { render, screen, within } from '@testing-library/react';
 import { expect, it } from 'vitest';
+import { ROOK_ON_H5, ROOKS_HOME } from '../tests-shared/rookPositions';
 import { Board } from './Board';
 
 const EMPTY = '8/8/8/8/8/8/8/8';
@@ -16,6 +17,18 @@ const squareNames = () =>
     );
 
 const square = (name: string) => screen.getByRole('gridcell', { name });
+
+const pieceImages = () => [
+  ...document.querySelectorAll<HTMLImageElement>('.board-piece'),
+];
+
+const imageAt = (transform: string) =>
+  pieceImages().find((image) => image.style.transform === transform);
+
+const KING_ON_E1 = '8/8/8/8/8/8/8/4K3';
+const KING_ON_E2 = '8/8/8/8/8/8/4K3/8';
+
+const ROOKS_ON_THE_H_FILE = '4k3/8/8/7R/8/8/8/4K2R';
 
 it('lays out rank 8 at the top from white', () => {
   // Given the board faces white
@@ -133,25 +146,111 @@ it('announces an empty square by name alone', () => {
 });
 
 it('shows each piece its own image', () => {
-  // Given the starting position
-  render(<Board position={START} orientation="white" />);
+  // Given a lone white king
 
-  // When e1 is inspected
-  const image = square('e1, white king').querySelector('img');
+  // When it renders
+  render(<Board position={KING_ON_E1} orientation="white" />);
 
-  // Then it holds the white king artwork
-  expect(image).toHaveAttribute('src', expect.stringContaining('wK'));
+  // Then the board holds the white king artwork
+  expect(pieceImages()[0]).toHaveAttribute(
+    'src',
+    expect.stringContaining('wK'),
+  );
 });
 
-it('puts no image on an empty square', () => {
+it('shows one image per piece and no more', () => {
   // Given the starting position
+
+  // When it renders
   render(<Board position={START} orientation="white" />);
 
-  // When e4 is inspected
-  const image = square('e4').querySelector('img');
+  // Then the 32 men are all that is drawn
+  expect(pieceImages()).toHaveLength(32);
+});
 
-  // Then there is nothing to show
-  expect(image).toBeNull();
+it('keeps piece images out of the accessibility tree', () => {
+  // Given the starting position, whose squares already announce their pieces
+
+  // When it renders
+  render(<Board position={START} orientation="white" />);
+
+  // Then the images add nothing for a screen reader to read
+  expect(screen.queryAllByRole('img')).toEqual([]);
+});
+
+it('offsets a piece to its square from white', () => {
+  // Given the board faces white
+
+  // When a king on e1 renders
+  render(<Board position={KING_ON_E1} orientation="white" />);
+
+  // Then it sits five files across and eight ranks down
+  expect(pieceImages()[0].style.transform).toBe('translate(400%, 700%)');
+});
+
+it('offsets a piece to its square from black', () => {
+  // Given the board faces black
+
+  // When a king on e1 renders
+  render(<Board position={KING_ON_E1} orientation="black" />);
+
+  // Then it sits four files across and on the top rank
+  expect(pieceImages()[0].style.transform).toBe('translate(300%, 0%)');
+});
+
+it('moves a piece by its offset, so it slides rather than jumps', () => {
+  // Given a king on e1
+  const { rerender } = render(
+    <Board position={KING_ON_E1} orientation="white" />,
+  );
+  const before = pieceImages()[0];
+
+  // When it steps up to e2
+  rerender(<Board position={KING_ON_E2} orientation="white" />);
+
+  // Then the same image is still on the board
+  expect(pieceImages()[0]).toBe(before);
+});
+
+it('offsets a moved piece to the square it arrived on', () => {
+  // Given a king on e1
+  const { rerender } = render(
+    <Board position={KING_ON_E1} orientation="white" />,
+  );
+
+  // When it steps up to e2
+  rerender(<Board position={KING_ON_E2} orientation="white" />);
+
+  // Then its offset is one rank higher
+  expect(pieceImages()[0].style.transform).toBe('translate(400%, 600%)');
+});
+
+it('keeps a piece its own image across a run of moves', () => {
+  // Given a rook on a1 and another on h1
+  const { rerender } = render(
+    <Board position={ROOKS_HOME} orientation="white" />,
+  );
+  const fromA1 = imageAt('translate(0%, 700%)');
+
+  // When the h1 rook goes to h5 and the a1 rook then follows it onto h1
+  rerender(<Board position={ROOK_ON_H5} orientation="white" />);
+  rerender(<Board position={ROOKS_ON_THE_H_FILE} orientation="white" />);
+
+  // Then h1 shows the rook that started on a1, not the one that left it
+  expect(imageAt('translate(700%, 700%)')).toBe(fromA1);
+});
+
+it('announces the square a piece moved to', () => {
+  // Given a king on e1
+  const { rerender } = render(
+    <Board position={KING_ON_E1} orientation="white" />,
+  );
+
+  // When it steps up to e2
+  rerender(<Board position={KING_ON_E2} orientation="white" />);
+
+  // Then e2 names the king standing on it
+  expect(square('e2, white king')).toBeInTheDocument();
 });
 
 it('keeps pieces on their own squares from black', () => {

@@ -11,6 +11,7 @@ import { Account } from '../pages/Account/page';
 import { ForgotPassword } from '../pages/ForgotPassword/page';
 import { Home } from '../pages/Home/page';
 import { NotFound } from '../pages/NotFound/page';
+import { SetNewPassword } from '../pages/SetNewPassword/page';
 import { SignIn } from '../pages/SignIn/page';
 import { SignUp } from '../pages/SignUp/page';
 import { Studies } from '../pages/Studies/page';
@@ -32,6 +33,7 @@ export const router = createBrowserRouter([
       { path: 'sign-in', element: <SignIn /> },
       { path: 'sign-up', element: <SignUp /> },
       { path: 'forgot-password', element: <ForgotPassword /> },
+      { path: 'set-new-password', element: <SetNewPassword /> },
       { path: '*', element: <NotFound /> },
     ],
   },
