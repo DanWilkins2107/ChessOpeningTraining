@@ -32,6 +32,17 @@ it('is open to a signed-out visitor', async () => {
   ).toBeInTheDocument();
 });
 
+it('shows no error before anything has been sent', async () => {
+  // Given a visitor on forgot password
+
+  // When they have not submitted yet
+  renderAt('/forgot-password');
+  await authSettled();
+
+  // Then nothing is flagged as wrong
+  expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+});
+
 it('replaces the form with a confirmation once sent', async () => {
   // Given a visitor on forgot password
   renderAt('/forgot-password');
