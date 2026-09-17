@@ -1,0 +1,18 @@
+/* fallow-ignore-file unused-file -- ef93ff81 2026-10-15 landed ahead of the study page, its first consumer. */
+
+/* One square wide, placed by a transform on the board rather than inside a
+   square, so changing squares is a slide rather than a re-parent. */
+.board-piece {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 12.5%;
+  height: 12.5%;
+  transition: transform 120ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .board-piece {
+    transition: none;
+  }
+}
