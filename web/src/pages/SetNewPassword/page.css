@@ -1,0 +1,20 @@
+.set-new-password-card {
+  max-width: 24rem;
+  margin-inline: auto;
+  padding: var(--gap-lg);
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
+}
+
+.set-new-password-heading {
+  margin-bottom: var(--gap-md);
+  font-size: var(--text-lg);
+}
+
+.set-new-password-link {
+  display: block;
+  margin-top: var(--gap-md);
+  font-size: var(--text-sm);
+}
