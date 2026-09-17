@@ -3,6 +3,7 @@ import {
   SIGNED_OUT_DONE,
   SIGNED_OUT_FAILED,
   SIGNED_OUT_PARAM,
+  SIGNED_OUT_PENDING,
 } from '../../elements/signOut.constants';
 import { supabase } from '../../supabase';
 import './page.css';
@@ -16,9 +17,9 @@ export function Account() {
 
     // Leaving first, while this page still owns the route: once the session
     // goes, ProtectedLayout redirects to its own sign-in URL and would win.
-    leaveWith(SIGNED_OUT_DONE);
+    leaveWith(SIGNED_OUT_PENDING);
     const { error } = await supabase.auth.signOut({ scope: 'local' });
-    if (error) leaveWith(SIGNED_OUT_FAILED);
+    leaveWith(error ? SIGNED_OUT_FAILED : SIGNED_OUT_DONE);
   }
 
   return (

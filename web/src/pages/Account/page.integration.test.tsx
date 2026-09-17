@@ -20,6 +20,13 @@ async function accountPage() {
 const pressSignOut = () =>
   fireEvent.click(screen.getByRole('button', { name: 'Sign out' }));
 
+// Sign out reports twice: in progress, then the outcome once the server has
+// answered. Waiting for the wording pins the test to the settled one.
+const noticeSays = (text: string) =>
+  vi.waitFor(() => expect(screen.getByRole('status')).toHaveTextContent(text));
+
+const signOutSettles = () => noticeSays('Sign out successful');
+
 function failTheLogoutRequest() {
   const realFetch = window.fetch;
   // mock-reason: the local auth server cannot be made to fail a logout on
@@ -45,18 +52,29 @@ it('signs out this device only', async () => {
 
   // When they sign out here
   pressSignOut();
+  await signOutSettles();
 
   // Then the other device stays signed in
-  await screen.findByRole('status');
   const { error } = await otherDevice.auth.refreshSession();
   expect(error).toBeNull();
+});
+
+it('says the sign out is under way while it runs', async () => {
+  // Given a signed-in user on their account page
+  await accountPage();
+
+  // When they press sign out
+  pressSignOut();
+
+  // Then the sign-in page says it is in progress
+  expect(await screen.findByRole('status')).toHaveTextContent('Signing out');
 });
 
 it('leaves no way back to the account page', async () => {
   // Given a signed-in user who has signed out
   const memoryRouter = await accountPage();
   pressSignOut();
-  await screen.findByRole('status');
+  await signOutSettles();
 
   // When they go back
   await memoryRouter.navigate(-1);
@@ -73,9 +91,7 @@ it('confirms a successful sign out on the sign-in page', async () => {
   pressSignOut();
 
   // Then the sign-in page says so
-  expect(await screen.findByRole('status')).toHaveTextContent(
-    'Sign out successful',
-  );
+  await signOutSettles();
 });
 
 it('says a failed sign out was not confirmed by the server', async () => {
@@ -87,17 +103,13 @@ it('says a failed sign out was not confirmed by the server', async () => {
   pressSignOut();
 
   // Then the sign-in page says the session was only cleared here
-  await vi.waitFor(() =>
-    expect(screen.getByRole('status')).toHaveTextContent(
-      'Signed out on this device. The server did not confirm it.',
-    ),
-  );
+  await noticeSays('Signed out on this device. The server did not confirm it.');
 });
 
 async function signBackIn() {
   const memoryRouter = await accountPage();
   pressSignOut();
-  await screen.findByRole('status');
+  await signOutSettles();
   submitCredentials(
     screen.getByRole('button', { name: 'Sign in' }),
     credentials,
