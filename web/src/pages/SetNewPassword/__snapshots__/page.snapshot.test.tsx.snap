@@ -1,0 +1,18 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SetNewPassword > matches snapshot 1`] = `
+<div>
+  <section
+    class="set-new-password-card"
+  >
+    <h1
+      class="set-new-password-heading"
+    >
+      Set new password
+    </h1>
+    <p>
+      Checking your reset link
+    </p>
+  </section>
+</div>
+`;
