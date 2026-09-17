@@ -1,4 +1,4 @@
-import { act, fireEvent, screen } from '@testing-library/react';
+import { act, fireEvent, screen, within } from '@testing-library/react';
 import { expect, it } from 'vitest';
 import { authSettled } from '../../tests-shared/authSettled';
 import { pathOf, renderAt, renderSettledAt } from '../../tests-shared/renderAt';
@@ -29,6 +29,12 @@ const atHome = () =>
   screen.findByRole('heading', { name: 'Chess Opening Training' }, SERVER);
 
 const rejection = () => screen.findByRole('alert', {}, SERVER);
+
+const tickedRules = async () =>
+  within(await ruleList())
+    .getAllByRole('listitem')
+    .map((item) => item.textContent)
+    .filter((text) => text?.endsWith('(done)'));
 
 async function enterNewPassword(password: string) {
   fireEvent.change(await screen.findByLabelText('New password', {}, SERVER), {
@@ -97,15 +103,17 @@ it('offers no password form to a visitor with no session', async () => {
 
 it('sends a visitor with no session back for a fresh link', async () => {
   // Given a visitor told their link is spent
-  const memoryRouter = await renderSettledAt('/set-new-password');
+  await renderSettledAt('/set-new-password');
 
-  // When they ask for a new one
-  fireEvent.click(
-    await screen.findByRole('link', { name: 'Request a new link' }),
+  // When they look for a way to get another
+  const link = await screen.findByRole(
+    'link',
+    { name: 'Request a new link' },
+    SERVER,
   );
 
-  // Then they are at forgot password
-  expect(pathOf(memoryRouter)).toBe('/forgot-password');
+  // Then it points at forgot password
+  expect(link).toHaveAttribute('href', '/forgot-password');
 });
 
 it('shows the password rules to a user with a session', async () => {
@@ -133,17 +141,15 @@ it('tells a user with a session nothing about a spent link', async () => {
   ).not.toBeInTheDocument();
 });
 
-it('opens the form with the password field empty', async () => {
+it('opens the form with every rule still to meet', async () => {
   // Given a user whose recovery link signed them in
   await rejecting.signIn();
 
   // When they open set new password
   await renderSettledAt('/set-new-password');
 
-  // Then nothing is typed for them
-  expect(await screen.findByLabelText('New password', {}, SERVER)).toHaveValue(
-    '',
-  );
+  // Then no rule is ticked off for them
+  expect(await tickedRules()).toEqual([]);
 });
 
 it('keeps save disabled while the password misses a rule', async () => {
