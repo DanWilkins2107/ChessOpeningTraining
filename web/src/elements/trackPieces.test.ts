@@ -1,11 +1,10 @@
 import { expect, it } from 'vitest';
+import { ROOK_ON_H5, ROOKS_HOME } from '../tests-shared/rookPositions';
 import { trackPieces } from './trackPieces';
 import type { PlacedPiece } from './trackPieces';
 
 const PAWN_E2 = '4k3/8/8/8/8/8/4P3/4K3';
 const PAWN_E3 = '4k3/8/8/8/8/4P3/8/4K3';
-const ROOKS_HOME = '4k3/8/8/8/8/8/8/R3K2R';
-const ROOK_ON_H5 = '4k3/8/8/7R/8/8/8/R3K3';
 const PAWN_ON_A7 = '4k3/P7/8/8/8/8/8/4K3';
 const QUEEN_ON_A8 = 'Q3k3/8/8/8/8/8/8/4K3';
 const PAWN_MEETS_PAWN = '4k3/8/8/8/8/3p4/4P3/4K3';

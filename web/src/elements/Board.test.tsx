@@ -1,5 +1,6 @@
 import { render, screen, within } from '@testing-library/react';
 import { expect, it } from 'vitest';
+import { ROOK_ON_H5, ROOKS_HOME } from '../tests-shared/rookPositions';
 import { Board } from './Board';
 
 const EMPTY = '8/8/8/8/8/8/8/8';
@@ -27,9 +28,7 @@ const imageAt = (transform: string) =>
 const KING_ON_E1 = '8/8/8/8/8/8/8/4K3';
 const KING_ON_E2 = '8/8/8/8/8/8/4K3/8';
 
-const ROOKS_HOME = '4k3/8/8/8/8/8/4K3/R6R';
-const ROOK_ON_H5 = '4k3/8/8/7R/8/8/4K3/R7';
-const ROOKS_ON_THE_H_FILE = '4k3/8/8/7R/8/8/4K3/7R';
+const ROOKS_ON_THE_H_FILE = '4k3/8/8/7R/8/8/8/4K2R';
 
 it('lays out rank 8 at the top from white', () => {
   // Given the board faces white
