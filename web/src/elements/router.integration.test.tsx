@@ -1,5 +1,5 @@
-import { act, screen } from '@testing-library/react';
-import { expect, it } from 'vitest';
+import { act, fireEvent, screen } from '@testing-library/react';
+import { expect, it, vi } from 'vitest';
 import { authSettled } from '../tests-shared/authSettled';
 import { pathOf, renderAt } from '../tests-shared/renderAt';
 import { registerTestUser } from '../tests-shared/testUser';
@@ -52,6 +52,64 @@ it('shows the account page to a signed-in user', async () => {
 
   // Then it shows the account page
   expect(screen.getByRole('heading', { name: 'Account' })).toBeInTheDocument();
+});
+
+it('opens studies from the header link for a signed-in user', async () => {
+  // Given a signed-in user on the home page
+  await signIn();
+  const memoryRouter = renderAt('/');
+  await authSettled();
+
+  // When they follow the Studies link
+  fireEvent.click(screen.getByRole('link', { name: 'Studies' }));
+
+  // Then they are on the studies page
+  expect(pathOf(memoryRouter)).toBe('/studies');
+  expect(screen.getByRole('heading', { name: 'Studies' })).toBeInTheDocument();
+});
+
+it('shows the header links on a protected page while the user is loading', () => {
+  // Given the user not yet loaded
+
+  // When the router renders a protected page
+  renderAt('/studies');
+
+  // Then the header links show straight away
+  expect(screen.getByRole('link', { name: 'Studies' })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Sign out' })).toBeInTheDocument();
+});
+
+it('leaves the nav off a public page, signed in or not', async () => {
+  // Given a signed-in user
+  await signIn();
+
+  // When they open a public page and the user loads
+  renderAt('/no-such-page');
+  await authSettled();
+
+  // Then the header carries no nav at all
+  expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
+});
+
+it('takes a user who signs out to sign in, without the header links', async () => {
+  // Given a signed-in user on a protected page
+  await signIn();
+  const memoryRouter = renderAt('/studies');
+  await authSettled();
+
+  // When they sign out
+  fireEvent.click(screen.getByRole('button', { name: 'Sign out' }));
+
+  // Then they are at sign in, and the header links are gone
+  await vi.waitFor(() => {
+    expect(pathOf(memoryRouter)).toBe('/sign-in?next=%2Fstudies');
+    expect(
+      screen.queryByRole('link', { name: 'Studies' }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'Sign out' }),
+    ).not.toBeInTheDocument();
+  });
 });
 
 it('sends a signed-out visitor from the account page to sign in', async () => {

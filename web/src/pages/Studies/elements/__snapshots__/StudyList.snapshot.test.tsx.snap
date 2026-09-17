@@ -1,0 +1,24 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`StudyList > matches snapshot 1`] = `
+<div>
+  <ul
+    class="study-list"
+  >
+    <li
+      class="study-list-item"
+    >
+      <span
+        class="study-list-name"
+      >
+        London
+      </span>
+      <span
+        class="study-list-side"
+      >
+        white
+      </span>
+    </li>
+  </ul>
+</div>
+`;

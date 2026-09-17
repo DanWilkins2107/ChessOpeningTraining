@@ -1,0 +1,23 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`HeaderNav > matches snapshot 1`] = `
+<div>
+  <nav
+    class="header-nav"
+  >
+    <a
+      class="header-nav-link"
+      data-discover="true"
+      href="/studies"
+    >
+      Studies
+    </a>
+    <button
+      class="sign-out"
+      type="button"
+    >
+      Sign out
+    </button>
+  </nav>
+</div>
+`;
