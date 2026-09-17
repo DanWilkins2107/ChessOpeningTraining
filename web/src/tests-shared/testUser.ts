@@ -9,10 +9,13 @@ const adminClient = createClient(
   { auth: { persistSession: false, autoRefreshToken: false } },
 );
 
-export function registerTestUser({ emailConfirmed = true } = {}) {
+export function registerTestUser({
+  emailConfirmed = true,
+  password = crypto.randomUUID(),
+}: { emailConfirmed?: boolean; password?: string } = {}) {
   const credentials = {
     email: `test-${crypto.randomUUID()}@example.test`,
-    password: crypto.randomUUID(),
+    password,
   };
   const user = { id: '' };
 
