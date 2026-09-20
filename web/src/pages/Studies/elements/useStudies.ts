@@ -11,8 +11,10 @@ export type Study = {
 
 export type StudiesResponse = PostgrestResponse<Study>;
 
-export function useStudies(): StudiesResponse | undefined {
+export function useStudies() {
   const userId = useUser()?.id;
+  // A fresh object per refresh: the effect has no use for it beyond re-running.
+  const [request, setRequest] = useState({});
   const [loaded, setLoaded] = useState<{
     userId?: string;
     response?: StudiesResponse;
@@ -35,7 +37,10 @@ export function useStudies(): StudiesResponse | undefined {
       .select('id, name, side')
       .order('created_at', { ascending: false })
       .then((response) => onResponse(userId, response));
-  }, [userId]);
+  }, [userId, request]);
 
-  return loaded.userId === userId ? loaded.response : undefined;
+  return {
+    response: loaded.userId === userId ? loaded.response : undefined,
+    refresh: () => setRequest({}),
+  };
 }

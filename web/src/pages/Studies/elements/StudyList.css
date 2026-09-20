@@ -14,14 +14,6 @@
   }
 }
 
-.study-list-error {
-  padding: var(--gap-sm) var(--gap-md);
-  border: 1px solid var(--danger);
-  border-radius: var(--radius-sm);
-  background: var(--danger-surface);
-  color: var(--danger);
-}
-
 .study-list-empty {
   color: var(--ink-muted);
 }
