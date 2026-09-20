@@ -99,6 +99,32 @@ it('empties the name once the study is created', async () => {
   expect(nameField()).toHaveValue('');
 });
 
+it('disables create again once the study is created', async () => {
+  // Given a signed-in user on the form
+  const creations = await signedInForm();
+
+  // When they create a study
+  await createStudyNamed(creations, 'Alekhine');
+
+  // Then create is disabled until another name is typed
+  expect(createButton()).toBeDisabled();
+});
+
+it('clears an earlier failure once a study is created', async () => {
+  // Given a failed create on the form
+  const creations = renderForm();
+  submitStudy('Dutch');
+  await screen.findByRole('alert');
+
+  // When the user signs in and creates it again
+  await author.signIn();
+  fireEvent.click(createButton());
+  await waitFor(() => expect(creations).toHaveLength(1));
+
+  // Then the message is gone
+  expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+});
+
 it('keeps create disabled until a name is typed', () => {
   // Given the form
 
@@ -142,13 +168,16 @@ it('caps the name at 100 characters', () => {
 });
 
 it('disables create until the attempt finishes', async () => {
-  // Given a signed-out visitor on the form
+  // Given a named study on the form
   renderForm();
+  fireEvent.change(nameField(), { target: { value: 'Grunfeld' } });
 
-  // When they create a study
-  submitStudy('Grunfeld');
+  // When the form is submitted
+  const submitted = fireEvent.submit(createButton().closest('form')!);
 
-  // Then create is disabled until the error shows
+  // Then the browser's own submission is cancelled, and create is disabled
+  // until the attempt finishes
+  expect(submitted).toBe(false);
   expect(createButton()).toBeDisabled();
   await screen.findByRole('alert');
   expect(createButton()).toBeEnabled();
