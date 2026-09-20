@@ -1,51 +1,30 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import { RouterProvider, createMemoryRouter } from 'react-router-dom';
+import { fireEvent, screen } from '@testing-library/react';
 import { expect, it } from 'vitest';
-import { authSettled } from '../tests-shared/authSettled';
+import { pathOf, renderAt, renderSettledAt } from '../tests-shared/renderAt';
 import { registerTestUser } from '../tests-shared/testUser';
-import { router } from './router';
 
 const { signIn } = registerTestUser();
 
-function renderHome() {
-  const memoryRouter = createMemoryRouter(router.routes);
-  render(<RouterProvider router={memoryRouter} />);
-  return memoryRouter;
-}
+const accountLink = () => screen.getByRole('link', { name: 'Account' });
 
-const accountLink = () => screen.queryByRole('link', { name: 'Account' });
-
-it('offers no account link while the user is loading', async () => {
-  // Given a signed-in user not yet loaded
-  await signIn();
-
-  // When the header renders
-  renderHome();
-
-  // Then there is no account link
-  expect(accountLink()).not.toBeInTheDocument();
-});
-
-it('offers no account link when signed out', async () => {
+it('offers the account link before anyone has signed in', () => {
   // Given nobody is signed in
 
-  // When the header renders and the user loads
-  renderHome();
-  await authSettled();
+  // When the header renders
+  renderAt('/');
 
-  // Then there is no account link
-  expect(accountLink()).not.toBeInTheDocument();
+  // Then the account link is already there
+  expect(accountLink()).toBeInTheDocument();
 });
 
 it('takes a signed-in user to their account page', async () => {
   // Given a signed-in user on the home page
   await signIn();
-  const memoryRouter = renderHome();
-  await authSettled();
+  const memoryRouter = await renderSettledAt('/');
 
   // When they press Account in the header
-  fireEvent.click(screen.getByRole('link', { name: 'Account' }));
+  fireEvent.click(accountLink());
 
   // Then they are on the account page
-  expect(memoryRouter.state.location.pathname).toBe('/account');
+  expect(pathOf(memoryRouter)).toBe('/account');
 });

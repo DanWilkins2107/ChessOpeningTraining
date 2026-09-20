@@ -4,16 +4,12 @@ import { Link, Navigate, useSearchParams } from 'react-router-dom';
 import { Button } from '../../elements/Button';
 import { ErrorMessage } from '../../elements/ErrorMessage';
 import { useUser } from '../../elements/session';
+import { SuccessMessage } from '../../elements/SuccessMessage';
 import { TextInput } from '../../elements/TextInput';
 import { supabase } from '../../supabase';
 import { safeReturnPath } from './elements/safeReturnPath';
 import { signInErrorMessage } from './elements/signInErrorMessage';
-import { SignOutNotice } from './elements/SignOutNotice';
-import {
-  signOutNotice,
-  signOutOutcome,
-  withoutSignOutNotice,
-} from './elements/signOutOutcome';
+import { signOutNotice, withoutSignOutNotice } from './elements/signOutNotice';
 import './page.css';
 
 // A signed-in visitor has no business on the form and is sent on, unless they
@@ -21,8 +17,8 @@ import './page.css';
 // session has finished clearing, and bouncing them would lose the notice.
 const sendsUserOn = (
   user: ReturnType<typeof useUser>,
-  outcome: string | null,
-) => Boolean(user) && signOutNotice(outcome) === undefined;
+  notice: string | undefined,
+) => Boolean(user) && notice === undefined;
 
 export function SignIn() {
   const user = useUser();
@@ -33,9 +29,9 @@ export function SignIn() {
   // email and a non-empty password. Sign in stays disabled until then.
   const [fieldsValid, setFieldsValid] = useState<boolean>();
 
-  const outcome = signOutOutcome(searchParams);
+  const notice = signOutNotice(searchParams);
 
-  if (sendsUserOn(user, outcome)) {
+  if (sendsUserOn(user, notice)) {
     return <Navigate to={safeReturnPath(searchParams.get('next'))} replace />;
   }
 
@@ -63,7 +59,7 @@ export function SignIn() {
         }
       >
         {/* Inside the form so the column's gap spaces it like the error. */}
-        <SignOutNotice outcome={outcome} />
+        {notice && <SuccessMessage>{notice}</SuccessMessage>}
         <TextInput
           label="Email"
           name="email"

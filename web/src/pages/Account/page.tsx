@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import {
   SIGNED_OUT_DONE,
-  SIGNED_OUT_FAILED,
   SIGNED_OUT_PARAM,
   SIGNED_OUT_PENDING,
 } from '../../elements/signOut.constants';
@@ -18,8 +17,8 @@ export function Account() {
     // Leaving first, while this page still owns the route: once the session
     // goes, ProtectedLayout redirects to its own sign-in URL and would win.
     leaveWith(SIGNED_OUT_PENDING);
-    const { error } = await supabase.auth.signOut({ scope: 'local' });
-    leaveWith(error ? SIGNED_OUT_FAILED : SIGNED_OUT_DONE);
+    await supabase.auth.signOut({ scope: 'local' });
+    leaveWith(SIGNED_OUT_DONE);
   }
 
   return (

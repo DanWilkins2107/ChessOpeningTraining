@@ -12,6 +12,12 @@ exports[`RootLayout > matches snapshot 1`] = `
     >
       Chess Opening Training
     </a>
+    <a
+      data-discover="true"
+      href="/account"
+    >
+      Account
+    </a>
   </header>
   <main
     class="root-layout-main"

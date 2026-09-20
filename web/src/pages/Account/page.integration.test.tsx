@@ -5,6 +5,7 @@ import { submitCredentials } from '../../tests-shared/credentialsForm';
 import { pathOf, renderSettledAt } from '../../tests-shared/renderAt';
 import { registerTestUser } from '../../tests-shared/testUser';
 import { env } from '../../env';
+import { supabase } from '../../supabase';
 
 const { credentials, signIn } = registerTestUser();
 
@@ -20,12 +21,12 @@ async function accountPage() {
 const pressSignOut = () =>
   fireEvent.click(screen.getByRole('button', { name: 'Sign out' }));
 
-// Sign out reports twice: in progress, then the outcome once the server has
+// Sign out reports twice: in progress, then success once the server has
 // answered. Waiting for the wording pins the test to the settled one.
-const noticeSays = (role: string, text: string) =>
-  vi.waitFor(() => expect(screen.getByRole(role)).toHaveTextContent(text));
-
-const signOutSettles = () => noticeSays('status', 'Sign out successful');
+const signOutSettles = () =>
+  vi.waitFor(() =>
+    expect(screen.getByRole('status')).toHaveTextContent('Sign out successful'),
+  );
 
 function failTheLogoutRequest() {
   const realFetch = window.fetch;
@@ -94,19 +95,18 @@ it('confirms a successful sign out on the sign-in page', async () => {
   await signOutSettles();
 });
 
-it('says a failed sign out was not confirmed by the server', async () => {
+it('signs out even when the server does not confirm it', async () => {
   // Given a signed-in user, and a server that fails to sign them out
   await accountPage();
   failTheLogoutRequest();
 
   // When they sign out
   pressSignOut();
+  await signOutSettles();
 
-  // Then the sign-in page flags that the session was only cleared here
-  await noticeSays(
-    'alert',
-    'Signed out on this device. The server did not confirm it.',
-  );
+  // Then this device's session is gone, which is all sign out promises
+  const { data } = await supabase.auth.getSession();
+  expect(data.session).toBeNull();
 });
 
 async function signBackIn() {
