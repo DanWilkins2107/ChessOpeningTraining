@@ -1,5 +1,5 @@
 import { Link, Outlet } from 'react-router-dom';
-import { ACCOUNT_ROUTE_PATH } from './router.constants';
+import { HeaderNav } from './HeaderNav';
 import './RootLayout.css';
 
 export function RootLayout() {
@@ -9,7 +9,7 @@ export function RootLayout() {
         <Link to="/" className="root-layout-wordmark">
           Chess Opening Training
         </Link>
-        <Link to={ACCOUNT_ROUTE_PATH}>Account</Link>
+        <HeaderNav />
       </header>
       <main className="root-layout-main">
         <Outlet />

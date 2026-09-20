@@ -1,0 +1,40 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`HeaderNav > matches snapshot on a protected page 1`] = `
+<div>
+  <nav
+    class="header-nav"
+  >
+    <a
+      class="header-nav-link"
+      data-discover="true"
+      href="/studies"
+    >
+      Studies
+    </a>
+    <a
+      class="header-nav-link"
+      data-discover="true"
+      href="/account"
+    >
+      Account
+    </a>
+  </nav>
+</div>
+`;
+
+exports[`HeaderNav > matches snapshot on a public page 1`] = `
+<div>
+  <nav
+    class="header-nav"
+  >
+    <a
+      class="header-nav-link"
+      data-discover="true"
+      href="/account"
+    >
+      Account
+    </a>
+  </nav>
+</div>
+`;

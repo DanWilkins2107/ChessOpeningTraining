@@ -1,10 +1,12 @@
-import { act, screen } from '@testing-library/react';
-import { expect, it } from 'vitest';
+import { act, fireEvent, screen } from '@testing-library/react';
+import { expect, it, vi } from 'vitest';
 import { authSettled } from '../tests-shared/authSettled';
 import { pathOf, renderAt } from '../tests-shared/renderAt';
 import { registerTestUser } from '../tests-shared/testUser';
 
 const { signIn } = registerTestUser();
+
+const accountLink = () => screen.getByRole('link', { name: 'Account' });
 
 it('wraps pages in the root layout', () => {
   // Given the router
@@ -52,6 +54,74 @@ it('shows the account page to a signed-in user', async () => {
 
   // Then it shows the account page
   expect(screen.getByRole('heading', { name: 'Account' })).toBeInTheDocument();
+});
+
+it('opens studies from the header link for a signed-in user', async () => {
+  // Given a signed-in user on the home page
+  await signIn();
+  const memoryRouter = renderAt('/');
+  await authSettled();
+
+  // When they follow the Studies link
+  fireEvent.click(screen.getByRole('link', { name: 'Studies' }));
+
+  // Then they are on the studies page
+  expect(pathOf(memoryRouter)).toBe('/studies');
+  expect(screen.getByRole('heading', { name: 'Studies' })).toBeInTheDocument();
+});
+
+it('shows the header links on a protected page while the user is loading', () => {
+  // Given the user not yet loaded
+
+  // When the router renders a protected page
+  renderAt('/studies');
+
+  // Then the header links show straight away
+  expect(screen.getByRole('link', { name: 'Studies' })).toBeInTheDocument();
+  expect(accountLink()).toBeInTheDocument();
+});
+
+it('leaves the signed-in links off a public page, signed in or not', async () => {
+  // Given a signed-in user
+  await signIn();
+
+  // When they open a public page and the user loads
+  renderAt('/no-such-page');
+  await authSettled();
+
+  // Then only the account link is on offer
+  expect(
+    screen.queryByRole('link', { name: 'Studies' }),
+  ).not.toBeInTheDocument();
+  expect(accountLink()).toBeInTheDocument();
+});
+
+it('opens the account page from the header link for a signed-in user', async () => {
+  // Given a signed-in user on the home page
+  await signIn();
+  const memoryRouter = renderAt('/');
+  await authSettled();
+
+  // When they follow the Account link
+  fireEvent.click(accountLink());
+
+  // Then they are on the account page
+  expect(pathOf(memoryRouter)).toBe('/account');
+  expect(screen.getByRole('heading', { name: 'Account' })).toBeInTheDocument();
+});
+
+it('asks a signed-out visitor pressing Account to sign in first', async () => {
+  // Given a signed-out visitor on a public page
+  const memoryRouter = renderAt('/sign-in');
+  await authSettled();
+
+  // When they press Account in the header
+  fireEvent.click(accountLink());
+
+  // Then they are asked to sign in, carrying the account path back
+  await vi.waitFor(() =>
+    expect(pathOf(memoryRouter)).toBe('/sign-in?next=%2Faccount'),
+  );
 });
 
 it('sends a signed-out visitor from the account page to sign in', async () => {
