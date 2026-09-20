@@ -1,5 +1,4 @@
 import { expect, it } from 'vitest';
-import { move } from '../tests-shared/move';
 import { z } from '../zod';
 import {
   deleteMoveFromMoveTree,
@@ -7,6 +6,7 @@ import {
   moveTreeSchema,
 } from './moveTree';
 import type { MoveNode } from './moveTree';
+import { leaves, move } from '../tests-shared/moveNode';
 
 it('has no lines when no moves are played', () => {
   // Given an empty tree
@@ -47,9 +47,6 @@ it('lists the main line first, then each variation in child order', () => {
     ['d4', 'd5'],
   ]);
 });
-
-const leaves = (count: number) =>
-  Array.from({ length: count }, (_, index) => move(`m${index}`));
 
 const line = (plies: number) =>
   Array.from({ length: plies }).reduce<MoveNode[]>(

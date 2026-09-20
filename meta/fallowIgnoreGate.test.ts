@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { reasonProblem, rottenIgnores } from './fallowIgnoreGate';
 
+// mock-reason: the vi.mock factory below runs before this module body, so the
+// fake execFileSync has to be built inside vi.hoisted to exist in time.
 const { execFileSync } = vi.hoisted(() => {
   const inTenDays = new Date(Date.now() + 10 * 86_400_000)
     .toISOString()

@@ -24,6 +24,14 @@ port = 54527
 [auth]
 site_url = "http://localhost:5173"
 additional_redirect_urls = ["http://localhost:5173"]
+minimum_password_length = 8
+# Mirrored for the live checklist in web/src/elements/passwordRules.ts.
+password_requirements = "lower_upper_letters_digits_symbols"
 
 [auth.email]
+enable_confirmations = true
+
+# Sign-up only hides that an email is already registered when neither email nor
+# SMS autoconfirms, so SMS confirmations are on even though SMS sign-up is not.
+[auth.sms]
 enable_confirmations = true

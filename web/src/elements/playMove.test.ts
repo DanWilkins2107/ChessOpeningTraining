@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { move } from '../tests-shared/move';
+import { move } from '../tests-shared/moveNode';
 import { playMove } from './playMove';
 
 it('plays the first move into an empty tree', () => {

@@ -1,6 +1,8 @@
 import { expect, it, vi } from 'vitest';
 import { env } from './env';
 
+// mock-reason: the vi.mock factory below runs before this module body, so the
+// stand-in client has to be built inside vi.hoisted to exist in time.
 const { client, createClient } = vi.hoisted(() => {
   const client = { from: () => null };
   return { client, createClient: vi.fn(() => client) };

@@ -1,0 +1,55 @@
+.study-list-spinner {
+  width: 2rem;
+  height: 2rem;
+  margin: var(--gap-lg) auto;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: var(--radius-pill);
+  animation: study-list-spin 0.8s linear infinite;
+}
+
+@keyframes study-list-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+.study-list-error {
+  padding: var(--gap-sm) var(--gap-md);
+  border: 1px solid var(--danger);
+  border-radius: var(--radius-sm);
+  background: var(--danger-surface);
+  color: var(--danger);
+}
+
+.study-list-empty {
+  color: var(--ink-muted);
+}
+
+.study-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.study-list-item {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--gap-md);
+  padding: var(--gap-md);
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.study-list-name {
+  font-weight: 600;
+}
+
+.study-list-side {
+  color: var(--ink-muted);
+  text-transform: capitalize;
+}

@@ -1,35 +1,17 @@
-import { RouterProvider, createMemoryRouter } from 'react-router-dom';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, screen } from '@testing-library/react';
 import { expect, it } from 'vitest';
 import { authSettled } from '../../tests-shared/authSettled';
+import {
+  fillCredentials,
+  submitCredentials,
+} from '../../tests-shared/credentialsForm';
+import { pathOf, renderAt, renderSettledAt } from '../../tests-shared/renderAt';
 import { registerTestUser } from '../../tests-shared/testUser';
-import { router } from '../../elements/router';
 
 const confirmed = registerTestUser();
 const unconfirmed = registerTestUser({ emailConfirmed: false });
 
-function renderAt(...entries: string[]) {
-  const memoryRouter = createMemoryRouter(router.routes, {
-    initialEntries: entries,
-  });
-  render(<RouterProvider router={memoryRouter} />);
-  return memoryRouter;
-}
-
-const pathOf = ({ state }: ReturnType<typeof renderAt>) =>
-  state.location.pathname + state.location.search;
-
 const signInButton = () => screen.getByRole('button', { name: 'Sign in' });
-
-function submit(credentials: { email: string; password: string }) {
-  fireEvent.change(screen.getByLabelText('Email'), {
-    target: { value: credentials.email },
-  });
-  fireEvent.change(screen.getByLabelText('Password'), {
-    target: { value: credentials.password },
-  });
-  fireEvent.click(signInButton());
-}
 
 it('shows the form while the user is still loading', async () => {
   // Given a signed-in user not yet loaded
@@ -74,7 +56,7 @@ it('signs in and returns to the return path', async () => {
   await authSettled();
 
   // When they submit correct credentials
-  submit(confirmed.credentials);
+  submitCredentials(signInButton(), confirmed.credentials);
 
   // Then they are signed in at the return path
   expect(
@@ -85,8 +67,7 @@ it('signs in and returns to the return path', async () => {
 
 it('signs in without the browser submitting the form', async () => {
   // Given a signed-out visitor on sign in
-  renderAt('/sign-in');
-  await authSettled();
+  await renderSettledAt('/sign-in');
 
   // When the form is submitted
   const submitted = fireEvent.submit(signInButton().closest('form')!);
@@ -96,13 +77,48 @@ it('signs in without the browser submitting the form', async () => {
   await screen.findByRole('alert');
 });
 
+it('keeps sign in disabled while the email is not valid', async () => {
+  // Given a signed-out visitor on sign in
+  await renderSettledAt('/sign-in');
+
+  // When they enter a password but no valid email
+  fillCredentials({ email: 'not-an-email', password: crypto.randomUUID() });
+
+  // Then they cannot sign in yet
+  expect(signInButton()).toBeDisabled();
+});
+
+it('keeps sign in disabled while the password is empty', async () => {
+  // Given a signed-out visitor on sign in
+  await renderSettledAt('/sign-in');
+
+  // When they enter a valid email but no password
+  fillCredentials({ ...confirmed.credentials, password: '' });
+
+  // Then they cannot sign in yet
+  expect(signInButton()).toBeDisabled();
+});
+
+it('enables sign in once the email and password are entered', async () => {
+  // Given a signed-out visitor on sign in
+  await renderSettledAt('/sign-in');
+
+  // When they enter a valid email and a password
+  fillCredentials(confirmed.credentials);
+
+  // Then they can sign in
+  expect(signInButton()).toBeEnabled();
+});
+
 it('disables the button until the attempt finishes', async () => {
   // Given a signed-out visitor on sign in
-  renderAt('/sign-in');
-  await authSettled();
+  await renderSettledAt('/sign-in');
 
   // When they submit
-  submit({ ...confirmed.credentials, password: crypto.randomUUID() });
+  submitCredentials(signInButton(), {
+    ...confirmed.credentials,
+    password: crypto.randomUUID(),
+  });
 
   // Then the button is disabled until the error shows
   expect(signInButton()).toBeDisabled();
@@ -124,11 +140,10 @@ it.each([
   ],
 ])('gives the same error for %s', async (_case, credentials) => {
   // Given a signed-out visitor on sign in
-  renderAt('/sign-in');
-  await authSettled();
+  await renderSettledAt('/sign-in');
 
   // When they submit the credentials
-  submit(credentials());
+  submitCredentials(signInButton(), credentials());
 
   // Then the error does not say which part was wrong
   expect(await screen.findByRole('alert')).toHaveTextContent(
@@ -136,13 +151,24 @@ it.each([
   );
 });
 
-it('asks for email confirmation when the password matches', async () => {
+it('links to sign up', async () => {
   // Given a signed-out visitor on sign in
-  renderAt('/sign-in');
+  const memoryRouter = renderAt('/sign-in');
   await authSettled();
 
+  // When they follow the sign up link
+  fireEvent.click(screen.getByRole('link', { name: 'Sign up' }));
+
+  // Then they are at sign up
+  expect(pathOf(memoryRouter)).toBe('/sign-up');
+});
+
+it('asks for email confirmation when the password matches', async () => {
+  // Given a signed-out visitor on sign in
+  await renderSettledAt('/sign-in');
+
   // When they submit the correct credentials of an unconfirmed account
-  submit(unconfirmed.credentials);
+  submitCredentials(signInButton(), unconfirmed.credentials);
 
   // Then they are asked to confirm their email
   expect(await screen.findByRole('alert')).toHaveTextContent(

@@ -1,0 +1,21 @@
+.sign-up-card {
+  max-width: 24rem;
+  margin-inline: auto;
+  padding: var(--gap-lg);
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
+}
+
+.sign-up-heading {
+  margin-bottom: var(--gap-md);
+  font-size: var(--text-lg);
+}
+
+.sign-up-switch {
+  display: flex;
+  gap: var(--gap-sm);
+  margin-top: var(--gap-md);
+  color: var(--ink-muted);
+}

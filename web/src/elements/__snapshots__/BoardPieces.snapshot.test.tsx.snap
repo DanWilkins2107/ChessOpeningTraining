@@ -1,0 +1,30 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`BoardPieces > matches snapshot 1`] = `
+<div>
+  <img
+    alt=""
+    class="board-piece"
+    src="/src/elements/bK.svg"
+    style="transform: translate(400%, 0%);"
+  />
+  <img
+    alt=""
+    class="board-piece"
+    src="/src/elements/wR.svg"
+    style="transform: translate(0%, 700%);"
+  />
+  <img
+    alt=""
+    class="board-piece"
+    src="/src/elements/wK.svg"
+    style="transform: translate(400%, 700%);"
+  />
+  <img
+    alt=""
+    class="board-piece"
+    src="/src/elements/wR.svg"
+    style="transform: translate(700%, 700%);"
+  />
+</div>
+`;

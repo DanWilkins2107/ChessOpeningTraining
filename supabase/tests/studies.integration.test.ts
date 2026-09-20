@@ -6,10 +6,11 @@ import {
   deleteUser,
   signedInUser,
 } from './tests-shared/testUsers';
-
-const PERMISSION_DENIED = '42501';
-const CHECK_VIOLATION = '23514';
-const NOT_NULL_VIOLATION = '23502';
+import {
+  CHECK_VIOLATION,
+  NOT_NULL_VIOLATION,
+  PERMISSION_DENIED,
+} from './tests-shared/pgErrorCodes';
 
 const STUDY = { name: 'Caro-Kann', side: 'black' };
 
@@ -85,6 +86,26 @@ it('lets the owner rename their study', async () => {
   expect(data).toEqual({ ...study, name: 'Slav', side: 'white' });
 });
 
+it.each([
+  ['id', async () => crypto.randomUUID()],
+  ['created_at', async () => '2000-01-01T00:00:00+00:00'],
+  ['owner_id', async () => (await signedInUser()).id],
+])('refuses changing a study’s %s', async (column, newValue) => {
+  // Given a user with a study
+  const { client } = await signedInUser();
+  const study = await existingStudy(client);
+
+  // When they change the column
+  const { error } = await client
+    .from('studies')
+    .update({ [column]: await newValue() })
+    .eq('id', study.id);
+
+  // Then it is refused, and the study is untouched
+  expect(error?.code).toBe(PERMISSION_DENIED);
+  expect(await storedStudy(study.id)).toEqual(study);
+});
+
 it('lets the owner delete their study', async () => {
   // Given a user with a study
   const { client } = await signedInUser();
@@ -111,38 +132,27 @@ it('hides a study from other users', async () => {
   expect(data).toEqual([]);
 });
 
-it('stops other users renaming a study', async () => {
+it.each([
+  [
+    'renaming',
+    (other: SupabaseClient, id: string) =>
+      other.from('studies').update({ name: 'Mine now' }).eq('id', id).select(),
+  ],
+  [
+    'deleting',
+    (other: SupabaseClient, id: string) =>
+      other.from('studies').delete().eq('id', id).select(),
+  ],
+])('stops other users %s a study', async (_, request) => {
   // Given a study, and a different signed-in user
   const owner = await signedInUser();
   const study = await existingStudy(owner.client);
   const { client } = await signedInUser();
 
-  // When the other user renames it
-  const { data } = await client
-    .from('studies')
-    .update({ name: 'Mine now' })
-    .eq('id', study.id)
-    .select();
+  // When the other user makes the request
+  const { data } = await request(client, study.id);
 
-  // Then nothing is updated, and the study is untouched
-  expect(data).toEqual([]);
-  expect(await storedStudy(study.id)).toEqual(study);
-});
-
-it('stops other users deleting a study', async () => {
-  // Given a study, and a different signed-in user
-  const owner = await signedInUser();
-  const study = await existingStudy(owner.client);
-  const { client } = await signedInUser();
-
-  // When the other user deletes it
-  const { data } = await client
-    .from('studies')
-    .delete()
-    .eq('id', study.id)
-    .select();
-
-  // Then nothing is deleted, and the study is untouched
+  // Then nothing is changed, and the study is untouched
   expect(data).toEqual([]);
   expect(await storedStudy(study.id)).toEqual(study);
 });
@@ -186,42 +196,6 @@ it.each([
 
   // Then it is refused
   expect(error?.code).toBe(PERMISSION_DENIED);
-});
-
-it.each([
-  ['id', crypto.randomUUID()],
-  ['created_at', '2000-01-01T00:00:00+00:00'],
-])('refuses a client-supplied %s on update', async (column, value) => {
-  // Given a user with a study
-  const { client } = await signedInUser();
-  const study = await existingStudy(client);
-
-  // When they change the column
-  const { error } = await client
-    .from('studies')
-    .update({ [column]: value })
-    .eq('id', study.id);
-
-  // Then it is refused, and the study is untouched
-  expect(error?.code).toBe(PERMISSION_DENIED);
-  expect(await storedStudy(study.id)).toEqual(study);
-});
-
-it('refuses moving a study to another user', async () => {
-  // Given a user with a study, and another user
-  const { client } = await signedInUser();
-  const study = await existingStudy(client);
-  const other = await signedInUser();
-
-  // When the owner hands it to the other user
-  const { error } = await client
-    .from('studies')
-    .update({ owner_id: other.id })
-    .eq('id', study.id);
-
-  // Then it is refused, and the study stays theirs
-  expect(error?.code).toBe(PERMISSION_DENIED);
-  expect(await storedStudy(study.id)).toEqual(study);
 });
 
 it.each([
