@@ -20,13 +20,16 @@ const sendsUserOn = (
   notice: string | undefined,
 ) => Boolean(user) && notice === undefined;
 
+// Both inputs are required, so the browser's validity means a well-formed
+// email and a non-empty password. Sign in stays disabled until then.
+const cannotSubmit = (pending: boolean, fieldsValid: boolean | undefined) =>
+  pending || !fieldsValid;
+
 export function SignIn() {
   const user = useUser();
   const [searchParams, setSearchParams] = useSearchParams();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string>();
-  // Both inputs are required, so the browser's validity means a well-formed
-  // email and a non-empty password. Sign in stays disabled until then.
   const [fieldsValid, setFieldsValid] = useState<boolean>();
 
   const notice = signOutNotice(searchParams);
@@ -73,7 +76,7 @@ export function SignIn() {
           autoComplete="current-password"
         />
         {error && <ErrorMessage>{error}</ErrorMessage>}
-        <Button disabled={pending || !fieldsValid}>Sign in</Button>
+        <Button disabled={cannotSubmit(pending, fieldsValid)}>Sign in</Button>
       </form>
       <Link to="/forgot-password" className="sign-in-link">
         Forgot password?
