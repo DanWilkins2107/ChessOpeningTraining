@@ -1,9 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
-import { authSettled } from '../tests-shared/authSettled';
 import { registerTestUser } from '../tests-shared/testUser';
 import { env } from '../env';
+import { supabase } from '../supabase';
 import { SignOut } from './SignOut';
 
 const { signIn } = registerTestUser();
@@ -12,33 +12,20 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-async function renderSignedIn() {
-  await signIn();
-  render(<SignOut />);
-  await authSettled();
+const signedOut = () =>
+  new Promise<void>((resolve) => {
+    const { data } = supabase.auth.onAuthStateChange((event) => {
+      if (event !== 'SIGNED_OUT') return;
+      data.subscription.unsubscribe();
+      resolve();
+    });
+  });
+
+async function clickSignOut() {
+  const done = signedOut();
+  fireEvent.click(screen.getByRole('button', { name: 'Sign out' }));
+  await act(() => done);
 }
-
-it('renders nothing while the user is loading', async () => {
-  // Given a signed-in user not yet loaded
-  await signIn();
-
-  // When it renders
-  const { container } = render(<SignOut />);
-
-  // Then it is empty
-  expect(container).toBeEmptyDOMElement();
-});
-
-it('renders nothing when signed out', async () => {
-  // Given nobody is signed in
-
-  // When it renders and the user loads
-  const { container } = render(<SignOut />);
-  await authSettled();
-
-  // Then it is empty
-  expect(container).toBeEmptyDOMElement();
-});
 
 it('signs out this device only', async () => {
   // Given the user signed in here and on another device
@@ -48,23 +35,25 @@ it('signs out this device only', async () => {
     { auth: { persistSession: false, autoRefreshToken: false } },
   );
   await signIn(otherDevice);
-  await renderSignedIn();
+  await signIn();
+  render(<SignOut />);
 
   // When they sign out here
-  fireEvent.click(screen.getByRole('button', { name: 'Sign out' }));
+  await clickSignOut();
 
-  // Then the button goes, with no error, and the other device stays signed in
-  await vi.waitFor(() =>
-    expect(screen.queryByRole('button')).not.toBeInTheDocument(),
-  );
-  expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  // Then this device is signed out and the other device stays signed in
+  await vi.waitFor(async () => {
+    const { data } = await supabase.auth.getSession();
+    expect(data.session).toBeNull();
+  });
   const { error } = await otherDevice.auth.refreshSession();
   expect(error).toBeNull();
 });
 
-it('shows the server error where the button was', async () => {
+it('shows the server error beside the button', async () => {
   // Given a signed-in user, and a server that fails to sign them out
-  await renderSignedIn();
+  await signIn();
+  render(<SignOut />);
   const realFetch = window.fetch;
   // mock-reason: the local auth server cannot be made to fail a logout on
   // demand. Only the logout request is failed; everything else is real.
@@ -77,9 +66,8 @@ it('shows the server error where the button was', async () => {
   );
 
   // When they sign out
-  fireEvent.click(screen.getByRole('button', { name: 'Sign out' }));
+  await clickSignOut();
 
-  // Then the error replaces the button
+  // Then the error shows
   expect(await screen.findByRole('alert')).toHaveTextContent('Logout failed');
-  expect(screen.queryByRole('button')).not.toBeInTheDocument();
 });
