@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   SIGNED_OUT_DONE,
   SIGNED_OUT_PARAM,
@@ -24,6 +24,9 @@ export function Account() {
   return (
     <section className="account-card">
       <h1 className="account-heading">Account</h1>
+      <Link to="/account/email" className="account-action">
+        Change email
+      </Link>
       <button type="button" className="account-action" onClick={signOut}>
         Sign out
       </button>
