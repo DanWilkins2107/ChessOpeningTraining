@@ -1,8 +1,7 @@
 // fallow-ignore-file unused-file -- ef93ff81 2026-10-15 landed ahead of the study page, its first consumer.
+import { FILES } from '../files/files.constants';
 import { PIECES } from '../pieces/pieces.constants';
 import type { Piece } from '../pieces/pieces.constants';
-
-export const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
 export function readPlacement(fen: string): Map<string, Piece> {
   const placement = new Map<string, Piece>();

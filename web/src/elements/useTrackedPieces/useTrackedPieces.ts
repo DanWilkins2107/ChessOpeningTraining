@@ -1,7 +1,7 @@
 // fallow-ignore-file unused-file -- ef93ff81 2026-10-15 landed ahead of the study page, its first consumer.
 import { useState } from 'react';
 import { trackPieces } from '../trackPieces/trackPieces';
-import type { PlacedPiece } from '../trackPieces/trackPieces';
+import type { PlacedPiece } from '../placedPiece/placedPiece';
 
 // Ids come from the previous placement, so the Board has to remember where the
 // pieces were rather than only the position it was last handed.

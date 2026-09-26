@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { BoardSquares } from './BoardSquares';
-import { FILES } from '../fen/fen';
+import { FILES } from '../files/files.constants';
 import { trackPieces } from '../trackPieces/trackPieces';
 
 describe('BoardSquares', () => {

@@ -1,8 +1,7 @@
 // fallow-ignore-file unused-file -- ef93ff81 2026-10-15 landed ahead of the study page, its first consumer.
-import { readPlacement } from '../fen/fen';
+import type { PlacedPiece } from '../placedPiece/placedPiece';
 import type { Piece } from '../pieces/pieces.constants';
-
-export type PlacedPiece = { id: number; square: string; piece: Piece };
+import { readPlacement } from '../readPlacement/readPlacement';
 
 export function trackPieces(
   previous: PlacedPiece[],

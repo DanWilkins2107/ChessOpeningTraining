@@ -7,7 +7,7 @@ const ROOT_EXCEPTIONS = [
   'main.tsx',
   'supabase.ts',
   'theme.css',
-  'zod.ts',
+  'z.ts',
 ];
 
 const modules = Object.keys(import.meta.glob('../src/**/*')).map((key) =>

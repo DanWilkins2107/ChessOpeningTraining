@@ -1,7 +1,7 @@
 // fallow-ignore-file unused-file -- ef93ff81 2026-10-15 landed ahead of the study page, its first consumer.
 import './BoardSquares.css';
-import { FILES } from '../fen/fen';
-import type { PlacedPiece } from '../trackPieces/trackPieces';
+import { FILES } from '../files/files.constants';
+import type { PlacedPiece } from '../placedPiece/placedPiece';
 
 type BoardSquaresProps = {
   files: string[];
