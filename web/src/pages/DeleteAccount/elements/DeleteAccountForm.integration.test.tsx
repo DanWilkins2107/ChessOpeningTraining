@@ -45,11 +45,9 @@ const signedOut = () =>
     expect(data.session).toBeNull();
   }, HASHING_WAIT);
 
-async function signedInOnAccountPage(
-  user: ReturnType<typeof registerTestUser>,
-) {
+async function signedInOnDeletePage(user: ReturnType<typeof registerTestUser>) {
   await user.signIn();
-  return renderSettledAt('/account');
+  return renderSettledAt('/account/delete');
 }
 
 function failTheDeleteRequest() {
@@ -66,28 +64,28 @@ function failTheDeleteRequest() {
 it('keeps delete disabled until a password is entered', async () => {
   // Given a signed-in user
 
-  // When they open their account page
-  await signedInOnAccountPage(keeping);
+  // When they open the delete account page
+  await signedInOnDeletePage(keeping);
 
   // Then they cannot delete yet
   expect(await deleteButton()).toBeDisabled();
 });
 
 it('refuses a wrong password and keeps the account', async () => {
-  // Given a signed-in user on their account page
-  const memoryRouter = await signedInOnAccountPage(keeping);
+  // Given a signed-in user on their delete account page
+  const memoryRouter = await signedInOnDeletePage(keeping);
 
   // When they confirm with the wrong password
   await deleteWith('not-their-password');
 
-  // Then they are told, and stay signed in on their account page
+  // Then they are told, and stay signed in on their delete account page
   expect(await refusal()).toHaveTextContent('Incorrect password');
-  expect(pathOf(memoryRouter)).toBe('/account');
+  expect(pathOf(memoryRouter)).toBe('/account/delete');
 });
 
 it('disables delete until the attempt finishes', async () => {
-  // Given a signed-in user on their account page
-  await signedInOnAccountPage(keeping);
+  // Given a signed-in user on their delete account page
+  await signedInOnDeletePage(keeping);
 
   // When they confirm with the wrong password
   await deleteWith('not-their-password');
@@ -100,7 +98,7 @@ it('disables delete until the attempt finishes', async () => {
 
 it('says so when the server fails to delete the account', async () => {
   // Given a signed-in user, and a server that fails the delete
-  await signedInOnAccountPage(keeping);
+  await signedInOnDeletePage(keeping);
   failTheDeleteRequest();
 
   // When they confirm with their password
@@ -113,8 +111,8 @@ it('says so when the server fails to delete the account', async () => {
 });
 
 it('gives an error without the browser submitting the form', async () => {
-  // Given a signed-in user on their account page
-  await signedInOnAccountPage(keeping);
+  // Given a signed-in user on their delete account page
+  await signedInOnDeletePage(keeping);
 
   // When the empty form is submitted
   const submitted = fireEvent.submit((await deleteButton()).closest('form')!);
@@ -125,8 +123,8 @@ it('gives an error without the browser submitting the form', async () => {
 });
 
 it('deletes the account', async () => {
-  // Given a signed-in user on their account page
-  await signedInOnAccountPage(deleting);
+  // Given a signed-in user on their delete account page
+  await signedInOnDeletePage(deleting);
 
   // When they confirm with their password
   await deleteWith(deleting.credentials.password);
@@ -141,8 +139,8 @@ it('deletes the account', async () => {
 });
 
 it('says the account was deleted on the sign-in page', async () => {
-  // Given a signed-in user on their account page
-  const memoryRouter = await signedInOnAccountPage(noticed);
+  // Given a signed-in user on their delete account page
+  const memoryRouter = await signedInOnDeletePage(noticed);
 
   // When they confirm with their password
   await deleteWith(noticed.credentials.password);
@@ -153,8 +151,8 @@ it('says the account was deleted on the sign-in page', async () => {
 });
 
 it('signs them out', async () => {
-  // Given a signed-in user on their account page
-  await signedInOnAccountPage(leaving);
+  // Given a signed-in user on their delete account page
+  await signedInOnDeletePage(leaving);
 
   // When they confirm with their password
   await deleteWith(leaving.credentials.password);
@@ -163,9 +161,9 @@ it('signs them out', async () => {
   await signedOut();
 });
 
-it('leaves no way back to the account page', async () => {
+it('leaves no way back to the delete account page', async () => {
   // Given a user who deleted their account
-  const memoryRouter = await signedInOnAccountPage(goingBack);
+  const memoryRouter = await signedInOnDeletePage(goingBack);
   await deleteWith(goingBack.credentials.password);
   await deletedNotice();
   await signedOut();
@@ -173,6 +171,6 @@ it('leaves no way back to the account page', async () => {
   // When they go back
   await memoryRouter.navigate(-1);
 
-  // Then the account page is not in their history
-  expect(pathOf(memoryRouter)).not.toBe('/account');
+  // Then the delete account page is not in their history
+  expect(pathOf(memoryRouter)).not.toBe('/account/delete');
 });

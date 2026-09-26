@@ -96,6 +96,26 @@ it('deletes their studies with it', async () => {
   expect(data).toBeNull();
 });
 
+it('deletes their profile with it', async () => {
+  // Given a user with a profile
+  const { id, client } = await signedInUser();
+  const profile = await client
+    .from('profiles')
+    .insert({ animate_pieces: false });
+  expect(profile.error).toBeNull();
+
+  // When they delete their account
+  await deletedOwnAccount(id, client);
+
+  // Then the profile is gone
+  const { data } = await admin
+    .from('profiles')
+    .select()
+    .eq('user_id', id)
+    .maybeSingle();
+  expect(data).toBeNull();
+});
+
 it('leaves other accounts alone', async () => {
   // Given two users
   const other = await signedInUser();

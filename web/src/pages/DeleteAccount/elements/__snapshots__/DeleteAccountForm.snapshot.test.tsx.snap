@@ -1,15 +1,10 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`DeleteAccount > matches snapshot 1`] = `
+exports[`DeleteAccountForm > matches snapshot 1`] = `
 <div>
   <form
-    class="delete-account"
+    class="delete-account-form"
   >
-    <h2
-      class="delete-account-heading"
-    >
-      Delete account
-    </h2>
     <p>
       This permanently deletes your account and all your studies.
     </p>

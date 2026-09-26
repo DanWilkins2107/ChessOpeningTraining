@@ -1,11 +1,11 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { DELETE_ACCOUNT_ROUTE_PATH } from '../../elements/router.constants';
 import {
   SIGNED_OUT_DONE,
   SIGNED_OUT_PARAM,
   SIGNED_OUT_PENDING,
 } from '../../elements/signOut.constants';
 import { supabase } from '../../supabase';
-import { DeleteAccount } from './elements/DeleteAccount';
 import './page.css';
 
 export function Account() {
@@ -28,7 +28,12 @@ export function Account() {
       <button type="button" className="account-action" onClick={signOut}>
         Sign out
       </button>
-      <DeleteAccount />
+      <Link
+        to={DELETE_ACCOUNT_ROUTE_PATH}
+        className="account-action account-action-danger"
+      >
+        Delete account
+      </Link>
     </section>
   );
 }

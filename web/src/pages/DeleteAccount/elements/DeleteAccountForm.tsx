@@ -10,9 +10,9 @@ import {
 import { TextInput } from '../../../elements/TextInput';
 import { supabase } from '../../../supabase';
 import { deleteAccountErrorMessage } from './deleteAccountErrorMessage';
-import './DeleteAccount.css';
+import './DeleteAccountForm.css';
 
-export function DeleteAccount() {
+export function DeleteAccountForm() {
   const navigate = useNavigate();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string>();
@@ -47,8 +47,7 @@ export function DeleteAccount() {
   }
 
   return (
-    <form className="delete-account" onSubmit={deleteAccount}>
-      <h2 className="delete-account-heading">Delete account</h2>
+    <form className="delete-account-form" onSubmit={deleteAccount}>
       <p>This permanently deletes your account and all your studies.</p>
       <TextInput
         label="Password"
