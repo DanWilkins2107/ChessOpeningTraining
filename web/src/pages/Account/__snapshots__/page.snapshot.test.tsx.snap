@@ -16,6 +16,13 @@ exports[`Account > matches snapshot 1`] = `
     >
       Sign out
     </button>
+    <a
+      class="account-action account-action-danger"
+      data-discover="true"
+      href="/account/delete"
+    >
+      Delete account
+    </a>
   </section>
 </div>
 `;
