@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { readPlacement } from './fen';
+import { readPlacement } from './readPlacement';
 
 const START_PLACEMENT = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
 

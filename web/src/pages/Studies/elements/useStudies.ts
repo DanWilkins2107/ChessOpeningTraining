@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { useUser } from '../../../elements/session';
+import { useUser } from '../../../elements/useUser';
 import { supabase } from '../../../supabase';
 import { STUDIES_QUERY_KEY } from './useStudies.constants';
 
