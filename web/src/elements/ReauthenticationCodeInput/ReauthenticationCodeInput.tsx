@@ -1,12 +1,6 @@
 import { TextInput } from '../../shared/TextInput/TextInput';
 
-type ReauthenticationCodeInputProps = {
-  onChange: (code: string) => void;
-};
-
-export function ReauthenticationCodeInput({
-  onChange,
-}: ReauthenticationCodeInputProps) {
+export function ReauthenticationCodeInput() {
   return (
     <>
       <p>We've emailed you a code to confirm it's you</p>
@@ -15,7 +9,6 @@ export function ReauthenticationCodeInput({
         name="code"
         type="text"
         autoComplete="one-time-code"
-        onChange={onChange}
       />
     </>
   );

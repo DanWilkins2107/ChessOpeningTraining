@@ -4,9 +4,7 @@ import { ReauthenticationCodeInput } from './ReauthenticationCodeInput';
 
 describe('ReauthenticationCodeInput', () => {
   it('matches snapshot', () => {
-    const { container } = render(
-      <ReauthenticationCodeInput onChange={() => {}} />,
-    );
+    const { container } = render(<ReauthenticationCodeInput />);
     expect(container).toMatchSnapshot();
   });
 });

@@ -24,6 +24,11 @@ const field = (label: string) => screen.getByLabelText<HTMLInputElement>(label);
 
 const changedNotice = () => screen.findByRole('status', {}, SERVER);
 
+const updateBodies = (updates: ReturnType<typeof answerRequests>) =>
+  updates.mock.calls
+    .filter(([input, init]) => isPasswordUpdate(input, init))
+    .map(([, init]) => JSON.parse(String(init?.body)) as object);
+
 const isPasswordUpdate = (input: RequestInfo | URL, init?: RequestInit) =>
   String(input).endsWith('/user') && init?.method === 'PUT';
 
@@ -96,10 +101,12 @@ it('confirms the change and clears the fields', async () => {
   // When they save a password meeting every rule
   await savePassword(newPassword());
 
-  // Then they are told it changed, and the fields are empty for next time
+  // Then they are told it changed, and the form is empty for next time
   expect(await changedNotice()).toHaveTextContent('Password changed');
   expect(field('New password')).toHaveValue('');
   expect(field('Confirm new password')).toHaveValue('');
+  expect(screen.queryAllByText('(done)')).toHaveLength(0);
+  expect(screen.queryByText("Passwords don't match")).not.toBeInTheDocument();
 });
 
 it('asks for an emailed code when the server wants reauthentication', async () => {
@@ -120,13 +127,10 @@ it('asks for an emailed code when the server wants reauthentication', async () =
   fireEvent.change(code, { target: { value: '123456' } });
   fireEvent.click(await saveButton());
   expect(await changedNotice()).toHaveTextContent('Password changed');
-  const resubmission = updates.mock.calls.filter(([input, init]) =>
-    isPasswordUpdate(input, init),
-  )[1];
-  expect(JSON.parse(String(resubmission[1]?.body))).toMatchObject({
-    password,
-    nonce: '123456',
-  });
+  const [first, resubmission] = updateBodies(updates);
+  expect(first).not.toHaveProperty('nonce');
+  expect(resubmission).toMatchObject({ password, nonce: '123456' });
+  expect(screen.queryByLabelText('Code')).not.toBeInTheDocument();
 });
 
 it('asks them to retry when the code cannot be sent', async () => {
@@ -143,4 +147,5 @@ it('asks them to retry when the code cannot be sent', async () => {
     "Couldn't set your password, try again",
   );
   expect(screen.queryByLabelText('Code')).not.toBeInTheDocument();
+  expect(screen.queryByRole('status')).not.toBeInTheDocument();
 });

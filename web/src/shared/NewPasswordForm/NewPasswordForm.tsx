@@ -19,22 +19,22 @@ export function NewPasswordForm({ onSaved }: NewPasswordFormProps) {
   const [error, setError] = useState<string>();
   const [password, setPassword] = useState('');
   const [confirmation, setConfirmation] = useState('');
-  // Undefined until the server asks for a reauthentication code.
-  const [code, setCode] = useState<string>();
+  const [awaitingCode, setAwaitingCode] = useState(false);
 
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     setPending(true);
-    const { status, error } = await savePassword(password, code);
+    const code = new FormData(form).get('code')?.toString();
+    const { saved, error, codeSent } = await savePassword(password, code);
     setPending(false);
     setError(error);
-    if (status === 'code-sent') setCode('');
-    if (status !== 'saved') return;
+    if (codeSent) setAwaitingCode(true);
+    if (!saved) return;
     form.reset();
     setPassword('');
     setConfirmation('');
-    setCode(undefined);
+    setAwaitingCode(false);
     await onSaved();
   }
 
@@ -53,7 +53,7 @@ export function NewPasswordForm({ onSaved }: NewPasswordFormProps) {
         confirmation={confirmation}
         onChange={setConfirmation}
       />
-      {code !== undefined && <ReauthenticationCodeInput onChange={setCode} />}
+      {awaitingCode && <ReauthenticationCodeInput />}
       {error && <ErrorMessage>{error}</ErrorMessage>}
       <Button
         disabled={

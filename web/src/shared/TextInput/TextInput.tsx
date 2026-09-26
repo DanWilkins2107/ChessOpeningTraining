@@ -6,11 +6,7 @@ type TextInputProps = {
   name: string;
   type: 'email' | 'password' | 'text';
   autoComplete:
-    | 'email'
-    | 'current-password'
-    | 'new-password'
-    | 'one-time-code'
-    | 'off';
+    'email' | 'current-password' | 'new-password' | 'one-time-code' | 'off';
   maxLength?: number;
   onChange?: (value: string) => void;
 };

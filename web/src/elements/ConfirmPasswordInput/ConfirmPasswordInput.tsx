@@ -1,4 +1,6 @@
+import { ErrorMessage } from '../../shared/ErrorMessage/ErrorMessage';
 import { TextInput } from '../../shared/TextInput/TextInput';
+import { PASSWORDS_DIFFER_MESSAGE } from './ConfirmPasswordInput.constants';
 
 type ConfirmPasswordInputProps = {
   password: string;
@@ -21,7 +23,7 @@ export function ConfirmPasswordInput({
         onChange={onChange}
       />
       {confirmation && confirmation !== password && (
-        <p>Passwords don't match</p>
+        <ErrorMessage>{PASSWORDS_DIFFER_MESSAGE}</ErrorMessage>
       )}
     </>
   );
