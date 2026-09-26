@@ -34,13 +34,13 @@ export default tseslint.config(
         {
           name: 'zod',
           message:
-            "Import z from web/src/zod.ts, which stops zod's new Function probe that the CSP blocks.",
+            "Import z from web/src/z.ts, which stops zod's new Function probe that the CSP blocks.",
         },
       ],
     },
   },
   {
-    files: ['web/src/zod.ts'],
+    files: ['web/src/z.ts'],
     rules: { 'no-restricted-imports': 'off' },
   },
 );
