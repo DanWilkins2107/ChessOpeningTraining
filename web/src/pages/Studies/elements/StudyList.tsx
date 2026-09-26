@@ -1,13 +1,18 @@
 import { ErrorMessage } from '../../../elements/ErrorMessage';
-import type { StudiesResponse } from './useStudies';
+import type { Study } from './useStudies';
 import './StudyList.css';
 
-export function StudyList({
-  response,
-}: {
-  response: StudiesResponse | undefined;
-}) {
-  if (response === undefined) {
+type StudyListProps = {
+  studies: Study[] | undefined;
+  failed: boolean;
+};
+
+export function StudyList({ studies, failed }: StudyListProps) {
+  if (failed) {
+    return <ErrorMessage>Couldn't load your studies, try again</ErrorMessage>;
+  }
+
+  if (studies === undefined) {
     return (
       <div
         role="status"
@@ -17,17 +22,13 @@ export function StudyList({
     );
   }
 
-  if (response.error) {
-    return <ErrorMessage>Couldn't load your studies, try again</ErrorMessage>;
-  }
-
-  if (response.data.length === 0) {
+  if (studies.length === 0) {
     return <p className="study-list-empty">No studies yet</p>;
   }
 
   return (
     <ul className="study-list">
-      {response.data.map(({ id, name, side }) => (
+      {studies.map(({ id, name, side }) => (
         <li key={id} className="study-list-item">
           <span className="study-list-name">{name}</span>
           <span className="study-list-side">{side}</span>

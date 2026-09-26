@@ -1,3 +1,5 @@
+import type { PostgrestError } from '@supabase/supabase-js';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Button } from '../../../elements/Button';
@@ -6,36 +8,44 @@ import { TextInput } from '../../../elements/TextInput';
 import { supabase } from '../../../supabase';
 import { createStudyErrorMessage } from './createStudyErrorMessage';
 import { SidePicker } from './SidePicker';
+import { STUDIES_QUERY_KEY } from './useStudies.constants';
 import './CreateStudyForm.css';
 
 const NAME_MAX_LENGTH = 100;
 
-type CreateStudyFormProps = {
-  onCreated: () => void;
-};
+type NewStudy = { name: string; side: string };
 
-export function CreateStudyForm({ onCreated }: CreateStudyFormProps) {
+async function insertStudy(study: NewStudy) {
+  const { error } = await supabase.from('studies').insert(study);
+  if (error) throw error;
+}
+
+export function CreateStudyForm() {
   const [name, setName] = useState('');
-  const [pending, setPending] = useState(false);
-  const [error, setError] = useState<string>();
+  const queryClient = useQueryClient();
+  const { mutate, isPending, error } = useMutation<
+    void,
+    PostgrestError,
+    NewStudy
+  >({
+    mutationFn: insertStudy,
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: STUDIES_QUERY_KEY }),
+  });
 
-  async function createStudy(event: FormEvent<HTMLFormElement>) {
+  function createStudy(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const side = String(new FormData(form).get('side'));
-    setPending(true);
-    const { error } = await supabase
-      .from('studies')
-      .insert({ name: name.trim(), side });
-    setPending(false);
-    if (error) {
-      setError(createStudyErrorMessage(error));
-      return;
-    }
-    setError(undefined);
-    form.reset();
-    setName('');
-    onCreated();
+    mutate(
+      { name: name.trim(), side },
+      {
+        onSuccess: () => {
+          form.reset();
+          setName('');
+        },
+      },
+    );
   }
 
   return (
@@ -50,9 +60,9 @@ export function CreateStudyForm({ onCreated }: CreateStudyFormProps) {
           onChange={setName}
         />
         <SidePicker />
-        <Button disabled={pending || name.trim() === ''}>Create study</Button>
+        <Button disabled={isPending || name.trim() === ''}>Create study</Button>
       </div>
-      {error && <ErrorMessage>{error}</ErrorMessage>}
+      {error && <ErrorMessage>{createStudyErrorMessage(error)}</ErrorMessage>}
     </form>
   );
 }

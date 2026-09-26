@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeAll, expect, it } from 'vitest';
 import { supabase } from '../../../supabase';
 import { registerTestUser } from '../../../tests-shared/testUser';
+import { withQueryClient } from '../../../tests-shared/withQueryClient';
 import { CreateStudyForm } from './CreateStudyForm';
 
 const author = registerTestUser();
@@ -24,14 +25,12 @@ const createButton = () => screen.getByRole('button', { name: 'Create study' });
 const nameField = () => screen.getByLabelText('Study name');
 
 function renderForm() {
-  const creations: string[] = [];
-  render(<CreateStudyForm onCreated={() => creations.push('created')} />);
-  return creations;
+  render(withQueryClient(<CreateStudyForm />));
 }
 
 async function signedInForm() {
   await author.signIn();
-  return renderForm();
+  renderForm();
 }
 
 function submitStudy(name: string) {
@@ -39,9 +38,10 @@ function submitStudy(name: string) {
   fireEvent.click(createButton());
 }
 
-async function createStudyNamed(creations: string[], name: string) {
+// The form empties the name only once the study is created.
+async function createStudyNamed(name: string) {
   submitStudy(name);
-  await waitFor(() => expect(creations).toHaveLength(1));
+  await waitFor(() => expect(nameField()).toHaveValue(''));
 }
 
 const newestStudy = async () =>
@@ -56,10 +56,10 @@ const newestStudy = async () =>
 
 it('creates a white study by default', async () => {
   // Given a signed-in user on the form
-  const creations = await signedInForm();
+  await signedInForm();
 
   // When they create a study without choosing a side
-  await createStudyNamed(creations, 'London');
+  await createStudyNamed('London');
 
   // Then it is stored as a white study
   expect(await newestStudy()).toEqual({ name: 'London', side: 'white' });
@@ -67,11 +67,11 @@ it('creates a white study by default', async () => {
 
 it('creates a study on the chosen side', async () => {
   // Given a signed-in user on the form
-  const creations = await signedInForm();
+  await signedInForm();
 
   // When they choose black and create a study
   fireEvent.click(screen.getByLabelText('black'));
-  await createStudyNamed(creations, 'Caro-Kann');
+  await createStudyNamed('Caro-Kann');
 
   // Then it is stored as a black study
   expect(await newestStudy()).toEqual({ name: 'Caro-Kann', side: 'black' });
@@ -79,10 +79,10 @@ it('creates a study on the chosen side', async () => {
 
 it('trims the name it stores', async () => {
   // Given a signed-in user on the form
-  const creations = await signedInForm();
+  await signedInForm();
 
   // When they create a study named with surrounding spaces
-  await createStudyNamed(creations, '  Slav  ');
+  await createStudyNamed('  Slav  ');
 
   // Then the stored name is trimmed
   expect((await newestStudy())?.name).toBe('Slav');
@@ -90,10 +90,10 @@ it('trims the name it stores', async () => {
 
 it('empties the name once the study is created', async () => {
   // Given a signed-in user on the form
-  const creations = await signedInForm();
+  await signedInForm();
 
   // When they create a study
-  await createStudyNamed(creations, 'Benoni');
+  await createStudyNamed('Benoni');
 
   // Then the name field is empty again
   expect(nameField()).toHaveValue('');
@@ -101,10 +101,10 @@ it('empties the name once the study is created', async () => {
 
 it('disables create again once the study is created', async () => {
   // Given a signed-in user on the form
-  const creations = await signedInForm();
+  await signedInForm();
 
   // When they create a study
-  await createStudyNamed(creations, 'Alekhine');
+  await createStudyNamed('Alekhine');
 
   // Then create is disabled until another name is typed
   expect(createButton()).toBeDisabled();
@@ -112,14 +112,14 @@ it('disables create again once the study is created', async () => {
 
 it('clears an earlier failure once a study is created', async () => {
   // Given a failed create on the form
-  const creations = renderForm();
+  renderForm();
   submitStudy('Dutch');
   await screen.findByRole('alert');
 
   // When the user signs in and creates it again
   await author.signIn();
   fireEvent.click(createButton());
-  await waitFor(() => expect(creations).toHaveLength(1));
+  await waitFor(() => expect(nameField()).toHaveValue(''));
 
   // Then the message is gone
   expect(screen.queryByRole('alert')).not.toBeInTheDocument();
@@ -178,7 +178,7 @@ it('disables create until the attempt finishes', async () => {
   // Then the browser's own submission is cancelled, and create is disabled
   // until the attempt finishes
   expect(submitted).toBe(false);
-  expect(createButton()).toBeDisabled();
+  await waitFor(() => expect(createButton()).toBeDisabled());
   await screen.findByRole('alert');
   expect(createButton()).toBeEnabled();
 });

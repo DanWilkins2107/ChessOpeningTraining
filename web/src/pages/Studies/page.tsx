@@ -4,13 +4,13 @@ import { useStudies } from './elements/useStudies';
 import './page.css';
 
 export function Studies() {
-  const { response, refresh } = useStudies();
+  const { data, isError } = useStudies();
 
   return (
     <section className="studies">
       <h1>Studies</h1>
-      <CreateStudyForm onCreated={refresh} />
-      <StudyList response={response} />
+      <CreateStudyForm />
+      <StudyList studies={data} failed={isError} />
     </section>
   );
 }
