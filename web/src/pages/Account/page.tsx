@@ -1,10 +1,10 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { DELETE_ACCOUNT_ROUTE_PATH } from '../../elements/router.constants';
+import { DELETE_ACCOUNT_ROUTE_PATH } from '../../elements/router/router.constants';
 import {
   SIGNED_OUT_DONE,
   SIGNED_OUT_PARAM,
   SIGNED_OUT_PENDING,
-} from '../../elements/signOut.constants';
+} from '../../shared/signOut/signOut.constants';
 import { supabase } from '../../supabase';
 import './page.css';
 

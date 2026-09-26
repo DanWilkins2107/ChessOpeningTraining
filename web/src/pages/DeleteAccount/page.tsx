@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { ACCOUNT_ROUTE_PATH } from '../../elements/router.constants';
-import { DeleteAccountForm } from './elements/DeleteAccountForm';
+import { ACCOUNT_ROUTE_PATH } from '../../elements/router/router.constants';
+import { DeleteAccountForm } from './elements/DeleteAccountForm/DeleteAccountForm';
 import './page.css';
 
 export function DeleteAccount() {

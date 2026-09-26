@@ -13,55 +13,112 @@ const MISPLACED: ModuleSources = {
 };
 
 describe('placementProblems', () => {
-  it('accepts an element at the lowest common folder of two pages', () => {
+  it('accepts a module shared by two pages at their lowest common folder', () => {
+    expect(
+      placementProblems(
+        {
+          'src/shared/Foo/Foo.tsx': '',
+          'src/pages/Home/page.tsx': imports('../../shared/Foo/Foo'),
+          'src/pages/About/page.tsx': imports('../../shared/Foo/Foo'),
+        },
+        [],
+      ),
+    ).toEqual([]);
+  });
+
+  it('rejects an element consumed by two owners', () => {
     expect(
       placementProblems(
         {
           'src/elements/Foo/Foo.tsx': '',
           'src/pages/Home/page.tsx': imports('../../elements/Foo/Foo'),
-          'src/pages/About/page.tsx': imports('../../elements/Foo/Foo'),
-        },
-        [],
-      ),
-    ).toEqual([]);
-  });
-
-  it('rejects an element above the only page that consumes it', () => {
-    expect(placementProblems(MISPLACED, [])).toEqual([
-      'src/elements/Foo/Foo.tsx: consumed from src/pages/Home, so it belongs in src/pages/Home/elements',
-    ]);
-  });
-
-  it('owns a consumer sitting directly in an elements folder by its parent', () => {
-    expect(
-      placementProblems(
-        {
-          'src/pages/Home/elements/Deep/Deep.tsx': '',
-          'src/elements/shell.tsx': imports('../pages/Home/elements/Deep/Deep'),
+          'src/elements/Bar/Bar.tsx': imports('../Foo/Foo'),
         },
         [],
       ),
     ).toEqual([
-      'src/pages/Home/elements/Deep/Deep.tsx: consumed from src, so it belongs in src/elements',
+      'src/elements/Foo: consumed from src, src/pages/Home, so it belongs in src/shared',
     ]);
   });
 
-  it('accepts an element nested inside the element that alone consumes it', () => {
+  it('rejects an element above the only page that consumes it', () => {
+    expect(placementProblems(MISPLACED, [])).toEqual([
+      'src/elements/Foo: consumed from src/pages/Home, so it belongs in src/pages/Home/elements',
+    ]);
+  });
+
+  it('rejects a shared module with a single owner', () => {
+    expect(
+      placementProblems(
+        {
+          'src/shared/Foo/Foo.tsx': '',
+          'src/pages/Home/page.tsx': imports('../../shared/Foo/Foo'),
+          'src/pages/Home/elements/Bar/Bar.tsx': imports(
+            '../../../../shared/Foo/Foo',
+          ),
+        },
+        [],
+      ),
+    ).toEqual([
+      'src/shared/Foo: consumed from src/pages/Home, so it belongs in src/pages/Home/elements',
+    ]);
+  });
+
+  it('owns a consumer in a module folder by the folder above elements', () => {
+    expect(
+      placementProblems(
+        {
+          'src/pages/Home/elements/Deep/Deep.tsx': '',
+          'src/elements/Shell/Shell.tsx': imports(
+            '../../pages/Home/elements/Deep/Deep',
+          ),
+        },
+        [],
+      ),
+    ).toEqual([
+      'src/pages/Home/elements/Deep: consumed from src, so it belongs in src/elements',
+    ]);
+  });
+
+  it('does not treat a module folder as an owner', () => {
     expect(
       placementProblems(
         {
           'src/pages/Home/elements/Foo/elements/Bar/Bar.tsx': '',
           'src/pages/Home/elements/Foo/Foo.tsx': imports('./elements/Bar/Bar'),
+          'src/pages/Home/elements/Baz/Baz.tsx': '',
+          'src/pages/Home/elements/Qux/Qux.tsx': imports('../Baz/Baz'),
         },
         [],
       ),
-    ).toEqual([]);
+    ).toEqual([
+      'src/pages/Home/elements/Foo/elements/Bar: consumed from src/pages/Home, so it belongs in src/pages/Home/elements',
+    ]);
+  });
+
+  it('places a module folder by consumers of any of its files but its own', () => {
+    expect(
+      placementProblems(
+        {
+          'src/elements/Foo/Foo.tsx': imports('./Foo.css', './Foo.constants'),
+          'src/elements/Foo/Foo.css': '',
+          'src/elements/Foo/Foo.constants.ts': '',
+          'src/pages/Home/page.tsx': imports('../../elements/Foo/Foo'),
+          'src/pages/About/page.tsx': imports(
+            '../../elements/Foo/Foo.constants',
+          ),
+        },
+        [],
+      ),
+    ).toEqual([
+      'src/elements/Foo: consumed from src/pages/About, src/pages/Home, so it belongs in src/shared',
+    ]);
   });
 
   it('ignores an import of an asset the gate does not track', () => {
     expect(
       placementProblems(
-        { 'src/pages/Home/page.tsx': imports('../../elements/logo.png') },
+        { 'src/pages/Home/page.tsx': imports('../../elements/logo/logo.png') },
         [],
       ),
     ).toEqual([]);
@@ -77,45 +134,45 @@ describe('placementProblems', () => {
     expect(
       placementProblems(
         {
-          'src/elements/theme.css': '',
-          'src/elements/useBoard.ts': '',
+          'src/elements/Theme/Theme.css': '',
+          'src/elements/useBoard/useBoard.ts': '',
           'src/pages/Home/page.tsx': imports(
-            '../../elements/theme.css',
-            '../../elements/useBoard',
+            '../../elements/Theme/Theme.css',
+            '../../elements/useBoard/useBoard',
           ),
         },
         [],
       ),
     ).toEqual([
-      'src/elements/theme.css: consumed from src/pages/Home, so it belongs in src/pages/Home/elements',
-      'src/elements/useBoard.ts: consumed from src/pages/Home, so it belongs in src/pages/Home/elements',
+      'src/elements/Theme: consumed from src/pages/Home, so it belongs in src/pages/Home/elements',
+      'src/elements/useBoard: consumed from src/pages/Home, so it belongs in src/pages/Home/elements',
     ]);
   });
 
-  it('places an svg at the lowest common folder of its importers', () => {
+  it('places an svg by the importers of its module folder', () => {
     expect(
       placementProblems(
         {
-          'src/elements/wK.svg': '<svg />',
-          'src/pages/Home/page.tsx': imports('../../elements/wK.svg'),
+          'src/elements/pieces/wK.svg': '<svg />',
+          'src/pages/Home/page.tsx': imports('../../elements/pieces/wK.svg'),
         },
         [],
       ),
     ).toEqual([
-      'src/elements/wK.svg: consumed from src/pages/Home, so it belongs in src/pages/Home/elements',
+      'src/elements/pieces: consumed from src/pages/Home, so it belongs in src/pages/Home/elements',
     ]);
   });
 
-  it('sends a shared root module into the src elements folder', () => {
+  it('sends a root module shared by two pages into the src shared folder', () => {
     const sources = {
-      'src/shared.ts': '',
-      'src/pages/Home/page.tsx': imports('../../shared'),
-      'src/pages/About/page.tsx': imports('../../shared'),
+      'src/common.ts': '',
+      'src/pages/Home/page.tsx': imports('../../common'),
+      'src/pages/About/page.tsx': imports('../../common'),
     };
     expect(placementProblems(sources, [])).toEqual([
-      'src/shared.ts: consumed from src/pages/About, src/pages/Home, so it belongs in src/elements',
+      'src/common.ts: consumed from src/pages/About, src/pages/Home, so it belongs in src/shared',
     ]);
-    expect(placementProblems(sources, ['src/shared.ts'])).toEqual([]);
+    expect(placementProblems(sources, ['src/common.ts'])).toEqual([]);
   });
 
   it('accepts a test helper at the lowest common folder of its tests', () => {
@@ -123,8 +180,8 @@ describe('placementProblems', () => {
       placementProblems(
         {
           'src/tests-shared/testUser.ts': '',
-          'src/elements/session.integration.test.tsx': imports(
-            '../tests-shared/testUser',
+          'src/elements/session/session.integration.test.tsx': imports(
+            '../../tests-shared/testUser',
           ),
           'src/router.integration.test.tsx': imports('./tests-shared/testUser'),
         },
@@ -158,11 +215,11 @@ describe('placementProblems', () => {
     expect(
       placementProblems(
         {
-          'src/elements/Foo.tsx': '',
+          'src/elements/Foo/Foo.tsx': '',
           'src/pages/Home/tests-shared/renderAt.ts': imports(
-            '../../../elements/Foo',
+            '../../../elements/Foo/Foo',
           ),
-          'src/pages/Home/page.test.tsx': imports('../../elements/Foo'),
+          'src/pages/Home/page.test.tsx': imports('../../elements/Foo/Foo'),
           'src/tests-shared/testUser.ts': '',
           'src/pages/Home/page.tsx': imports('../../tests-shared/testUser'),
         },
@@ -177,14 +234,9 @@ describe('excludeProblems', () => {
     { path, expiry, reason: 'moving with the analysis page' },
   ];
 
-  it('accepts a live exclude on a module that is still misplaced', () => {
+  it('accepts a live exclude on a module folder that is still misplaced', () => {
     expect(
-      excludeProblems(
-        MISPLACED,
-        [],
-        exclude('src/elements/Foo/Foo.tsx'),
-        TODAY,
-      ),
+      excludeProblems(MISPLACED, [], exclude('src/elements/Foo'), TODAY),
     ).toEqual([]);
   });
 
@@ -193,10 +245,10 @@ describe('excludeProblems', () => {
       excludeProblems(
         MISPLACED,
         [],
-        exclude('src/elements/Foo/Foo.tsx', '2026-08-31'),
+        exclude('src/elements/Foo', '2026-08-31'),
         TODAY,
       ),
-    ).toEqual(['src/elements/Foo/Foo.tsx: expiry 2026-08-31 has passed']);
+    ).toEqual(['src/elements/Foo: expiry 2026-08-31 has passed']);
   });
 
   it('rejects an exclude parked more than 30 days out', () => {
@@ -204,12 +256,10 @@ describe('excludeProblems', () => {
       excludeProblems(
         MISPLACED,
         [],
-        exclude('src/elements/Foo/Foo.tsx', '2026-10-02'),
+        exclude('src/elements/Foo', '2026-10-02'),
         TODAY,
       ),
-    ).toEqual([
-      'src/elements/Foo/Foo.tsx: expiry 2026-10-02 is more than 30 days out',
-    ]);
+    ).toEqual(['src/elements/Foo: expiry 2026-10-02 is more than 30 days out']);
   });
 
   it.each(['2026-09-31', 'soon'])('rejects the expiry %s', (expiry) => {
@@ -217,23 +267,27 @@ describe('excludeProblems', () => {
       excludeProblems(
         MISPLACED,
         [],
-        exclude('src/elements/Foo/Foo.tsx', expiry),
+        exclude('src/elements/Foo', expiry),
         TODAY,
       ),
-    ).toEqual([
-      `src/elements/Foo/Foo.tsx: expiry ${expiry} is not a real date`,
-    ]);
+    ).toEqual([`src/elements/Foo: expiry ${expiry} is not a real date`]);
   });
 
   it('rejects an exclude naming a module that does not exist', () => {
     expect(
+      excludeProblems(MISPLACED, [], exclude('src/elements/Gone'), TODAY),
+    ).toEqual(['src/elements/Gone: exclude names no module']);
+  });
+
+  it('rejects an exclude naming a file inside a module folder', () => {
+    expect(
       excludeProblems(
         MISPLACED,
         [],
-        exclude('src/elements/Gone/Gone.tsx'),
+        exclude('src/elements/Foo/Foo.tsx'),
         TODAY,
       ),
-    ).toEqual(['src/elements/Gone/Gone.tsx: exclude names no module']);
+    ).toEqual(['src/elements/Foo/Foo.tsx: exclude names no module']);
   });
 
   it('rejects an exclude on a module that is now correctly placed', () => {
