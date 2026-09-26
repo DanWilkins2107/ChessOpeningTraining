@@ -3,7 +3,7 @@ import type { FormEvent } from 'react';
 import { Link, Navigate, useSearchParams } from 'react-router-dom';
 import { Button } from '../../elements/Button';
 import { ErrorMessage } from '../../elements/ErrorMessage';
-import { useUser } from '../../elements/session';
+import { useUser } from '../../elements/useUser';
 import { SuccessMessage } from '../../elements/SuccessMessage';
 import { TextInput } from '../../elements/TextInput';
 import { supabase } from '../../supabase';
