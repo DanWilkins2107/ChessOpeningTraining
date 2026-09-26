@@ -1,6 +1,6 @@
 import type { PostgrestResponse } from '@supabase/supabase-js';
 import { useEffect, useEffectEvent, useState } from 'react';
-import { useUser } from '../../../elements/session';
+import { useUser } from '../../../elements/useUser';
 import { supabase } from '../../../supabase';
 
 export type Study = {

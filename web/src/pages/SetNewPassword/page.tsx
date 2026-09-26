@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { useUser } from '../../elements/session';
+import { useUser } from '../../elements/useUser';
 import { SetNewPasswordForm } from './elements/SetNewPasswordForm';
 import './page.css';
 
