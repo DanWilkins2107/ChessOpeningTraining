@@ -1,0 +1,14 @@
+/* fallow-ignore-file unused-file -- ef93ff81 2026-10-15 landed ahead of the study page, its first consumer. */
+
+/* The squares of an empty board in greys, drawn as one gradient: each 2x2 tile
+   is a light square top-left, as a8 is from white. */
+.board-loading {
+  width: 100%;
+  aspect-ratio: 1;
+  border: 1px solid var(--border);
+  background: repeating-conic-gradient(
+      var(--border) 0 25%,
+      var(--surface-page) 0 50%
+    )
+    0 0 / 25% 25%;
+}

@@ -3,10 +3,10 @@ import {
   SIGNED_OUT_DONE,
   SIGNED_OUT_PARAM,
   SIGNED_OUT_PENDING,
-} from '../../elements/signOut.constants';
-import { useAnimatePieces } from './elements/useAnimatePieces';
+} from '../../shared/signOut/signOut.constants';
+import { useAnimatePieces } from './elements/useAnimatePieces/useAnimatePieces';
 import { supabase } from '../../supabase';
-import { AnimatePiecesToggle } from './elements/AnimatePiecesToggle';
+import { AnimatePiecesToggle } from './elements/AnimatePiecesToggle/AnimatePiecesToggle';
 import './page.css';
 
 export function Account() {

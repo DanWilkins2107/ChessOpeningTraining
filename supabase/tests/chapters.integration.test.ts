@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { env } from 'node:process';
 import { expect, it } from 'vitest';
-import type { MoveNode } from '../../web/src/elements/moveTree';
+import type { MoveNode } from '../../web/src/elements/MoveNode/MoveNode';
 import { leaves, move } from '../../web/src/tests-shared/moveNode';
 import { admin, anonClient, signedInUser } from './tests-shared/testUsers';
 import {

@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { Button } from '../../elements/Button';
-import { ErrorMessage } from '../../elements/ErrorMessage';
-import { TextInput } from '../../elements/TextInput';
+import { Button } from '../../shared/Button/Button';
+import { ErrorMessage } from '../../shared/ErrorMessage/ErrorMessage';
+import { TextInput } from '../../shared/TextInput/TextInput';
 import { supabase } from '../../supabase';
-import { resetOutcome } from './elements/resetOutcome';
-import type { ResetOutcome } from './elements/resetOutcome';
+import { resetOutcome } from './elements/resetOutcome/resetOutcome';
+import type { ResetOutcome } from './elements/resetOutcome/resetOutcome';
 import './page.css';
 
 export function ForgotPassword() {
