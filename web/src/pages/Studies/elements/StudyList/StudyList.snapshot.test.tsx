@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 import { StudyList } from './StudyList';
 
@@ -15,6 +16,7 @@ describe('StudyList', () => {
           statusText: 'OK',
         }}
       />,
+      { wrapper: MemoryRouter },
     );
     expect(container).toMatchSnapshot();
   });
