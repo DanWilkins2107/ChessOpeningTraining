@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
-import { useUser } from '../../shared/session/session';
+import { useUser } from '../../shared/useUser/useUser';
 import { CheckEmail } from './elements/CheckEmail/CheckEmail';
 import { SignUpForm } from './elements/SignUpForm/SignUpForm';
 import './page.css';

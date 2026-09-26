@@ -1,5 +1,5 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { useUser } from '../../shared/session/session';
+import { useUser } from '../../shared/useUser/useUser';
 
 export function ProtectedLayout() {
   const user = useUser();
