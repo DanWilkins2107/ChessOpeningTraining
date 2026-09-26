@@ -2,7 +2,7 @@ import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { ROOKS_HOME } from '../tests-shared/rookPositions';
 import { BoardPieces } from './BoardPieces';
-import { FILES } from './fen';
+import { FILES } from './files.constants';
 import { trackPieces } from './trackPieces';
 
 describe('BoardPieces', () => {

@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useUser } from '../../elements/session';
+import { useUser } from '../../elements/useUser';
 import { NewPasswordForm } from '../../elements/NewPasswordForm';
 import './page.css';
 

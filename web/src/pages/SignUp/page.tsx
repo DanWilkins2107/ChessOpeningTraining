@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
-import { useUser } from '../../elements/session';
+import { useUser } from '../../elements/useUser';
 import { CheckEmail } from './elements/CheckEmail';
 import { SignUpForm } from './elements/SignUpForm';
 import './page.css';

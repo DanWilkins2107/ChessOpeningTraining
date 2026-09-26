@@ -12,7 +12,7 @@ const ROOT_EXCEPTIONS = [
   'src/main.tsx',
   'src/supabase.ts',
   'src/theme.css',
-  'src/zod.ts',
+  'src/z.ts',
 ];
 
 // Modules knowingly left above or below their lowest common folder, each only
