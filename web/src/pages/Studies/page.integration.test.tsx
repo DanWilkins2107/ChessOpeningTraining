@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import { act, render, screen } from '@testing-library/react';
 import { afterEach, beforeAll, expect, it, vi } from 'vitest';
 import { authSettled } from '../../tests-shared/authSettled';
+import { holdFirstRequest } from '../../tests-shared/heldRequest';
 import { registerTestUser } from '../../tests-shared/testUser';
 import { env } from '../../env';
 import { Studies } from './page';
@@ -165,28 +166,15 @@ it("shows loading, not the previous user's studies, when the user changes", asyn
 it('ignores a response for a user who has since changed', async () => {
   // Given a user whose studies request is held
   await withStudies.signIn();
-  const realFetch = window.fetch;
-  let release = () => {};
-  const released = new Promise<void>((resolve) => (release = resolve));
-  let held: Promise<Response> | undefined;
-  // mock-reason: the local server answers too fast to overtake. The first
-  // studies request is held, then sent for real; the rest go straight through.
-  vi.spyOn(window, 'fetch').mockImplementation((input, init) => {
-    if (held || !isStudiesRequest(input)) return realFetch(input, init);
-    held = released.then(() => realFetch(input, init));
-    return held;
-  });
+  const request = holdFirstRequest(isStudiesRequest);
   render(<Studies />);
   await authSettled();
-  await vi.waitFor(() => expect(held).toBeDefined());
+  await request.sent();
 
   // When a different user signs in and loads, then the first response arrives
   await act(() => withoutStudies.signIn());
   await screen.findByText('No studies yet');
-  release();
-  const stale = await held!;
-  await vi.waitFor(() => expect(stale.bodyUsed).toBe(true));
-  await act(() => new Promise((resolve) => setTimeout(resolve, 50)));
+  await request.answer();
 
   // Then the second user's result stays
   expect(screen.getByText('No studies yet')).toBeInTheDocument();

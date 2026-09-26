@@ -11,6 +11,10 @@
   transition: transform 120ms ease-out;
 }
 
+.board-piece-still {
+  transition: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .board-piece {
     transition: none;
