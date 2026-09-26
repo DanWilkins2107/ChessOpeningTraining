@@ -1,14 +1,8 @@
 import { fireEvent, screen } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
 import { renderSettledAt } from '../../../../tests-shared/renderAt';
-import { registerTestUser } from '../../../../tests-shared/testUser';
+import { createTestUser } from '../../../../tests-shared/testUser';
 import { supabase } from '../../../../supabase';
-
-// Separate users, as a requested change stays pending on the account.
-const viewer = registerTestUser();
-const requester = registerTestUser();
-const returner = registerTestUser();
-const taken = registerTestUser();
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -24,27 +18,29 @@ const enterNewEmail = (email: string) =>
     target: { value: email },
   });
 
-async function changeEmailPageAs(user: ReturnType<typeof registerTestUser>) {
+async function changeEmailPageAsNewUser() {
+  const user = await createTestUser();
   await user.signIn();
-  return renderSettledAt('/account/email');
+  await renderSettledAt('/account/email');
+  return user;
 }
 
 it('shows their current email and no pending change', async () => {
   // Given a signed-in user
 
   // When they open their change email page
-  await changeEmailPageAs(viewer);
+  const { credentials } = await changeEmailPageAsNewUser();
 
   // Then it shows the email they have, with nothing waiting
   expect(
-    await screen.findByText(`Current email: ${viewer.credentials.email}`),
+    await screen.findByText(`Current email: ${credentials.email}`),
   ).toBeInTheDocument();
   expect(screen.queryByRole('status')).not.toBeInTheDocument();
 });
 
 it('asks them to check both inboxes once a change is requested', async () => {
   // Given a signed-in user on their change email page
-  await changeEmailPageAs(requester);
+  await changeEmailPageAsNewUser();
   // mock-reason: the redirect is the assertion, and the test stack only honours
   // redirects on its allow list, which the test origin is not on, so the email
   // cannot show it. The spy still calls the real client.
@@ -67,7 +63,8 @@ it('asks them to check both inboxes once a change is requested', async () => {
 
 it('still shows a pending change when they come back', async () => {
   // Given a user who requested a change earlier
-  await returner.signIn();
+  const user = await createTestUser();
+  await user.signIn();
   const newEmail = unusedEmail();
   const { error } = await supabase.auth.updateUser({ email: newEmail });
   if (error) throw error;
@@ -83,7 +80,8 @@ it('still shows a pending change when they come back', async () => {
 
 it('says when the new email already has an account', async () => {
   // Given a signed-in user on their change email page
-  await changeEmailPageAs(viewer);
+  const taken = await createTestUser();
+  await changeEmailPageAsNewUser();
 
   // When they ask for an email another account uses
   enterNewEmail(taken.credentials.email);
@@ -97,7 +95,8 @@ it('says when the new email already has an account', async () => {
 
 it('disables the button until the attempt finishes', async () => {
   // Given a signed-in user on their change email page
-  await changeEmailPageAs(viewer);
+  const taken = await createTestUser();
+  await changeEmailPageAsNewUser();
 
   // When they submit a change the server refuses
   enterNewEmail(taken.credentials.email);
@@ -110,8 +109,9 @@ it('disables the button until the attempt finishes', async () => {
 });
 
 it('keeps the browser from submitting the form itself', async () => {
-  // Given a signed-in user on their change email page with a new email entered
-  await changeEmailPageAs(viewer);
+  // Given a signed-in user on their change email page with a taken email entered
+  const taken = await createTestUser();
+  await changeEmailPageAsNewUser();
   enterNewEmail(taken.credentials.email);
 
   // When the form is submitted
@@ -124,7 +124,7 @@ it('keeps the browser from submitting the form itself', async () => {
 
 it('keeps change email disabled until the new email is valid', async () => {
   // Given a signed-in user on their change email page
-  await changeEmailPageAs(viewer);
+  await changeEmailPageAsNewUser();
 
   // When they type something that is not an email, then an email
   enterNewEmail('not-an-email');

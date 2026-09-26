@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { ProtectedLayout } from '../ProtectedLayout/ProtectedLayout';
 import {
+  ACCOUNT_EMAIL_ROUTE_PATH,
   ACCOUNT_ROUTE_PATH,
   PROTECTED_ROUTE_HANDLE,
   ROOT_ROUTE_PATH,
@@ -30,7 +31,7 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <Home /> },
           { path: ACCOUNT_ROUTE_PATH, element: <Account /> },
-          { path: 'account/email', element: <ChangeEmail /> },
+          { path: ACCOUNT_EMAIL_ROUTE_PATH, element: <ChangeEmail /> },
           { path: STUDIES_ROUTE_PATH, element: <Studies /> },
           { path: STUDY_ROUTE_PATH, element: <Study /> },
         ],
