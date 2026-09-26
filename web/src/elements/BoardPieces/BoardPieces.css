@@ -9,6 +9,8 @@
   width: 12.5%;
   height: 12.5%;
   transition: transform 120ms ease-out;
+  /* Clicks belong to the square underneath. */
+  pointer-events: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
