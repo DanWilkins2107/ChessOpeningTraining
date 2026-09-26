@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { act, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeAll, expect, it, vi } from 'vitest';
 import { authSettled } from '../../tests-shared/authSettled';
 import { holdFirstRequest } from '../../tests-shared/heldRequest';
@@ -9,6 +9,7 @@ import { Studies } from './page';
 
 const withStudies = registerTestUser();
 const withoutStudies = registerTestUser();
+const creatingStudies = registerTestUser();
 
 beforeAll(async () => {
   const client = createClient(
@@ -74,6 +75,22 @@ it('says so when the user has no studies', async () => {
 
   // Then it shows the empty state
   expect(await screen.findByText('No studies yet')).toBeInTheDocument();
+});
+
+it('adds a created study to the list', async () => {
+  // Given a signed-in user with no studies, on the page
+  await creatingStudies.signIn();
+  render(<Studies />);
+  await screen.findByText('No studies yet');
+
+  // When they create a study
+  fireEvent.change(screen.getByLabelText('Study name'), {
+    target: { value: 'Najdorf' },
+  });
+  fireEvent.click(screen.getByRole('button', { name: 'Create study' }));
+
+  // Then it appears in the list
+  expect(await screen.findByText('Najdorf')).toBeInTheDocument();
 });
 
 it('requests studies only once the user has loaded', async () => {

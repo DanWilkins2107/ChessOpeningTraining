@@ -8,6 +8,87 @@ exports[`Studies > matches snapshot 1`] = `
     <h1>
       Studies
     </h1>
+    <form
+      class="create-study-form"
+    >
+      <div
+        class="create-study-fields"
+      >
+        <div
+          class="text-input"
+        >
+          <label
+            for="_r_0_"
+          >
+            Study name
+          </label>
+          <div
+            class="text-input-control"
+          >
+            <input
+              autocomplete="off"
+              class="text-input-field"
+              id="_r_0_"
+              maxlength="100"
+              name="name"
+              required=""
+              type="text"
+            />
+          </div>
+        </div>
+        <fieldset
+          class="side-picker"
+        >
+          <legend
+            class="side-picker-legend"
+          >
+            Side
+          </legend>
+          <div
+            class="side-picker-options"
+          >
+            <label
+              class="side-picker-option"
+            >
+              <input
+                checked=""
+                class="side-picker-input"
+                name="side"
+                type="radio"
+                value="white"
+              />
+              <span
+                class="side-picker-name"
+              >
+                white
+              </span>
+            </label>
+            <label
+              class="side-picker-option"
+            >
+              <input
+                class="side-picker-input"
+                name="side"
+                type="radio"
+                value="black"
+              />
+              <span
+                class="side-picker-name"
+              >
+                black
+              </span>
+            </label>
+          </div>
+        </fieldset>
+        <button
+          class="button"
+          disabled=""
+          type="submit"
+        >
+          Create study
+        </button>
+      </div>
+    </form>
     <div
       aria-label="Loading studies"
       class="study-list-spinner"
