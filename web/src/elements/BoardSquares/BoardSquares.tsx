@@ -7,11 +7,17 @@ type BoardSquaresProps = {
   files: string[];
   ranks: number[];
   pieces: PlacedPiece[];
+  onSquareClick?: (square: string) => void;
 };
 
 // The squares carry the position for a screen reader; the images over them are
 // decoration, so this is the layer that has to name what stands where.
-export function BoardSquares({ files, ranks, pieces }: BoardSquaresProps) {
+export function BoardSquares({
+  files,
+  ranks,
+  pieces,
+  onSquareClick,
+}: BoardSquaresProps) {
   const placement = new Map(pieces.map(({ square, piece }) => [square, piece]));
 
   return (
@@ -19,21 +25,21 @@ export function BoardSquares({ files, ranks, pieces }: BoardSquaresProps) {
       {ranks.map((rank, row) => (
         <div role="row" key={rank} className="board-row">
           {files.map((file, column) => {
-            const piece = placement.get(`${file}${rank}`);
+            const square = `${file}${rank}`;
+            const piece = placement.get(square);
             return (
               <div
                 role="gridcell"
                 key={file}
                 aria-label={
-                  piece === undefined
-                    ? `${file}${rank}`
-                    : `${file}${rank}, ${piece.name}`
+                  piece === undefined ? square : `${square}, ${piece.name}`
                 }
                 className={
                   (FILES.indexOf(file) + rank) % 2 === 1
                     ? 'board-square board-square-dark'
                     : 'board-square board-square-light'
                 }
+                onClick={onSquareClick && (() => onSquareClick(square))}
               >
                 {column === 0 && (
                   <span aria-hidden className="board-rank">
