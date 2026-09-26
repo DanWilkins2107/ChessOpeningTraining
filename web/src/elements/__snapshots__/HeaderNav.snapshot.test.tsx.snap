@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`HeaderNav > matches snapshot 1`] = `
+exports[`HeaderNav > matches snapshot on a protected page 1`] = `
 <div>
   <nav
     class="header-nav"
@@ -12,12 +12,29 @@ exports[`HeaderNav > matches snapshot 1`] = `
     >
       Studies
     </a>
-    <button
-      class="sign-out"
-      type="button"
+    <a
+      class="header-nav-link"
+      data-discover="true"
+      href="/account"
     >
-      Sign out
-    </button>
+      Account
+    </a>
+  </nav>
+</div>
+`;
+
+exports[`HeaderNav > matches snapshot on a public page 1`] = `
+<div>
+  <nav
+    class="header-nav"
+  >
+    <a
+      class="header-nav-link"
+      data-discover="true"
+      href="/account"
+    >
+      Account
+    </a>
   </nav>
 </div>
 `;

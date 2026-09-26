@@ -4,28 +4,44 @@ import { Link, Navigate, useSearchParams } from 'react-router-dom';
 import { Button } from '../../elements/Button';
 import { ErrorMessage } from '../../elements/ErrorMessage';
 import { useUser } from '../../elements/session';
+import { SuccessMessage } from '../../elements/SuccessMessage';
 import { TextInput } from '../../elements/TextInput';
 import { supabase } from '../../supabase';
 import { safeReturnPath } from './elements/safeReturnPath';
 import { signInErrorMessage } from './elements/signInErrorMessage';
+import { signOutNotice, withoutSignOutNotice } from './elements/signOutNotice';
 import './page.css';
+
+// A signed-in visitor has no business on the form and is sent on, unless they
+// have just signed out here: signing out lands them on this page before the
+// session has finished clearing, and bouncing them would lose the notice.
+const sendsUserOn = (
+  user: ReturnType<typeof useUser>,
+  notice: string | undefined,
+) => Boolean(user) && notice === undefined;
+
+// Both inputs are required, so the browser's validity means a well-formed
+// email and a non-empty password. Sign in stays disabled until then.
+const cannotSubmit = (pending: boolean, fieldsValid: boolean | undefined) =>
+  pending || !fieldsValid;
 
 export function SignIn() {
   const user = useUser();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string>();
-  // Both inputs are required, so the browser's validity means a well-formed
-  // email and a non-empty password. Sign in stays disabled until then.
   const [fieldsValid, setFieldsValid] = useState<boolean>();
 
-  if (user) {
+  const notice = signOutNotice(searchParams);
+
+  if (sendsUserOn(user, notice)) {
     return <Navigate to={safeReturnPath(searchParams.get('next'))} replace />;
   }
 
   async function signIn(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
+    setSearchParams(withoutSignOutNotice, { replace: true });
     setPending(true);
     const { error } = await supabase.auth.signInWithPassword({
       email: String(form.get('email')),
@@ -45,6 +61,8 @@ export function SignIn() {
           setFieldsValid(event.currentTarget.checkValidity())
         }
       >
+        {/* Inside the form so the column's gap spaces it like the error. */}
+        {notice && <SuccessMessage>{notice}</SuccessMessage>}
         <TextInput
           label="Email"
           name="email"
@@ -58,7 +76,7 @@ export function SignIn() {
           autoComplete="current-password"
         />
         {error && <ErrorMessage>{error}</ErrorMessage>}
-        <Button disabled={pending || !fieldsValid}>Sign in</Button>
+        <Button disabled={cannotSubmit(pending, fieldsValid)}>Sign in</Button>
       </form>
       <Link to="/forgot-password" className="sign-in-link">
         Forgot password?

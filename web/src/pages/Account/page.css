@@ -1,0 +1,32 @@
+.account-card {
+  max-width: 24rem;
+  margin-inline: auto;
+  padding: var(--gap-lg);
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
+}
+
+.account-heading {
+  margin-bottom: var(--gap-md);
+  font-size: var(--text-lg);
+}
+
+.account-action {
+  display: block;
+  width: 100%;
+  padding: var(--gap-sm) var(--gap-md);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-page);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 120ms ease;
+}
+
+.account-action:hover {
+  border-color: var(--accent);
+}
