@@ -38,7 +38,7 @@ export function useAnimatePieces(): AnimatePiecesSetting {
 
     supabase
       .from('profiles')
-      .select('animate_pieces')
+      .select()
       .maybeSingle()
       .then((response) => onResponse(userId, response));
   }, [userId]);

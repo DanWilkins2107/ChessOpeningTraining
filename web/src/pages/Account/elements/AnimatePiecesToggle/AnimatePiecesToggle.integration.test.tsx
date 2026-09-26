@@ -67,7 +67,8 @@ it('holds the checkbox until the setting loads', async () => {
   await renderFor(firstVisit);
   await request.sent();
 
-  // Then it cannot be changed yet
+  // Then it is unticked and cannot be changed yet
+  expect(checkbox()).not.toBeChecked();
   expect(checkbox()).toBeDisabled();
   await request.answer();
   await loadedCheckbox();
@@ -90,9 +91,10 @@ it('saves the setting when it is unticked', async () => {
   // When they untick it
   fireEvent.click(await loadedCheckbox());
 
-  // Then it shows unticked and the profile says so
+  // Then it shows unticked, the profile says so, and nothing is wrong
   expect(checkbox()).not.toBeChecked();
   await vi.waitFor(async () => expect(await savedAnimatePieces()).toBe(false));
+  expect(screen.queryByRole('alert')).not.toBeInTheDocument();
 });
 
 it('shows a setting saved earlier', async () => {

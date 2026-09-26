@@ -1,3 +1,3 @@
 export type AnimatePiecesSetting =
-  | { status: 'loading' | 'failed' }
+  | { status: 'loading' | 'failed'; animatePieces?: never }
   | { status: 'loaded'; animatePieces: boolean };

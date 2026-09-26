@@ -27,9 +27,7 @@ export function AnimatePiecesToggle({ setting }: AnimatePiecesToggleProps) {
       <label className="animate-pieces-label">
         <input
           type="checkbox"
-          checked={
-            chosen ?? (setting.status === 'loaded' && setting.animatePieces)
-          }
+          checked={chosen ?? setting.animatePieces ?? false}
           disabled={setting.status !== 'loaded'}
           onChange={(event) => save(event.target.checked)}
         />

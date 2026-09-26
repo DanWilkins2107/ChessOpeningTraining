@@ -26,6 +26,10 @@ function Setting() {
 
 const renderSettingTestingHarness = () => render(<Setting />);
 
+// mock-reason: spying only, to see which requests go out. Every request is
+// sent for real.
+const spyOnFetch = () => vi.spyOn(window, 'fetch');
+
 it('animates for a user who never changed the setting', async () => {
   // Given a user with no saved setting
   await animating.signIn();
@@ -48,6 +52,38 @@ it('keeps pieces still for a user who turned animation off', async () => {
   expect(await screen.findByText('still')).toBeInTheDocument();
 });
 
+it('stays loading without asking for a setting while signed out', async () => {
+  // Given no signed-in user
+  const fetchSpy = spyOnFetch();
+
+  // When the setting renders
+  renderSettingTestingHarness();
+  await authSettled();
+
+  // Then it is loading and has asked for nothing
+  expect(screen.getByText('loading')).toBeInTheDocument();
+  expect(fetchSpy.mock.calls.some(([input]) => isProfilesRequest(input))).toBe(
+    false,
+  );
+});
+
+it('shows loading, not the previous setting, while the next user loads', async () => {
+  // Given a user who turned animation off, with their setting shown
+  await still.signIn();
+  renderSettingTestingHarness();
+  await screen.findByText('still');
+
+  // When a user with no saved setting signs in, whose request is held
+  const request = holdFirstRequest(isProfilesRequest);
+  await act(() => animating.signIn());
+  await request.sent();
+
+  // Then it is loading until their own setting arrives
+  expect(screen.getByText('loading')).toBeInTheDocument();
+  await request.answer();
+  expect(await screen.findByText('animate')).toBeInTheDocument();
+});
+
 it('ignores a setting for a user who has since changed', async () => {
   // Given a user who turned animation off, whose setting request is held
   await still.signIn();
@@ -56,10 +92,12 @@ it('ignores a setting for a user who has since changed', async () => {
   await authSettled();
   await request.sent();
 
-  // When a user with no saved setting signs in, then the first response arrives
+  // When a user with no saved setting signs in and their setting shows, then
+  // the first response arrives
   await act(() => animating.signIn());
+  await screen.findByText('animate');
   await request.answer();
 
   // Then it still says to animate
-  expect(await screen.findByText('animate')).toBeInTheDocument();
+  expect(screen.getByText('animate')).toBeInTheDocument();
 });
