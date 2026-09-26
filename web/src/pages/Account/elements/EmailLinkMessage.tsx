@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ErrorMessage } from '../../../elements/ErrorMessage';
 import { ACCOUNT_ROUTE_PATH } from '../../../elements/router.constants';
-import { SUBSCRIBE_ONCE } from '../../../elements/session.constants';
+import { SUBSCRIBE_ONCE } from '../../../elements/useUser.constants';
 import { SuccessMessage } from '../../../elements/SuccessMessage';
 import { emailLinkNotice } from './emailLinkNotice';
 

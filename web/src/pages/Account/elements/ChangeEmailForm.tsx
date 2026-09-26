@@ -3,7 +3,7 @@ import type { FormEvent } from 'react';
 import { Button } from '../../../elements/Button';
 import { ErrorMessage } from '../../../elements/ErrorMessage';
 import { ACCOUNT_ROUTE_PATH } from '../../../elements/router.constants';
-import { useUser } from '../../../elements/session';
+import { useUser } from '../../../elements/useUser';
 import { TextInput } from '../../../elements/TextInput';
 import { supabase } from '../../../supabase';
 import { changeEmailErrorMessage } from './changeEmailErrorMessage';
