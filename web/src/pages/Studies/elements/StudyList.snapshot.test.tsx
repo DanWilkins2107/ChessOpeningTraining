@@ -6,8 +6,14 @@ describe('StudyList', () => {
   it('matches snapshot', () => {
     const { container } = render(
       <StudyList
-        studies={[{ id: 'a4f1', name: 'London', side: 'white' }]}
-        failed={false}
+        response={{
+          success: true,
+          data: [{ id: 'a4f1', name: 'London', side: 'white' }],
+          error: null,
+          count: null,
+          status: 200,
+          statusText: 'OK',
+        }}
       />,
     );
     expect(container).toMatchSnapshot();

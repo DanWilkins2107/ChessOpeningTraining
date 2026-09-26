@@ -3,15 +3,12 @@ import { RouterProvider, createMemoryRouter } from 'react-router-dom';
 import { render } from '@testing-library/react';
 import { router } from '../elements/router';
 import { authSettled } from './authSettled';
-import { withQueryClient } from './withQueryClient';
 
 export function renderAt(...entries: string[]) {
   const memoryRouter = createMemoryRouter(router.routes, {
     initialEntries: entries,
   });
-  render(
-    withQueryClient(createElement(RouterProvider, { router: memoryRouter })),
-  );
+  render(createElement(RouterProvider, { router: memoryRouter }));
   return memoryRouter;
 }
 

@@ -1,5 +1,3 @@
-import type { PostgrestError } from '@supabase/supabase-js';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Button } from '../../../elements/Button';
@@ -8,44 +6,36 @@ import { TextInput } from '../../../elements/TextInput';
 import { supabase } from '../../../supabase';
 import { createStudyErrorMessage } from './createStudyErrorMessage';
 import { SidePicker } from './SidePicker';
-import { STUDIES_QUERY_KEY } from './useStudies.constants';
 import './CreateStudyForm.css';
 
 const NAME_MAX_LENGTH = 100;
 
-type NewStudy = { name: string; side: string };
+type CreateStudyFormProps = {
+  onCreated: () => void;
+};
 
-async function insertStudy(study: NewStudy) {
-  const { error } = await supabase.from('studies').insert(study);
-  if (error) throw error;
-}
-
-export function CreateStudyForm() {
+export function CreateStudyForm({ onCreated }: CreateStudyFormProps) {
   const [name, setName] = useState('');
-  const queryClient = useQueryClient();
-  const { mutate, isPending, error } = useMutation<
-    void,
-    PostgrestError,
-    NewStudy
-  >({
-    mutationFn: insertStudy,
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: STUDIES_QUERY_KEY }),
-  });
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string>();
 
-  function createStudy(event: FormEvent<HTMLFormElement>) {
+  async function createStudy(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const side = String(new FormData(form).get('side'));
-    mutate(
-      { name: name.trim(), side },
-      {
-        onSuccess: () => {
-          form.reset();
-          setName('');
-        },
-      },
-    );
+    setPending(true);
+    const { error } = await supabase
+      .from('studies')
+      .insert({ name: name.trim(), side });
+    setPending(false);
+    if (error) {
+      setError(createStudyErrorMessage(error));
+      return;
+    }
+    setError(undefined);
+    form.reset();
+    setName('');
+    onCreated();
   }
 
   return (
@@ -60,9 +50,9 @@ export function CreateStudyForm() {
           onChange={setName}
         />
         <SidePicker />
-        <Button disabled={isPending || name.trim() === ''}>Create study</Button>
+        <Button disabled={pending || name.trim() === ''}>Create study</Button>
       </div>
-      {error && <ErrorMessage>{createStudyErrorMessage(error)}</ErrorMessage>}
+      {error && <ErrorMessage>{error}</ErrorMessage>}
     </form>
   );
 }

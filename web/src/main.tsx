@@ -1,6 +1,5 @@
 import './env';
 import './theme.css';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
@@ -11,12 +10,8 @@ if (!container) {
   throw new Error('Root element #root not found in index.html');
 }
 
-const queryClient = new QueryClient();
-
 createRoot(container).render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
+    <RouterProvider router={router} />
   </StrictMode>,
 );
