@@ -141,14 +141,3 @@ it('leaves no way back to the sign-out notice once they sign back in', async () 
   // Then the stale notice is not in their history
   expect(pathOf(memoryRouter)).toBe('/');
 });
-
-it('leads to the delete account page', async () => {
-  // Given a signed-in user on their account page
-  const memoryRouter = await accountPage();
-
-  // When they choose to delete their account
-  fireEvent.click(screen.getByRole('link', { name: 'Delete account' }));
-
-  // Then they are on the delete account page
-  expect(pathOf(memoryRouter)).toBe('/account/delete');
-});

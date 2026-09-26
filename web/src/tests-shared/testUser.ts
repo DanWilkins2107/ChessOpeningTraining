@@ -9,16 +9,10 @@ const adminClient = createClient(
   { auth: { persistSession: false, autoRefreshToken: false } },
 );
 
-// A user whose test deletes the account itself is left for that test to delete.
 export function registerTestUser({
   emailConfirmed = true,
   password = crypto.randomUUID(),
-  deletedByTest = false,
-}: {
-  emailConfirmed?: boolean;
-  password?: string;
-  deletedByTest?: boolean;
-} = {}) {
+}: { emailConfirmed?: boolean; password?: string } = {}) {
   const credentials = {
     email: `test-${crypto.randomUUID()}@example.test`,
     password,
@@ -35,7 +29,6 @@ export function registerTestUser({
   });
 
   afterAll(async () => {
-    if (deletedByTest) return;
     const { error } = await adminClient.auth.admin.deleteUser(user.id);
     if (error) throw error;
   });

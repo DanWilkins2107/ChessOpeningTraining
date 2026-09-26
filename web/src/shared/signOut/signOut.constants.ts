@@ -8,10 +8,8 @@
 export const SIGNED_OUT_PARAM = 'signedOut';
 export const SIGNED_OUT_PENDING = 'pending';
 export const SIGNED_OUT_DONE = 'done';
-export const SIGNED_OUT_ACCOUNT_DELETED = 'accountDeleted';
 
 export const SIGN_OUT_NOTICES = new Map<string | null, string>([
   [SIGNED_OUT_PENDING, 'Signing out'],
   [SIGNED_OUT_DONE, 'Sign out successful'],
-  [SIGNED_OUT_ACCOUNT_DELETED, 'Account deleted'],
 ]);
