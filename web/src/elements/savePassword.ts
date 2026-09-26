@@ -1,16 +1,20 @@
 import { supabase } from '../supabase';
 import { TRY_AGAIN, newPasswordErrorMessage } from './newPasswordErrorMessage';
 
-type SaveOutcome = 'saved' | 'code-sent' | { error: string };
+type SaveOutcome =
+  | { status: 'saved' | 'code-sent'; error?: undefined }
+  | { status: 'failed'; error: string };
 
 export async function savePassword(
   password: string,
-  nonce: string,
+  nonce: string | undefined,
 ): Promise<SaveOutcome> {
   const { error } = await supabase.auth.updateUser({ password, nonce });
-  if (!error) return 'saved';
+  if (!error) return { status: 'saved' };
   if (error.code !== 'reauthentication_needed')
-    return { error: newPasswordErrorMessage(error) };
+    return { status: 'failed', error: newPasswordErrorMessage(error) };
   const sent = await supabase.auth.reauthenticate();
-  return sent.error ? { error: TRY_AGAIN } : 'code-sent';
+  return sent.error
+    ? { status: 'failed', error: TRY_AGAIN }
+    : { status: 'code-sent' };
 }

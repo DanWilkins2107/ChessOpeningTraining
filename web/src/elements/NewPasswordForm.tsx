@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Button } from './Button';
+import { ConfirmPasswordInput } from './ConfirmPasswordInput';
 import { ErrorMessage } from './ErrorMessage';
 import { meetsEveryRule } from './meetsEveryRule';
 import { PasswordChecklist } from './PasswordChecklist';
+import { ReauthenticationCodeInput } from './ReauthenticationCodeInput';
 import { savePassword } from './savePassword';
 import { TextInput } from './TextInput';
 import './NewPasswordForm.css';
@@ -16,6 +18,7 @@ export function NewPasswordForm({ onSaved }: NewPasswordFormProps) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string>();
   const [password, setPassword] = useState('');
+  const [confirmation, setConfirmation] = useState('');
   // Undefined until the server asks for a reauthentication code.
   const [code, setCode] = useState<string>();
 
@@ -23,13 +26,14 @@ export function NewPasswordForm({ onSaved }: NewPasswordFormProps) {
     event.preventDefault();
     const form = event.currentTarget;
     setPending(true);
-    const outcome = await savePassword(password, code ?? '');
+    const { status, error } = await savePassword(password, code);
     setPending(false);
-    setError(typeof outcome === 'object' ? outcome.error : undefined);
-    if (outcome === 'code-sent') setCode('');
-    if (outcome !== 'saved') return;
+    setError(error);
+    if (status === 'code-sent') setCode('');
+    if (status !== 'saved') return;
     form.reset();
     setPassword('');
+    setConfirmation('');
     setCode(undefined);
     await onSaved();
   }
@@ -44,20 +48,18 @@ export function NewPasswordForm({ onSaved }: NewPasswordFormProps) {
         onChange={setPassword}
       />
       <PasswordChecklist password={password} />
-      {code !== undefined && (
-        <>
-          <p>We've emailed you a code to confirm it's you</p>
-          <TextInput
-            label="Code"
-            name="code"
-            type="text"
-            autoComplete="one-time-code"
-            onChange={setCode}
-          />
-        </>
-      )}
+      <ConfirmPasswordInput
+        password={password}
+        confirmation={confirmation}
+        onChange={setConfirmation}
+      />
+      {code !== undefined && <ReauthenticationCodeInput onChange={setCode} />}
       {error && <ErrorMessage>{error}</ErrorMessage>}
-      <Button disabled={pending || !meetsEveryRule(password)}>
+      <Button
+        disabled={
+          pending || !meetsEveryRule(password) || confirmation !== password
+        }
+      >
         Save password
       </Button>
     </form>
