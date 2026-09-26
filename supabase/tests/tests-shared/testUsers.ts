@@ -23,6 +23,9 @@ export async function deleteUser(id: string) {
   userIds.delete(id);
 }
 
+// For a user a test deleted some other way, so afterAll does not delete it again.
+export const forgetUser = (id: string) => userIds.delete(id);
+
 export async function signedInUser() {
   const credentials = {
     email: `test-${crypto.randomUUID()}@example.test`,

@@ -39,6 +39,7 @@ export default defineConfig({
             SUPABASE_ANON_KEY: testStack.ANON_KEY,
             SUPABASE_SERVICE_ROLE_KEY: testStack.SERVICE_ROLE_KEY,
             MAILPIT_URL: testStack.MAILPIT_URL,
+            SUPABASE_JWT_SECRET: testStack.JWT_SECRET,
           },
         },
       },
