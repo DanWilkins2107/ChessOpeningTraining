@@ -1,15 +1,11 @@
 import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { Board } from './Board';
+import { AnimatePiecesToggle } from './AnimatePiecesToggle';
 
-describe('Board', () => {
+describe('AnimatePiecesToggle', () => {
   it('matches snapshot', () => {
     const { container } = render(
-      <Board
-        position="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-        orientation="white"
-        animatePieces
-      />,
+      <AnimatePiecesToggle setting={{ status: 'loading' }} />,
     );
     expect(container).toMatchSnapshot();
   });

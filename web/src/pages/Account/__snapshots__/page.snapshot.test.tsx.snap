@@ -10,6 +10,19 @@ exports[`Account > matches snapshot 1`] = `
     >
       Account
     </h1>
+    <div
+      class="animate-pieces"
+    >
+      <label
+        class="animate-pieces-label"
+      >
+        <input
+          disabled=""
+          type="checkbox"
+        />
+        Animate pieces
+      </label>
+    </div>
     <button
       class="account-action"
       type="button"

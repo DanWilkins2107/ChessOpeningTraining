@@ -15,7 +15,7 @@
   "overrides": [
     { "files": ["web/src/**"], "rules": { "unused-files": "off" } },
     {
-      "files": ["web/src/tests-shared/**"],
+      "files": ["web/src/**/tests-shared/**"],
       "rules": { "unused-files": "error" }
     }
   ]
