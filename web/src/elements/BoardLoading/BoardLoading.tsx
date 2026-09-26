@@ -3,6 +3,8 @@ import './BoardLoading.css';
 
 export function BoardLoading() {
   return (
-    <div role="status" aria-label="Loading board" className="board-loading" />
+    <div role="status" aria-label="Loading board" className="board-loading">
+      <div className="board-loading-spinner" />
+    </div>
   );
 }

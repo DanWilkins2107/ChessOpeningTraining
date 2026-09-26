@@ -11,5 +11,5 @@ it('says the board is loading', () => {
   // Then it announces that the board is on its way
   expect(
     screen.getByRole('status', { name: 'Loading board' }),
-  ).toBeEmptyDOMElement();
+  ).toBeInTheDocument();
 });

@@ -6,6 +6,10 @@ exports[`BoardLoading > matches snapshot 1`] = `
     aria-label="Loading board"
     class="board-loading"
     role="status"
-  />
+  >
+    <div
+      class="board-loading-spinner"
+    />
+  </div>
 </div>
 `;
