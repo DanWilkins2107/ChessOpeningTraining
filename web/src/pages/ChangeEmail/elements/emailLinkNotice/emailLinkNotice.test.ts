@@ -27,7 +27,7 @@ it('reports a failed link without repeating its wording', () => {
   // Then it is a fixed error
   expect(notice).toEqual({
     confirmed: false,
-    text: 'That link is invalid or has expired',
+    text: 'That link has expired or was already used. Enter your new email again to get fresh links',
     clearHash: true,
   });
 });

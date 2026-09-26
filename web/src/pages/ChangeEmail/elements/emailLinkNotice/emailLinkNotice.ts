@@ -5,7 +5,7 @@ export function emailLinkNotice(hash: string) {
   if (params.has('error')) {
     return {
       confirmed: false,
-      text: 'That link is invalid or has expired',
+      text: 'That link has expired or was already used. Enter your new email again to get fresh links',
       clearHash: true,
     };
   }

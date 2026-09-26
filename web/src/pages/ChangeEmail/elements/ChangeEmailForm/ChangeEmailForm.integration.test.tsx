@@ -178,7 +178,7 @@ it('reports a link that failed', async () => {
 
   // Then they are told it failed
   expect(screen.getByRole('alert')).toHaveTextContent(
-    'That link is invalid or has expired',
+    'That link has expired or was already used. Enter your new email again to get fresh links',
   );
 });
 
