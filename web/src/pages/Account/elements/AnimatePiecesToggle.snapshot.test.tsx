@@ -4,7 +4,11 @@ import { AnimatePiecesToggle } from './AnimatePiecesToggle';
 
 describe('AnimatePiecesToggle', () => {
   it('matches snapshot', () => {
-    const { container } = render(<AnimatePiecesToggle />);
+    const { container } = render(
+      <AnimatePiecesToggle
+        setting={{ status: 'loading', animatePieces: true }}
+      />,
+    );
     expect(container).toMatchSnapshot();
   });
 });

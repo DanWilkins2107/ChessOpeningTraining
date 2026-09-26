@@ -4,12 +4,14 @@ import {
   SIGNED_OUT_PARAM,
   SIGNED_OUT_PENDING,
 } from '../../elements/signOut.constants';
+import { useAnimatePieces } from './elements/useAnimatePieces';
 import { supabase } from '../../supabase';
 import { AnimatePiecesToggle } from './elements/AnimatePiecesToggle';
 import './page.css';
 
 export function Account() {
   const navigate = useNavigate();
+  const animatePieces = useAnimatePieces();
 
   async function signOut() {
     const leaveWith = (outcome: string) =>
@@ -25,7 +27,7 @@ export function Account() {
   return (
     <section className="account-card">
       <h1 className="account-heading">Account</h1>
-      <AnimatePiecesToggle />
+      <AnimatePiecesToggle setting={animatePieces} />
       <button type="button" className="account-action" onClick={signOut}>
         Sign out
       </button>

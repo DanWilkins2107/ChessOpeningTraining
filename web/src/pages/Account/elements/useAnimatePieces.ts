@@ -1,7 +1,7 @@
 import type { PostgrestMaybeSingleResponse } from '@supabase/supabase-js';
 import { useEffect, useEffectEvent, useState } from 'react';
-import { supabase } from '../supabase';
-import { useUser } from './useUser';
+import { supabase } from '../../../supabase';
+import { useUser } from '../../../elements/useUser';
 
 export type AnimatePiecesSetting = {
   status: 'loading' | 'loaded' | 'failed';

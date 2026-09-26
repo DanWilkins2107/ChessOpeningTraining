@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { ErrorMessage } from '../../../elements/ErrorMessage';
-import { useAnimatePieces } from '../../../elements/useAnimatePieces';
+import type { AnimatePiecesSetting } from './useAnimatePieces';
 import { supabase } from '../../../supabase';
 import './AnimatePiecesToggle.css';
 
-export function AnimatePiecesToggle() {
-  const setting = useAnimatePieces();
+type AnimatePiecesToggleProps = { setting: AnimatePiecesSetting };
+
+export function AnimatePiecesToggle({ setting }: AnimatePiecesToggleProps) {
   const [chosen, setChosen] = useState<boolean>();
   const [saveFailed, setSaveFailed] = useState(false);
 

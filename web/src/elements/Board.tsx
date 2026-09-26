@@ -3,18 +3,20 @@ import './Board.css';
 import { BoardPieces } from './BoardPieces';
 import { BoardSquares } from './BoardSquares';
 import { FILES } from './files.constants';
-import { useAnimatePieces } from './useAnimatePieces';
 import { useTrackedPieces } from './useTrackedPieces';
 
 const RANKS = [8, 7, 6, 5, 4, 3, 2, 1];
 
-type BoardProps = { position: string; orientation: 'white' | 'black' };
+type BoardProps = {
+  position: string;
+  orientation: 'white' | 'black';
+  animatePieces: boolean;
+};
 
-export function Board({ position, orientation }: BoardProps) {
+export function Board({ position, orientation, animatePieces }: BoardProps) {
   const files = orientation === 'white' ? FILES : [...FILES].reverse();
   const ranks = orientation === 'white' ? RANKS : [...RANKS].reverse();
   const pieces = useTrackedPieces(position);
-  const { animatePieces } = useAnimatePieces();
 
   return (
     <div className="board">

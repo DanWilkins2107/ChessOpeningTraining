@@ -1,13 +1,13 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import { afterEach, beforeAll, expect, it, vi } from 'vitest';
-import { authSettled } from '../../../tests-shared/authSettled';
+import { holdFirstRequest } from '../../../tests-shared/heldRequest';
 import {
   isProfilesRequest,
   turnOffAnimationFor,
-} from '../../../tests-shared/profiles';
+} from '../tests-shared/profiles';
+import { renderSettledAt } from '../../../tests-shared/renderAt';
 import { registerTestUser } from '../../../tests-shared/testUser';
 import { supabase } from '../../../supabase';
-import { AnimatePiecesToggle } from './AnimatePiecesToggle';
 
 const firstVisit = registerTestUser();
 const turningOff = registerTestUser();
@@ -31,8 +31,7 @@ const loadedCheckbox = async () => {
 
 async function renderFor(user: ReturnType<typeof registerTestUser>) {
   await user.signIn();
-  render(<AnimatePiecesToggle />);
-  await authSettled();
+  await renderSettledAt('/account');
 }
 
 function failProfilesRequests(method: 'GET' | 'POST') {
@@ -61,14 +60,16 @@ async function savedAnimatePieces() {
 }
 
 it('holds the checkbox until the setting loads', async () => {
-  // Given a signed-in user
-  await firstVisit.signIn();
+  // Given a signed-in user, whose setting request is held
+  const request = holdFirstRequest(isProfilesRequest);
 
   // When the toggle renders
-  render(<AnimatePiecesToggle />);
+  await renderFor(firstVisit);
+  await request.sent();
 
   // Then it cannot be changed yet
   expect(checkbox()).toBeDisabled();
+  await request.answer();
   await loadedCheckbox();
 });
 
@@ -119,11 +120,10 @@ it('saves over a setting already saved', async () => {
 
 it('says so and keeps the checkbox held when the setting fails to load', async () => {
   // Given a server that fails the profile request
-  await failing.signIn();
   failProfilesRequests('GET');
 
   // When the toggle renders
-  render(<AnimatePiecesToggle />);
+  await renderFor(failing);
 
   // Then it shows a generic message and cannot be changed
   expect(await screen.findByRole('alert')).toHaveTextContent(

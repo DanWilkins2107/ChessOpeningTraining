@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
-import { env } from '../env';
-import type { registerTestUser } from './testUser';
+import { env } from '../../../env';
+import type { registerTestUser } from '../../../tests-shared/testUser';
 
 export const isProfilesRequest = (input: RequestInfo | URL) =>
   String(input).includes('/rest/v1/profiles');
