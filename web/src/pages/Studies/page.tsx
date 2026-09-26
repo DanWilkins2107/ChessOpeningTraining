@@ -1,5 +1,5 @@
-import { StudyList } from './elements/StudyList';
-import { useStudies } from './elements/useStudies';
+import { StudyList } from './elements/StudyList/StudyList';
+import { useStudies } from './elements/useStudies/useStudies';
 import './page.css';
 
 export function Studies() {

@@ -2,7 +2,7 @@ import { expect, it } from 'vitest';
 import { needsSnapshot, snapshotPathFor } from './snapshotGate';
 
 // .tsx files that render nothing, so there is no snapshot to take of them.
-const NON_COMPONENTS = ['main.tsx', 'elements/router.tsx'];
+const NON_COMPONENTS = ['main.tsx', 'elements/router/router.tsx'];
 
 const fromSrc = (keys: string[]) =>
   keys.map((key) => key.replace('../src/', ''));

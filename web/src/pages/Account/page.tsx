@@ -3,7 +3,7 @@ import {
   SIGNED_OUT_DONE,
   SIGNED_OUT_PARAM,
   SIGNED_OUT_PENDING,
-} from '../../elements/signOut.constants';
+} from '../../shared/signOut/signOut.constants';
 import { supabase } from '../../supabase';
 import './page.css';
 

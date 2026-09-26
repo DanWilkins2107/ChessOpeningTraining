@@ -13,7 +13,8 @@ export type ModuleSources = Record<string, string>;
 
 const SOURCE = /\.(tsx?|css|svg)$/;
 const TEST = /\.test\.tsx?$/;
-const SHARED_FOLDERS = ['elements', 'tests-shared'];
+const TEST_HELPER_FOLDER = 'tests-shared';
+const PLACEMENT_FOLDERS = ['elements', 'shared', TEST_HELPER_FOLDER];
 const RELATIVE_IMPORT = /\b(?:from|import)\s*\(?\s*['"](\.[^'"]*)['"]/g;
 const RESOLVED_EXTENSIONS = ['', '.ts', '.tsx'];
 
@@ -33,8 +34,8 @@ export function placementProblems(
   exempt: string[],
 ): string[] {
   return Object.entries(misplacements(sources))
-    .filter(([modulePath]) => !exempt.includes(modulePath))
-    .map(([modulePath, reason]) => `${modulePath}: ${reason}`);
+    .filter(([unit]) => !exempt.includes(unit))
+    .map(([unit, reason]) => `${unit}: ${reason}`);
 }
 
 export function excludeProblems(
@@ -44,64 +45,77 @@ export function excludeProblems(
   today: Date = startOfTodayUtc(),
 ): string[] {
   const misplaced = misplacements(sources);
+  const units = new Set(Object.keys(sources).map(unitOf));
   const problems = rootExceptions
     .filter((modulePath) => !(modulePath in sources))
     .map((modulePath) => `${modulePath}: root exception names no module`);
 
-  for (const { path: modulePath, expiry } of temporary) {
-    if (!(modulePath in sources)) {
-      problems.push(`${modulePath}: exclude names no module`);
+  for (const { path: unit, expiry } of temporary) {
+    if (!units.has(unit)) {
+      problems.push(`${unit}: exclude names no module`);
       continue;
     }
-    if (!(modulePath in misplaced)) {
-      problems.push(`${modulePath}: exclude is no longer needed`);
+    if (!(unit in misplaced)) {
+      problems.push(`${unit}: exclude is no longer needed`);
     }
     const expired = expiryProblem(expiry, today);
-    if (expired !== null) problems.push(`${modulePath}: ${expired}`);
+    if (expired !== null) problems.push(`${unit}: ${expired}`);
   }
 
   return problems;
 }
 
+// A unit is a module folder with everything in it, or a lone file outside one.
 function misplacements(sources: ModuleSources): Record<string, string> {
-  const consumers = consumersByModule(sources);
+  const consumers = consumersByUnit(sources);
+  const placeable = new Set(
+    Object.keys(sources).filter(isPlaceable).map(unitOf),
+  );
   const found: Record<string, string> = {};
 
-  for (const modulePath of Object.keys(sources)) {
-    if (!isPlaceable(modulePath)) continue;
-
-    const sharedFolder = sharedFolderOf(modulePath);
+  for (const unit of placeable) {
+    const helper = isTestHelper(unit);
     const owners = [
       ...new Set(
-        (consumers[modulePath] ?? [])
-          .filter((consumer) => consumerFolderOf(consumer) === sharedFolder)
+        (consumers[unit] ?? [])
+          .filter((consumer) => isTestCode(consumer) === helper)
           .map(owningFolder),
       ),
     ].sort();
     if (owners.length === 0) continue;
 
-    const required = requiredFolder(owners, sharedFolder);
-    if (declaredFolder(modulePath) === required) continue;
+    const required = requiredFolder(owners, helper);
+    if (declaredFolder(unit) === required) continue;
 
-    found[modulePath] =
+    found[unit] =
       `consumed from ${owners.join(', ')}, so it belongs in ${required}`;
   }
 
   return found;
 }
 
-function consumersByModule(sources: ModuleSources): Record<string, string[]> {
+function consumersByUnit(sources: ModuleSources): Record<string, string[]> {
   const consumers: Record<string, string[]> = {};
 
   for (const [file, text] of Object.entries(sources)) {
-    for (const target of importedModules(file, text)) {
-      const resolved = resolveModule(target, sources);
-      if (resolved === null) continue;
-      (consumers[resolved] ??= []).push(file);
+    for (const unit of importedUnits(file, text, sources)) {
+      (consumers[unit] ??= []).push(file);
     }
   }
 
   return consumers;
+}
+
+function importedUnits(
+  file: string,
+  text: string,
+  sources: ModuleSources,
+): string[] {
+  return importedModules(file, text)
+    .map((target) => resolveModule(target, sources))
+    .filter((resolved) => resolved !== null)
+    .map(unitOf)
+    .filter((unit) => unit !== unitOf(file));
 }
 
 function importedModules(file: string, text: string): string[] {
@@ -122,34 +136,40 @@ const isPlaceable = (modulePath: string) =>
   !TEST.test(modulePath) &&
   (declaredFolder(modulePath) !== null || modulePath.split('/').length === 2);
 
-const isSharedFolder = (folder: string | undefined) =>
-  SHARED_FOLDERS.some((shared) => shared === folder);
+const isTestHelper = (modulePath: string) =>
+  declaredFolder(modulePath)?.split('/').at(-1) === TEST_HELPER_FOLDER;
 
-const sharedFolderOf = (modulePath: string) =>
-  declaredFolder(modulePath)?.split('/').at(-1) ?? 'elements';
+// App code places what it imports into elements or shared; tests and their
+// helpers place what they import into tests-shared.
+const isTestCode = (consumer: string) =>
+  TEST.test(consumer) || isTestHelper(consumer);
 
-// App code places what it imports into elements; tests and their helpers place
-// what they import into tests-shared.
-const consumerFolderOf = (consumer: string) =>
-  TEST.test(consumer) ? 'tests-shared' : sharedFolderOf(consumer);
+function unitOf(modulePath: string): string {
+  const folder = declaredFolder(modulePath);
+  if (folder === null) return modulePath;
+  const [moduleFolder, ...rest] = modulePath
+    .slice(folder.length + 1)
+    .split('/');
+  return rest.length === 0 ? modulePath : `${folder}/${moduleFolder}`;
+}
 
 function declaredFolder(modulePath: string): string | null {
   const folders = modulePath.split('/').slice(0, -1);
   const innermost = Math.max(
-    ...SHARED_FOLDERS.map((shared) => folders.lastIndexOf(shared)),
+    ...PLACEMENT_FOLDERS.map((shared) => folders.lastIndexOf(shared)),
   );
   return innermost === -1 ? null : folders.slice(0, innermost + 1).join('/');
 }
 
 function owningFolder(modulePath: string): string {
-  const folders = modulePath.split('/').slice(0, -1);
-  while (isSharedFolder(folders.at(-1))) folders.pop();
-  return collapsePages(folders.join('/'));
+  const folder = declaredFolder(modulePath) ?? modulePath;
+  return collapsePages(path.posix.dirname(folder));
 }
 
-function requiredFolder(owners: string[], sharedFolder: string): string {
-  const shared = owners.reduce(commonPrefix);
-  return `${collapsePages(shared)}/${sharedFolder}`;
+function requiredFolder(owners: string[], helper: boolean): string {
+  const shared = collapsePages(owners.reduce(commonPrefix));
+  if (helper) return `${shared}/${TEST_HELPER_FOLDER}`;
+  return `${shared}/${owners.length === 1 ? 'elements' : 'shared'}`;
 }
 
 function commonPrefix(left: string, right: string): string {
