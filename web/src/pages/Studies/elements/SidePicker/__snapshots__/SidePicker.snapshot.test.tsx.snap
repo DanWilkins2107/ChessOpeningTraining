@@ -1,0 +1,50 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SidePicker > matches snapshot 1`] = `
+<div>
+  <fieldset
+    class="side-picker"
+  >
+    <legend
+      class="side-picker-legend"
+    >
+      Side
+    </legend>
+    <div
+      class="side-picker-options"
+    >
+      <label
+        class="side-picker-option"
+      >
+        <input
+          checked=""
+          class="side-picker-input"
+          name="side"
+          type="radio"
+          value="white"
+        />
+        <span
+          class="side-picker-name"
+        >
+          white
+        </span>
+      </label>
+      <label
+        class="side-picker-option"
+      >
+        <input
+          class="side-picker-input"
+          name="side"
+          type="radio"
+          value="black"
+        />
+        <span
+          class="side-picker-name"
+        >
+          black
+        </span>
+      </label>
+    </div>
+  </fieldset>
+</div>
+`;
