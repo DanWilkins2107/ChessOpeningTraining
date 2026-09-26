@@ -8,6 +8,7 @@ import {
 } from './router.constants';
 import { RootLayout } from '../RootLayout/RootLayout';
 import { Account } from '../../pages/Account/page';
+import { ChangeEmail } from '../../pages/ChangeEmail/page';
 import { ForgotPassword } from '../../pages/ForgotPassword/page';
 import { Home } from '../../pages/Home/page';
 import { NotFound } from '../../pages/NotFound/page';
@@ -27,6 +28,7 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <Home /> },
           { path: ACCOUNT_ROUTE_PATH, element: <Account /> },
+          { path: 'account/email', element: <ChangeEmail /> },
           { path: STUDIES_ROUTE_PATH, element: <Studies /> },
         ],
       },

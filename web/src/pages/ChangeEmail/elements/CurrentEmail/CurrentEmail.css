@@ -1,0 +1,4 @@
+.current-email {
+  color: var(--ink-muted);
+  overflow-wrap: anywhere;
+}

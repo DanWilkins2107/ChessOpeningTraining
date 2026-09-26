@@ -23,8 +23,13 @@
   color: var(--ink);
   font: inherit;
   text-align: left;
+  text-decoration: none;
   cursor: pointer;
   transition: border-color 120ms ease;
+}
+
+.account-action + .account-action {
+  margin-top: var(--gap-sm);
 }
 
 .account-action:hover {

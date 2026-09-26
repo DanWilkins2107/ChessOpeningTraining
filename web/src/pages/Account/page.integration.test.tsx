@@ -141,3 +141,14 @@ it('leaves no way back to the sign-out notice once they sign back in', async () 
   // Then the stale notice is not in their history
   expect(pathOf(memoryRouter)).toBe('/');
 });
+
+it('takes them to change their email', async () => {
+  // Given a signed-in user on their account page
+  const memoryRouter = await accountPage();
+
+  // When they choose to change their email
+  fireEvent.click(screen.getByRole('link', { name: 'Change email' }));
+
+  // Then they are on the change email page
+  expect(pathOf(memoryRouter)).toBe('/account/email');
+});
