@@ -54,6 +54,7 @@ export function Board({ position, orientation, onMove }: BoardProps) {
         files={files}
         ranks={ranks}
         pieces={pieces}
+        selected={selected}
         onSquareClick={clickSquare}
       />
       <BoardPieces files={files} ranks={ranks} pieces={pieces} />
