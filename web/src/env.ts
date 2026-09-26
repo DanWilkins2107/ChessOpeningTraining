@@ -1,4 +1,4 @@
-import { z } from './zod';
+import { z } from './z';
 
 const envSchema = z.object({
   VITE_SUPABASE_URL: z.url(),
