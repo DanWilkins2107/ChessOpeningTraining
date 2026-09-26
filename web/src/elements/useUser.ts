@@ -1,7 +1,7 @@
 import type { Session, User } from '@supabase/supabase-js';
 import { useEffect, useEffectEvent, useState } from 'react';
 import { supabase } from '../supabase';
-import { SUBSCRIBE_ONCE } from './session.constants';
+import { SUBSCRIBE_ONCE } from './useUser.constants';
 
 export function useUser(): User | null | undefined {
   const [user, setUser] = useState<User | null>();
