@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { useUser } from '../../elements/session';
-import { SetNewPasswordForm } from './elements/SetNewPasswordForm';
+import { useUser } from '../../shared/session/session';
+import { SetNewPasswordForm } from './elements/SetNewPasswordForm/SetNewPasswordForm';
 import './page.css';
 
 export function SetNewPassword() {
