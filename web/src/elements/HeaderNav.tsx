@@ -1,6 +1,9 @@
 import { Link, useMatches } from 'react-router-dom';
-import { PROTECTED_ROUTE_HANDLE, STUDIES_ROUTE_PATH } from './router.constants';
-import { SignOut } from './SignOut';
+import {
+  ACCOUNT_ROUTE_PATH,
+  PROTECTED_ROUTE_HANDLE,
+  STUDIES_ROUTE_PATH,
+} from './router.constants';
 import './HeaderNav.css';
 
 export function HeaderNav() {
@@ -8,17 +11,24 @@ export function HeaderNav() {
     ({ handle }) => handle === PROTECTED_ROUTE_HANDLE,
   );
 
-  // The route's own handle decides, not the user, so the links are there from
-  // the first paint of a protected page. A visitor who turns out to be nobody
-  // is redirected to sign in, which is public, and the nav goes with them.
-  if (!onProtectedPage) return null;
-
+  // The route's own handle decides which signed-in links show, not the user, so
+  // they are there from the first paint of a protected page. A visitor who
+  // turns out to be nobody is redirected to sign in, which is public, and those
+  // links go with them.
+  //
+  // Account is offered everywhere, signed in or not: following it from a public
+  // page redirects to sign in carrying `next=/account`, which lands them on the
+  // account page once they are in.
   return (
     <nav className="header-nav">
-      <Link to={STUDIES_ROUTE_PATH} className="header-nav-link">
-        Studies
+      {onProtectedPage && (
+        <Link to={STUDIES_ROUTE_PATH} className="header-nav-link">
+          Studies
+        </Link>
+      )}
+      <Link to={ACCOUNT_ROUTE_PATH} className="header-nav-link">
+        Account
       </Link>
-      <SignOut />
     </nav>
   );
 }
