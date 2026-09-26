@@ -5,6 +5,7 @@ import {
   SIGNED_OUT_PENDING,
 } from '../../elements/signOut.constants';
 import { supabase } from '../../supabase';
+import { DeleteAccount } from './elements/DeleteAccount';
 import './page.css';
 
 export function Account() {
@@ -27,6 +28,7 @@ export function Account() {
       <button type="button" className="account-action" onClick={signOut}>
         Sign out
       </button>
+      <DeleteAccount />
     </section>
   );
 }
