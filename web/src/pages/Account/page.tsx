@@ -1,5 +1,4 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { DELETE_ACCOUNT_ROUTE_PATH } from '../../elements/router/router.constants';
 import {
   SIGNED_OUT_DONE,
   SIGNED_OUT_PARAM,
@@ -29,7 +28,7 @@ export function Account() {
         Sign out
       </button>
       <Link
-        to={DELETE_ACCOUNT_ROUTE_PATH}
+        to="/account/delete"
         className="account-action account-action-danger"
       >
         Delete account
