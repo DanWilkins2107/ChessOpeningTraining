@@ -4,8 +4,8 @@ import './TextInput.css';
 type TextInputProps = {
   label: string;
   name: string;
-  type: 'email' | 'password';
-  autoComplete: 'email' | 'current-password' | 'new-password';
+  type: 'email' | 'password' | 'text';
+  autoComplete: 'email' | 'current-password' | 'new-password' | 'one-time-code';
   onChange?: (value: string) => void;
 };
 

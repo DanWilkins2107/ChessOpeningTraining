@@ -1,6 +1,12 @@
 import { act, fireEvent, screen, within } from '@testing-library/react';
 import { expect, it } from 'vitest';
 import { authSettled } from '../../tests-shared/authSettled';
+import {
+  SERVER,
+  enterNewPassword,
+  saveButton,
+  savePassword,
+} from '../../tests-shared/newPasswordForm';
 import { pathOf, renderAt, renderSettledAt } from '../../tests-shared/renderAt';
 import { registerTestUser } from '../../tests-shared/testUser';
 import { supabase } from '../../supabase';
@@ -12,18 +18,11 @@ const landing = registerTestUser();
 const returning = registerTestUser();
 const rejecting = registerTestUser({ password: currentPassword });
 
-// Every wait here is on the test stack, and saving makes it hash the password,
-// which outlasts Testing Library's default one-second wait.
-const SERVER = { timeout: 3000 };
-
 const spentNotice = () =>
   screen.findByText('That reset link is invalid or has expired', {}, SERVER);
 
 const ruleList = () =>
   screen.findByRole('list', { name: 'Password needs' }, SERVER);
-
-const saveButton = () =>
-  screen.findByRole('button', { name: 'Save password' }, SERVER);
 
 const atHome = () =>
   screen.findByRole('heading', { name: 'Chess Opening Training' }, SERVER);
@@ -35,17 +34,6 @@ const tickedRules = async () =>
     .getAllByRole('listitem')
     .map((item) => item.textContent)
     .filter((text) => text?.endsWith('(done)'));
-
-async function enterNewPassword(password: string) {
-  fireEvent.change(await screen.findByLabelText('New password', {}, SERVER), {
-    target: { value: password },
-  });
-}
-
-async function savePassword(password: string) {
-  await enterNewPassword(password);
-  fireEvent.click(await saveButton());
-}
 
 it('says it is checking the link while the session resolves', () => {
   // Given a visitor arriving from a recovery link

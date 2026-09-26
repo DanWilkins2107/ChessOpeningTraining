@@ -4,9 +4,7 @@ import {
   AuthWeakPasswordError,
 } from '@supabase/supabase-js';
 import { expect, it } from 'vitest';
-import { setNewPasswordErrorMessage } from './setNewPasswordErrorMessage';
-
-const TRY_AGAIN = "Couldn't set your password, try again";
+import { TRY_AGAIN, newPasswordErrorMessage } from './newPasswordErrorMessage';
 
 const tooWeak = new AuthWeakPasswordError(
   `Password should ${crypto.randomUUID()}`,
@@ -26,18 +24,29 @@ const rateLimited = new AuthApiError(
   'over_request_rate_limit',
 );
 
+const badCode = new AuthApiError(
+  'Invalid nonce',
+  422,
+  'reauthentication_not_valid',
+);
+
 const offline = new AuthRetryableFetchError('Failed to fetch', 0);
 
 it.each([
   ['a weak password', tooWeak, tooWeak.message],
   ['a password the account already has', unchanged, unchanged.message],
+  [
+    'a wrong reauthentication code',
+    badCode,
+    'That code is wrong or has expired',
+  ],
   ['a rate limit', rateLimited, TRY_AGAIN],
   ['a network failure', offline, TRY_AGAIN],
 ])('explains %s', (_case, error, shown) => {
   // Given a rejected password update
 
   // When its error is explained
-  const explained = setNewPasswordErrorMessage(error);
+  const explained = newPasswordErrorMessage(error);
 
   // Then the matching message is shown
   expect(explained).toBe(shown);
