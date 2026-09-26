@@ -29,16 +29,19 @@ async function emailChangeRequested() {
   return { ...user, newEmail };
 }
 
-it('keeps the old email while only one inbox has confirmed', async () => {
-  // Given a user who has asked to change their email
-  const { id, email, newEmail } = await emailChangeRequested();
+it.each(['old', 'new'] as const)(
+  'keeps the old email while only the %s inbox has confirmed',
+  async (inbox) => {
+    // Given a user who has asked to change their email
+    const { id, email, newEmail } = await emailChangeRequested();
 
-  // When only the new inbox's link is followed
-  await follow(await linkMailedTo(newEmail));
+    // When only that inbox's link is followed
+    await follow(await linkMailedTo(inbox === 'old' ? email : newEmail));
 
-  // Then the email is unchanged
-  expect(await storedEmail(id)).toBe(email);
-});
+    // Then the email is unchanged
+    expect(await storedEmail(id)).toBe(email);
+  },
+);
 
 it('changes the email once both inboxes confirm', async () => {
   // Given a user who has asked to change their email
