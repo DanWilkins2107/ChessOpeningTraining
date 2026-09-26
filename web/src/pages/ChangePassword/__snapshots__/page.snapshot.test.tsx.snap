@@ -1,0 +1,123 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ChangePassword > matches snapshot 1`] = `
+<div>
+  <section
+    class="change-password-card"
+  >
+    <h1
+      class="change-password-heading"
+    >
+      Change password
+    </h1>
+    <div
+      class="change-password-form"
+    >
+      <form
+        class="new-password-form"
+      >
+        <div
+          class="text-input"
+        >
+          <label
+            for="_r_0_"
+          >
+            New password
+          </label>
+          <div
+            class="text-input-control"
+          >
+            <input
+              autocomplete="new-password"
+              class="text-input-field"
+              id="_r_0_"
+              name="password"
+              required=""
+              type="password"
+            />
+            <button
+              aria-label="Show password"
+              class="text-input-reveal"
+              type="button"
+            >
+              Show
+            </button>
+          </div>
+        </div>
+        <ul
+          aria-label="Password needs"
+          class="password-checklist"
+        >
+          <li
+            class="password-rule"
+          >
+            At least 8 characters
+          </li>
+          <li
+            class="password-rule"
+          >
+            A lowercase letter
+          </li>
+          <li
+            class="password-rule"
+          >
+            An uppercase letter
+          </li>
+          <li
+            class="password-rule"
+          >
+            A number
+          </li>
+          <li
+            class="password-rule"
+          >
+            A symbol
+          </li>
+        </ul>
+        <div
+          class="text-input"
+        >
+          <label
+            for="_r_1_"
+          >
+            Confirm new password
+          </label>
+          <div
+            class="text-input-control"
+          >
+            <input
+              autocomplete="new-password"
+              class="text-input-field"
+              id="_r_1_"
+              name="confirmation"
+              required=""
+              type="password"
+            />
+            <button
+              aria-label="Show password"
+              class="text-input-reveal"
+              type="button"
+            >
+              Show
+            </button>
+          </div>
+        </div>
+        <button
+          class="button"
+          disabled=""
+          type="submit"
+        >
+          Save password
+        </button>
+      </form>
+    </div>
+    <a
+      class="change-password-back"
+      data-discover="true"
+      href="/account"
+    >
+      Back to account
+    </a>
+  </section>
+</div>
+`;

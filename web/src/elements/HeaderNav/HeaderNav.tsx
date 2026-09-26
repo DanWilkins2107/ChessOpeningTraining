@@ -3,7 +3,7 @@ import {
   ACCOUNT_ROUTE_PATH,
   PROTECTED_ROUTE_HANDLE,
   STUDIES_ROUTE_PATH,
-} from '../router/router.constants';
+} from '../../shared/routes/routes.constants';
 import './HeaderNav.css';
 
 export function HeaderNav() {

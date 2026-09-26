@@ -5,7 +5,8 @@ type TextInputProps = {
   label: string;
   name: string;
   type: 'email' | 'password' | 'text';
-  autoComplete: 'email' | 'current-password' | 'new-password' | 'off';
+  autoComplete:
+    'email' | 'current-password' | 'new-password' | 'one-time-code' | 'off';
   maxLength?: number;
   onChange?: (value: string) => void;
 };

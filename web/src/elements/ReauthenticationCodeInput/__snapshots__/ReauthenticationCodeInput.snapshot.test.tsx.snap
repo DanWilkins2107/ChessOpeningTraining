@@ -1,0 +1,30 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ReauthenticationCodeInput > matches snapshot 1`] = `
+<div>
+  <p>
+    We've emailed you a code to confirm it's you
+  </p>
+  <div
+    class="text-input"
+  >
+    <label
+      for="_r_0_"
+    >
+      Code
+    </label>
+    <div
+      class="text-input-control"
+    >
+      <input
+        autocomplete="one-time-code"
+        class="text-input-field"
+        id="_r_0_"
+        name="code"
+        required=""
+        type="text"
+      />
+    </div>
+  </div>
+</div>
+`;

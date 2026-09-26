@@ -1,10 +1,11 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../../shared/useUser/useUser';
-import { SetNewPasswordForm } from './elements/SetNewPasswordForm/SetNewPasswordForm';
+import { NewPasswordForm } from '../../shared/NewPasswordForm/NewPasswordForm';
 import './page.css';
 
 export function SetNewPassword() {
   const user = useUser();
+  const navigate = useNavigate();
 
   return (
     <section className="set-new-password-card">
@@ -18,7 +19,9 @@ export function SetNewPassword() {
           </Link>
         </>
       )}
-      {user && <SetNewPasswordForm />}
+      {user && (
+        <NewPasswordForm onSaved={() => navigate('/', { replace: true })} />
+      )}
     </section>
   );
 }

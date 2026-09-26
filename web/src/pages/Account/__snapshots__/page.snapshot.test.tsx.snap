@@ -10,6 +10,13 @@ exports[`Account > matches snapshot 1`] = `
     >
       Account
     </h1>
+    <a
+      class="account-action"
+      data-discover="true"
+      href="/account/password"
+    >
+      Change password
+    </a>
     <button
       class="account-action"
       type="button"

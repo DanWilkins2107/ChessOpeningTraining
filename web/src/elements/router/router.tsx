@@ -2,12 +2,14 @@ import { createBrowserRouter } from 'react-router-dom';
 import { ProtectedLayout } from '../ProtectedLayout/ProtectedLayout';
 import {
   ACCOUNT_ROUTE_PATH,
+  CHANGE_PASSWORD_ROUTE_PATH,
   PROTECTED_ROUTE_HANDLE,
   ROOT_ROUTE_PATH,
   STUDIES_ROUTE_PATH,
-} from './router.constants';
+} from '../../shared/routes/routes.constants';
 import { RootLayout } from '../RootLayout/RootLayout';
 import { Account } from '../../pages/Account/page';
+import { ChangePassword } from '../../pages/ChangePassword/page';
 import { ForgotPassword } from '../../pages/ForgotPassword/page';
 import { Home } from '../../pages/Home/page';
 import { NotFound } from '../../pages/NotFound/page';
@@ -27,6 +29,7 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <Home /> },
           { path: ACCOUNT_ROUTE_PATH, element: <Account /> },
+          { path: CHANGE_PASSWORD_ROUTE_PATH, element: <ChangePassword /> },
           { path: STUDIES_ROUTE_PATH, element: <Studies /> },
         ],
       },

@@ -1,0 +1,15 @@
+import { TextInput } from '../../shared/TextInput/TextInput';
+
+export function ReauthenticationCodeInput() {
+  return (
+    <>
+      <p>We've emailed you a code to confirm it's you</p>
+      <TextInput
+        label="Code"
+        name="code"
+        type="text"
+        autoComplete="one-time-code"
+      />
+    </>
+  );
+}

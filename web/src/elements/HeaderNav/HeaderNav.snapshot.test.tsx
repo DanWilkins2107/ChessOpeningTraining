@@ -2,7 +2,7 @@ import { render } from '@testing-library/react';
 import { RouterProvider, createMemoryRouter } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 import { HeaderNav } from './HeaderNav';
-import { PROTECTED_ROUTE_HANDLE } from '../router/router.constants';
+import { PROTECTED_ROUTE_HANDLE } from '../../shared/routes/routes.constants';
 
 function renderNav(handle?: typeof PROTECTED_ROUTE_HANDLE) {
   const router = createMemoryRouter([

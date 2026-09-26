@@ -30,6 +30,7 @@ password_requirements = "lower_upper_letters_digits_symbols"
 
 [auth.email]
 enable_confirmations = true
+secure_password_change = true
 
 # Sign-up only hides that an email is already registered when neither email nor
 # SMS autoconfirms, so SMS confirmations are on even though SMS sign-up is not.
