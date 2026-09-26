@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   SIGNED_OUT_DONE,
   SIGNED_OUT_PARAM,
@@ -27,6 +27,12 @@ export function Account() {
       <button type="button" className="account-action" onClick={signOut}>
         Sign out
       </button>
+      <Link
+        to="/account/delete"
+        className="account-action account-action-danger"
+      >
+        Delete account
+      </Link>
     </section>
   );
 }

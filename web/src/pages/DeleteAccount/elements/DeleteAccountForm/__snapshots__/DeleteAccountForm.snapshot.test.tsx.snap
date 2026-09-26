@@ -1,0 +1,48 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`DeleteAccountForm > matches snapshot 1`] = `
+<div>
+  <form
+    class="delete-account-form"
+  >
+    <p>
+      This permanently deletes your account and all your studies.
+    </p>
+    <div
+      class="text-input"
+    >
+      <label
+        for="_r_0_"
+      >
+        Password
+      </label>
+      <div
+        class="text-input-control"
+      >
+        <input
+          autocomplete="current-password"
+          class="text-input-field"
+          id="_r_0_"
+          name="password"
+          required=""
+          type="password"
+        />
+        <button
+          aria-label="Show password"
+          class="text-input-reveal"
+          type="button"
+        >
+          Show
+        </button>
+      </div>
+    </div>
+    <button
+      class="button button-danger"
+      disabled=""
+      type="submit"
+    >
+      Delete account
+    </button>
+  </form>
+</div>
+`;
