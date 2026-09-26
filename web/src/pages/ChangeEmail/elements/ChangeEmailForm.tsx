@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Button } from '../../../elements/Button';
 import { ErrorMessage } from '../../../elements/ErrorMessage';
-import { ACCOUNT_ROUTE_PATH } from '../../../elements/router.constants';
+import { CHANGE_EMAIL_ROUTE_PATH } from '../../../elements/router.constants';
 import { useUser } from '../../../elements/useUser';
 import { TextInput } from '../../../elements/TextInput';
 import { supabase } from '../../../supabase';
@@ -23,7 +23,7 @@ export function ChangeEmailForm() {
     setPending(true);
     const { error } = await supabase.auth.updateUser(
       { email: String(form.get('email')) },
-      { emailRedirectTo: window.location.origin + ACCOUNT_ROUTE_PATH },
+      { emailRedirectTo: window.location.origin + CHANGE_EMAIL_ROUTE_PATH },
     );
     setPending(false);
     setError(error ? changeEmailErrorMessage(error) : undefined);

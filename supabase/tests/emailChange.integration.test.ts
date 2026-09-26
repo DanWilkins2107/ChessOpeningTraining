@@ -2,7 +2,7 @@ import { env } from 'node:process';
 import { expect, it, vi } from 'vitest';
 import { admin, signedInUser } from './tests-shared/testUsers';
 
-const ACCOUNT_URL = 'http://localhost:5173/account';
+const CHANGE_EMAIL_URL = 'http://localhost:5173/account/email';
 
 const storedEmail = async (id: string) =>
   (await admin.auth.admin.getUserById(id)).data.user?.email;
@@ -29,7 +29,7 @@ async function emailChangeRequested() {
   const newEmail = `test-${crypto.randomUUID()}@example.test`;
   const { error } = await user.client.auth.updateUser(
     { email: newEmail },
-    { emailRedirectTo: ACCOUNT_URL },
+    { emailRedirectTo: CHANGE_EMAIL_URL },
   );
   if (error) throw error;
   return { ...user, newEmail };
@@ -42,8 +42,8 @@ it('keeps the old email while only one inbox has confirmed', async () => {
   // When only the new inbox's link is followed
   const landing = await follow(await linkMailedTo(newEmail));
 
-  // Then the email is unchanged, and the account page is told to wait
-  expect(landing).toMatch(new RegExp(`^${ACCOUNT_URL}#message=`));
+  // Then the email is unchanged, and the change email page is told to wait
+  expect(landing).toMatch(new RegExp(`^${CHANGE_EMAIL_URL}#message=`));
   expect(await storedEmail(id)).toBe(email);
 });
 
@@ -53,8 +53,11 @@ it('changes the email once both inboxes confirm', async () => {
 
   // When the links in both inboxes are followed
   await follow(await linkMailedTo(newEmail));
-  await follow(await linkMailedTo(email));
+  const landing = new URL(String(await follow(await linkMailedTo(email))));
 
-  // Then the account has the new email
+  // Then the account has the new email, and the change email page is told so
   expect(await storedEmail(id)).toBe(newEmail);
+  expect(new URLSearchParams(landing.hash.slice(1)).get('type')).toBe(
+    'email_change',
+  );
 });

@@ -3,13 +3,23 @@
 export function emailLinkNotice(hash: string) {
   const params = new URLSearchParams(hash.slice(1));
   if (params.has('error')) {
-    return { confirmed: false, text: 'That link is invalid or has expired' };
+    return {
+      confirmed: false,
+      text: 'That link is invalid or has expired',
+      clearHash: true,
+    };
   }
   if (params.has('message')) {
     return {
       confirmed: true,
       text: 'Confirmed, now open the link sent to your other email',
+      clearHash: true,
     };
+  }
+  // The last link carries the new session, which Supabase reads from the hash
+  // and then clears itself.
+  if (params.get('type') === 'email_change') {
+    return { confirmed: true, text: 'Email changed', clearHash: false };
   }
   return undefined;
 }

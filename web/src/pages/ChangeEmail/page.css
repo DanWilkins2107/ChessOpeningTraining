@@ -1,0 +1,19 @@
+.change-email-card {
+  max-width: 24rem;
+  margin-inline: auto;
+  padding: var(--gap-lg);
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
+}
+
+.change-email-heading {
+  margin-bottom: var(--gap-md);
+  font-size: var(--text-lg);
+}
+
+.change-email-back {
+  display: block;
+  font-size: var(--text-sm);
+}

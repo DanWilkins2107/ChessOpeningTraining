@@ -13,6 +13,7 @@ it('confirms the first of the two links', () => {
   expect(notice).toEqual({
     confirmed: true,
     text: 'Confirmed, now open the link sent to your other email',
+    clearHash: true,
   });
 });
 
@@ -27,12 +28,29 @@ it('reports a failed link without repeating its wording', () => {
   expect(notice).toEqual({
     confirmed: false,
     text: 'That link is invalid or has expired',
+    clearHash: true,
+  });
+});
+
+it('confirms the change once the last link is opened, leaving the hash to Supabase', () => {
+  // Given the hash Supabase adds after the last link, carrying the new session
+  const hash = `#type=email_change&access_token=${crypto.randomUUID()}`;
+
+  // When it is read
+  const notice = emailLinkNotice(hash);
+
+  // Then the change is confirmed, and the session is not cleared from under Supabase
+  expect(notice).toEqual({
+    confirmed: true,
+    text: 'Email changed',
+    clearHash: false,
   });
 });
 
 it.each([
   ['no hash', ''],
   ['an unrelated hash', '#section'],
+  ['a session from another kind of link', '#type=recovery&access_token=token'],
 ])('has nothing to say for %s', (_case, hash) => {
   // Given a hash that is not about an email link
 

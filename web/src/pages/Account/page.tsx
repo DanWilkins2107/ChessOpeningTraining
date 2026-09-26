@@ -1,11 +1,11 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { CHANGE_EMAIL_ROUTE_PATH } from '../../elements/router.constants';
 import {
   SIGNED_OUT_DONE,
   SIGNED_OUT_PARAM,
   SIGNED_OUT_PENDING,
 } from '../../elements/signOut.constants';
 import { supabase } from '../../supabase';
-import { ChangeEmailForm } from './elements/ChangeEmailForm';
 import './page.css';
 
 export function Account() {
@@ -25,7 +25,9 @@ export function Account() {
   return (
     <section className="account-card">
       <h1 className="account-heading">Account</h1>
-      <ChangeEmailForm />
+      <Link to={CHANGE_EMAIL_ROUTE_PATH} className="account-action">
+        Change email
+      </Link>
       <button type="button" className="account-action" onClick={signOut}>
         Sign out
       </button>

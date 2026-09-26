@@ -24,19 +24,19 @@ const enterNewEmail = (email: string) =>
     target: { value: email },
   });
 
-async function accountPageAs(
+async function changeEmailPageAs(
   user: ReturnType<typeof registerTestUser>,
   hash = '',
 ) {
   await user.signIn();
-  return renderSettledAt(`/account${hash}`);
+  return renderSettledAt(`/account/email${hash}`);
 }
 
 it('shows their current email and no pending change', async () => {
   // Given a signed-in user
 
-  // When they open their account page
-  await accountPageAs(viewer);
+  // When they open their change email page
+  await changeEmailPageAs(viewer);
 
   // Then it shows the email they have, with nothing waiting
   expect(
@@ -46,8 +46,8 @@ it('shows their current email and no pending change', async () => {
 });
 
 it('asks them to check both inboxes once a change is requested', async () => {
-  // Given a signed-in user on their account page
-  await accountPageAs(requester);
+  // Given a signed-in user on their change email page
+  await changeEmailPageAs(requester);
   // mock-reason: the redirect is the assertion, and the test stack only honours
   // redirects on its allow list, which the test origin is not on, so the email
   // cannot show it. The spy still calls the real client.
@@ -64,7 +64,7 @@ it('asks them to check both inboxes once a change is requested', async () => {
   );
   expect(updateUser).toHaveBeenCalledWith(
     { email: newEmail },
-    { emailRedirectTo: `${window.location.origin}/account` },
+    { emailRedirectTo: `${window.location.origin}/account/email` },
   );
 });
 
@@ -75,8 +75,8 @@ it('still shows a pending change when they come back', async () => {
   const { error } = await supabase.auth.updateUser({ email: newEmail });
   if (error) throw error;
 
-  // When they open their account page
-  await renderSettledAt('/account');
+  // When they open their change email page
+  await renderSettledAt('/account/email');
 
   // Then the change is still waiting on both inboxes
   expect(await screen.findByRole('status')).toHaveTextContent(
@@ -85,8 +85,8 @@ it('still shows a pending change when they come back', async () => {
 });
 
 it('says when the new email already has an account', async () => {
-  // Given a signed-in user on their account page
-  await accountPageAs(viewer);
+  // Given a signed-in user on their change email page
+  await changeEmailPageAs(viewer);
 
   // When they ask for an email another account uses
   enterNewEmail(taken.credentials.email);
@@ -99,8 +99,8 @@ it('says when the new email already has an account', async () => {
 });
 
 it('disables the button until the attempt finishes', async () => {
-  // Given a signed-in user on their account page
-  await accountPageAs(viewer);
+  // Given a signed-in user on their change email page
+  await changeEmailPageAs(viewer);
 
   // When they submit a change the server refuses
   enterNewEmail(taken.credentials.email);
@@ -113,8 +113,8 @@ it('disables the button until the attempt finishes', async () => {
 });
 
 it('keeps the browser from submitting the form itself', async () => {
-  // Given a signed-in user on their account page with a new email entered
-  await accountPageAs(viewer);
+  // Given a signed-in user on their change email page with a new email entered
+  await changeEmailPageAs(viewer);
   enterNewEmail(taken.credentials.email);
 
   // When the form is submitted
@@ -126,8 +126,8 @@ it('keeps the browser from submitting the form itself', async () => {
 });
 
 it('keeps change email disabled until the new email is valid', async () => {
-  // Given a signed-in user on their account page
-  await accountPageAs(viewer);
+  // Given a signed-in user on their change email page
+  await changeEmailPageAs(viewer);
 
   // When they type something that is not an email, then an email
   enterNewEmail('not-an-email');
@@ -141,7 +141,7 @@ it('keeps change email disabled until the new email is valid', async () => {
 
 it('confirms the first link and clears it from the address', async () => {
   // Given a user back from the first of the two email links
-  const memoryRouter = await accountPageAs(
+  const memoryRouter = await changeEmailPageAs(
     viewer,
     '#message=Confirmation+link+accepted',
   );
@@ -157,9 +157,21 @@ it('confirms the first link and clears it from the address', async () => {
   expect(memoryRouter.state.location.hash).toBe('');
 });
 
+it('confirms the change once the last link is opened', async () => {
+  // Given a user back from the last of the two email links
+  const hash = `#type=email_change&access_token=${crypto.randomUUID()}`;
+
+  // When their change email page opens
+  const memoryRouter = await changeEmailPageAs(viewer, hash);
+
+  // Then the change is confirmed, and the session hash is left for Supabase
+  expect(screen.getByRole('status')).toHaveTextContent('Email changed');
+  expect(memoryRouter.state.location.hash).toBe(hash);
+});
+
 it('reports a link that failed', async () => {
   // Given a user back from an expired email link
-  await accountPageAs(
+  await changeEmailPageAs(
     viewer,
     '#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired',
   );
@@ -173,8 +185,8 @@ it('reports a link that failed', async () => {
 it('leaves a hash that is not about an email link alone', async () => {
   // Given a signed-in user
 
-  // When they open their account page with an unrelated hash
-  const memoryRouter = await accountPageAs(viewer, '#section');
+  // When they open their change email page with an unrelated hash
+  const memoryRouter = await changeEmailPageAs(viewer, '#section');
 
   // Then the hash stays
   expect(memoryRouter.state.location.hash).toBe('#section');
