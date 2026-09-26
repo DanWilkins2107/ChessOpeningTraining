@@ -1,3 +1,4 @@
+import { ErrorMessage } from '../../../../shared/ErrorMessage/ErrorMessage';
 import type { StudiesResponse } from '../StudiesResponse/StudiesResponse';
 import './StudyList.css';
 
@@ -17,11 +18,7 @@ export function StudyList({
   }
 
   if (response.error) {
-    return (
-      <p role="alert" className="study-list-error">
-        Couldn't load your studies, try again
-      </p>
-    );
+    return <ErrorMessage>Couldn't load your studies, try again</ErrorMessage>;
   }
 
   if (response.data.length === 0) {

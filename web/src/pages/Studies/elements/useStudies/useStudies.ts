@@ -1,10 +1,11 @@
-import { useEffect, useEffectEvent, useState } from 'react';
+import { useEffect, useEffectEvent, useReducer, useState } from 'react';
 import { useUser } from '../../../../shared/useUser/useUser';
 import { supabase } from '../../../../supabase';
 import type { StudiesResponse } from '../StudiesResponse/StudiesResponse';
 
-export function useStudies(): StudiesResponse | undefined {
+export function useStudies() {
   const userId = useUser()?.id;
+  const [version, refresh] = useReducer((n: number) => n + 1, 0);
   const [loaded, setLoaded] = useState<{
     userId?: string;
     response?: StudiesResponse;
@@ -27,7 +28,10 @@ export function useStudies(): StudiesResponse | undefined {
       .select('id, name, side')
       .order('created_at', { ascending: false })
       .then((response) => onResponse(userId, response));
-  }, [userId]);
+  }, [userId, version]);
 
-  return loaded.userId === userId ? loaded.response : undefined;
+  return {
+    response: loaded.userId === userId ? loaded.response : undefined,
+    refresh,
+  };
 }
