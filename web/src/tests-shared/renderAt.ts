@@ -1,7 +1,7 @@
 import { createElement } from 'react';
 import { RouterProvider, createMemoryRouter } from 'react-router-dom';
 import { render } from '@testing-library/react';
-import { router } from '../elements/router';
+import { router } from '../elements/router/router';
 import { authSettled } from './authSettled';
 
 export function renderAt(...entries: string[]) {

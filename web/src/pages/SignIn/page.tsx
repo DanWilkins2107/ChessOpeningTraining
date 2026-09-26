@@ -1,15 +1,18 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link, Navigate, useSearchParams } from 'react-router-dom';
-import { Button } from '../../elements/Button';
-import { ErrorMessage } from '../../elements/ErrorMessage';
-import { useUser } from '../../elements/useUser';
-import { SuccessMessage } from '../../elements/SuccessMessage';
-import { TextInput } from '../../elements/TextInput';
+import { Button } from '../../shared/Button/Button';
+import { ErrorMessage } from '../../shared/ErrorMessage/ErrorMessage';
+import { useUser } from '../../shared/useUser/useUser';
+import { SuccessMessage } from '../../shared/SuccessMessage/SuccessMessage';
+import { TextInput } from '../../shared/TextInput/TextInput';
 import { supabase } from '../../supabase';
-import { safeReturnPath } from './elements/safeReturnPath';
-import { signInErrorMessage } from './elements/signInErrorMessage';
-import { signOutNotice, withoutSignOutNotice } from './elements/signOutNotice';
+import { safeReturnPath } from './elements/safeReturnPath/safeReturnPath';
+import { signInErrorMessage } from './elements/signInErrorMessage/signInErrorMessage';
+import {
+  signOutNotice,
+  withoutSignOutNotice,
+} from './elements/signOutNotice/signOutNotice';
 import './page.css';
 
 // A signed-in visitor has no business on the form and is sent on, unless they

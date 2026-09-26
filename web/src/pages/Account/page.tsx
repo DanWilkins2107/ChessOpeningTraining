@@ -3,8 +3,8 @@ import {
   SIGNED_OUT_DONE,
   SIGNED_OUT_PARAM,
   SIGNED_OUT_PENDING,
-} from '../../elements/signOut.constants';
-import { CHANGE_PASSWORD_ROUTE_PATH } from '../../elements/router.constants';
+} from '../../shared/signOut/signOut.constants';
+import { CHANGE_PASSWORD_ROUTE_PATH } from '../../shared/routes/routes.constants';
 import { supabase } from '../../supabase';
 import './page.css';
 

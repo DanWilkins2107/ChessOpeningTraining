@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { ACCOUNT_ROUTE_PATH } from '../../elements/router.constants';
-import { ChangePasswordForm } from './elements/ChangePasswordForm';
+import { ACCOUNT_ROUTE_PATH } from '../../shared/routes/routes.constants';
+import { ChangePasswordForm } from './elements/ChangePasswordForm/ChangePasswordForm';
 import './page.css';
 
 export function ChangePassword() {

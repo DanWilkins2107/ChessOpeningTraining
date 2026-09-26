@@ -1,6 +1,6 @@
 import { configDefaults, defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
-import { csp } from './src/elements/csp.ts';
+import { csp } from './src/elements/csp/csp.ts';
 
 export default defineConfig({
   // Explicit so setupFiles and .env.test still resolve against web/ when this

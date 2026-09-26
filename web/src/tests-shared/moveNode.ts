@@ -1,4 +1,4 @@
-import type { MoveNode } from '../elements/moveTree';
+import type { MoveNode } from '../elements/MoveNode/MoveNode';
 
 export const move = (san: string, ...children: MoveNode[]): MoveNode => ({
   san,
