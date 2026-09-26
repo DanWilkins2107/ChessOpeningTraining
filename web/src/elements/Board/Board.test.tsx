@@ -1,5 +1,5 @@
-import { render, screen, within } from '@testing-library/react';
-import { expect, it } from 'vitest';
+import { fireEvent, render, screen, within } from '@testing-library/react';
+import { expect, it, vi } from 'vitest';
 import { ROOK_ON_H5, ROOKS_HOME } from '../../tests-shared/rookPositions';
 import { Board } from './Board';
 
@@ -29,6 +29,19 @@ const KING_ON_E1 = '8/8/8/8/8/8/8/4K3';
 const KING_ON_E2 = '8/8/8/8/8/8/4K3/8';
 
 const ROOKS_ON_THE_H_FILE = '4k3/8/8/7R/8/8/8/4K2R';
+
+const AFTER_E4 = 'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1';
+const AFTER_KNIGHTS_OUT =
+  'rnbqkb1r/pppppppp/5n2/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq - 2 2';
+const PAWN_ABOUT_TO_PROMOTE = '4k3/P7/8/8/8/8/8/4K3 w - - 0 1';
+
+const clickSquares = (...names: string[]) => {
+  for (const name of names) {
+    fireEvent.click(
+      screen.getByRole('gridcell', { name: new RegExp(`^${name}`) }),
+    );
+  }
+};
 
 it('lays out rank 8 at the top from white', () => {
   // Given the board faces white
@@ -261,4 +274,142 @@ it('keeps pieces on their own squares from black', () => {
 
   // Then the white king is still announced on e1
   expect(square('e1, white king')).toBeInTheDocument();
+});
+
+it('plays a clicked piece to a clicked legal square', () => {
+  // Given the starting position with a move handler
+  const onMove = vi.fn();
+  render(<Board position={START} orientation="white" onMove={onMove} />);
+
+  // When the e2 pawn is clicked, then e4
+  clickSquares('e2', 'e4');
+
+  // Then the move is handed to the handler
+  expect(onMove).toHaveBeenCalledExactlyOnceWith({ from: 'e2', to: 'e4' });
+});
+
+it('lets the side to move be black', () => {
+  // Given black to move
+  const onMove = vi.fn();
+  render(<Board position={AFTER_E4} orientation="white" onMove={onMove} />);
+
+  // When the e7 pawn is clicked, then e5
+  clickSquares('e7', 'e5');
+
+  // Then black's move is handed over
+  expect(onMove).toHaveBeenCalledExactlyOnceWith({ from: 'e7', to: 'e5' });
+});
+
+it('plays nothing when a target is clicked with no piece selected', () => {
+  // Given the starting position with a move handler
+  const onMove = vi.fn();
+  render(<Board position={START} orientation="white" onMove={onMove} />);
+
+  // When e4 is clicked on its own
+  clickSquares('e4');
+
+  // Then no move is made
+  expect(onMove).not.toHaveBeenCalled();
+});
+
+it('does not select a piece of the side not to move', () => {
+  // Given white to move
+  const onMove = vi.fn();
+  render(<Board position={START} orientation="white" onMove={onMove} />);
+
+  // When the e7 pawn is clicked, then e5
+  clickSquares('e7', 'e5');
+
+  // Then no move is made
+  expect(onMove).not.toHaveBeenCalled();
+});
+
+it('switches the selection to another clicked piece', () => {
+  // Given the e2 pawn is selected
+  const onMove = vi.fn();
+  render(<Board position={START} orientation="white" onMove={onMove} />);
+  clickSquares('e2');
+
+  // When the d2 pawn is clicked, then d4
+  clickSquares('d2', 'd4');
+
+  // Then the d-pawn moves
+  expect(onMove).toHaveBeenCalledExactlyOnceWith({ from: 'd2', to: 'd4' });
+});
+
+it('deselects on a click that is not a legal target', () => {
+  // Given the e2 pawn is selected
+  const onMove = vi.fn();
+  render(<Board position={START} orientation="white" onMove={onMove} />);
+  clickSquares('e2');
+
+  // When e5 is clicked, then e4
+  clickSquares('e5', 'e4');
+
+  // Then no move is made
+  expect(onMove).not.toHaveBeenCalled();
+});
+
+it('clears the selection once a move is played', () => {
+  // Given e2-e4 has just been played, with the position not yet updated
+  const onMove = vi.fn();
+  render(<Board position={START} orientation="white" onMove={onMove} />);
+  clickSquares('e2', 'e4');
+
+  // When e4 is clicked again
+  clickSquares('e4');
+
+  // Then no second move is made
+  expect(onMove).toHaveBeenCalledOnce();
+});
+
+it('clears the selection when the position changes', () => {
+  // Given the e2 pawn is selected
+  const onMove = vi.fn();
+  const { rerender } = render(
+    <Board position={START} orientation="white" onMove={onMove} />,
+  );
+  clickSquares('e2');
+
+  // When a new position arrives with white to move and e4 clicked
+  rerender(
+    <Board position={AFTER_KNIGHTS_OUT} orientation="white" onMove={onMove} />,
+  );
+  clickSquares('e4');
+
+  // Then no move is made
+  expect(onMove).not.toHaveBeenCalled();
+});
+
+it('promotes to a queen', () => {
+  // Given a white pawn on a7
+  const onMove = vi.fn();
+  render(
+    <Board
+      position={PAWN_ABOUT_TO_PROMOTE}
+      orientation="white"
+      onMove={onMove}
+    />,
+  );
+
+  // When it is clicked, then a8
+  clickSquares('a7', 'a8');
+
+  // Then the move promotes to a queen
+  expect(onMove).toHaveBeenCalledExactlyOnceWith({
+    from: 'a7',
+    to: 'a8',
+    promotion: 'q',
+  });
+});
+
+it('ignores clicks without a move handler', () => {
+  // Given a board with no move handler
+  render(<Board position={START} orientation="white" />);
+
+  // When e2 is clicked, then e4
+  clickSquares('e2', 'e4');
+
+  // Then the position is unchanged
+  expect(square('e2, white pawn')).toBeInTheDocument();
 });
