@@ -9,10 +9,8 @@ import { TextInput } from '../../shared/TextInput/TextInput';
 import { supabase } from '../../supabase';
 import { safeReturnPath } from './elements/safeReturnPath/safeReturnPath';
 import { signInErrorMessage } from './elements/signInErrorMessage/signInErrorMessage';
-import {
-  signOutNotice,
-  withoutSignOutNotice,
-} from './elements/signOutNotice/signOutNotice';
+import { signOutNotice } from './elements/signOutNotice/signOutNotice';
+import { withoutSignOutNotice } from './elements/withoutSignOutNotice/withoutSignOutNotice';
 import './page.css';
 
 // A signed-in visitor has no business on the form and is sent on, unless they

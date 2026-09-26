@@ -1,5 +1,5 @@
 import { ErrorMessage } from '../../../../shared/ErrorMessage/ErrorMessage';
-import type { StudiesResponse } from '../useStudies/useStudies';
+import type { StudiesResponse } from '../StudiesResponse/StudiesResponse';
 import './StudyList.css';
 
 export function StudyList({
