@@ -3,39 +3,34 @@ const EXT = String.raw`(?:tsx|ts|css|svg|constants\.ts|test\.ts|test\.tsx|snapsh
 const SNAP = String.raw`snapshot\.test\.tsx\.snap`;
 
 const IS_NAME = new RegExp(`^${NAME}$`);
-const LEAF = new RegExp(
-  String.raw`^(?:elements/(?:${NAME}\.${EXT}|LICENSE\.txt|__snapshots__/${NAME}\.${SNAP})|tests-shared/${NAME}\.ts)$`,
-);
+const MODULE_FOLDERS = ['elements', 'shared'];
+const TEST_HELPER = new RegExp(String.raw`^tests-shared/${NAME}\.ts$`);
+const ASSET = new RegExp(String.raw`^(?:${NAME}\.svg|LICENSE\.txt)$`);
 const companionOf = (base: string) =>
   new RegExp(String.raw`^(?:${base}\.${EXT}|__snapshots__/${base}\.${SNAP})$`);
 const stemOf = (name: string) => name.replace(/\..*$/, '');
 
-const pageBase = (page: string) => (IS_NAME.test(page) ? 'page' : null);
-
-const elementBase = (dir: string, name: string) =>
-  dir === 'elements' && name !== '__snapshots__' && IS_NAME.test(name)
-    ? name
-    : null;
-
-const folderBase = (parts: string[], base: string) => {
-  if (parts.length <= 2) return null;
-  const [dir, name] = parts;
-  return base === '' && dir === 'pages'
-    ? pageBase(name)
-    : elementBase(dir, name);
+const inModuleFolder = ([folder, name, ...rest]: string[]) => {
+  if (!MODULE_FOLDERS.includes(folder) || !IS_NAME.test(name)) return false;
+  const file = rest.join('/');
+  return companionOf(name).test(file) || ASSET.test(file);
 };
 
-const placedUnder = (parts: string[], base: string): boolean => {
-  const nested = folderBase(parts, base);
-  if (nested !== null) return placedUnder(parts.slice(2), nested);
+const placedInLevel = (parts: string[]) =>
+  TEST_HELPER.test(parts.join('/')) || inModuleFolder(parts);
 
-  const rest = parts.join('/');
-  return LEAF.test(rest) || (base !== '' && companionOf(base).test(rest));
+const placedInPage = ([page, ...rest]: string[]) =>
+  IS_NAME.test(page) &&
+  (companionOf('page').test(rest.join('/')) || placedInLevel(rest));
+
+export const isPlaced = (path: string, rootExceptions: string[]) => {
+  if (!path.includes('/')) {
+    return rootExceptions.some((exception) =>
+      companionOf(stemOf(exception)).test(path),
+    );
+  }
+  const parts = path.split('/');
+  return parts[0] === 'pages'
+    ? placedInPage(parts.slice(1))
+    : placedInLevel(parts);
 };
-
-export const isPlaced = (path: string, rootExceptions: string[]) =>
-  path.includes('/')
-    ? placedUnder(path.split('/'), '')
-    : rootExceptions.some((exception) =>
-        companionOf(stemOf(exception)).test(path),
-      );

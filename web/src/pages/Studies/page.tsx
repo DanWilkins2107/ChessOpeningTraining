@@ -1,6 +1,6 @@
-import { CreateStudyForm } from './elements/CreateStudyForm';
-import { StudyList } from './elements/StudyList';
-import { useStudies } from './elements/useStudies';
+import { CreateStudyForm } from './elements/CreateStudyForm/CreateStudyForm';
+import { StudyList } from './elements/StudyList/StudyList';
+import { useStudies } from './elements/useStudies/useStudies';
 import './page.css';
 
 export function Studies() {
