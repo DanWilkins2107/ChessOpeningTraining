@@ -1,0 +1,9 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Study > matches snapshot 1`] = `
+<div>
+  <section
+    aria-label="Study"
+  />
+</div>
+`;
