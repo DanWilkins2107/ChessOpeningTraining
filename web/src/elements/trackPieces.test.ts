@@ -1,7 +1,7 @@
 import { expect, it } from 'vitest';
 import { ROOK_ON_H5, ROOKS_HOME } from '../tests-shared/rookPositions';
 import { trackPieces } from './trackPieces';
-import type { PlacedPiece } from './trackPieces';
+import type { PlacedPiece } from './placedPiece';
 
 const PAWN_E2 = '4k3/8/8/8/8/8/4P3/4K3';
 const PAWN_E3 = '4k3/8/8/8/8/4P3/8/4K3';

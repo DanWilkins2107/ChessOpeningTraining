@@ -75,7 +75,7 @@ describe('componentPerFileProblems', () => {
 });
 
 describe('isScannedModule', () => {
-  const scanned = ['src/pages/Home/page.tsx', 'src/elements/fen.ts'];
+  const scanned = ['src/pages/Home/page.tsx', 'src/elements/readPlacement.ts'];
 
   it.each(scanned)('scans %s', (file) => {
     expect(isScannedModule(file)).toBe(true);
@@ -83,7 +83,7 @@ describe('isScannedModule', () => {
 
   const skipped = [
     'src/pages/Home/page.test.tsx',
-    'src/elements/fen.test.ts',
+    'src/elements/readPlacement.test.ts',
     'src/tests-shared/renderRoute.tsx',
     'src/pages/Home/tests-shared/stub.ts',
     'src/theme.css',

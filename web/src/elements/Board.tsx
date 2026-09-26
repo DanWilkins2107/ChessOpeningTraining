@@ -2,7 +2,7 @@
 import './Board.css';
 import { BoardPieces } from './BoardPieces';
 import { BoardSquares } from './BoardSquares';
-import { FILES } from './fen';
+import { FILES } from './files.constants';
 import { useTrackedPieces } from './useTrackedPieces';
 
 const RANKS = [8, 7, 6, 5, 4, 3, 2, 1];
