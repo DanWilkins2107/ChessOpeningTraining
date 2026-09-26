@@ -5,7 +5,13 @@ type TextInputProps = {
   label: string;
   name: string;
   type: 'email' | 'password' | 'text';
-  autoComplete: 'email' | 'current-password' | 'new-password' | 'one-time-code';
+  autoComplete:
+    | 'email'
+    | 'current-password'
+    | 'new-password'
+    | 'one-time-code'
+    | 'off';
+  maxLength?: number;
   onChange?: (value: string) => void;
 };
 
@@ -14,6 +20,7 @@ export function TextInput({
   name,
   type,
   autoComplete,
+  maxLength,
   onChange,
 }: TextInputProps) {
   const id = useId();
@@ -29,6 +36,7 @@ export function TextInput({
           name={name}
           type={revealed ? 'text' : type}
           autoComplete={autoComplete}
+          maxLength={maxLength}
           onChange={(event) => onChange?.(event.target.value)}
           required
         />
