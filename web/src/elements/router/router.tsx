@@ -5,6 +5,7 @@ import {
   PROTECTED_ROUTE_HANDLE,
   ROOT_ROUTE_PATH,
   STUDIES_ROUTE_PATH,
+  STUDY_ROUTE_PATH,
 } from './router.constants';
 import { RootLayout } from '../RootLayout/RootLayout';
 import { Account } from '../../pages/Account/page';
@@ -15,6 +16,7 @@ import { SetNewPassword } from '../../pages/SetNewPassword/page';
 import { SignIn } from '../../pages/SignIn/page';
 import { SignUp } from '../../pages/SignUp/page';
 import { Studies } from '../../pages/Studies/page';
+import { Study } from '../../pages/Study/page';
 
 export const router = createBrowserRouter([
   {
@@ -28,6 +30,7 @@ export const router = createBrowserRouter([
           { index: true, element: <Home /> },
           { path: ACCOUNT_ROUTE_PATH, element: <Account /> },
           { path: STUDIES_ROUTE_PATH, element: <Studies /> },
+          { path: STUDY_ROUTE_PATH, element: <Study /> },
         ],
       },
       { path: 'sign-in', element: <SignIn /> },
