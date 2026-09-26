@@ -1,11 +1,11 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   SIGNED_OUT_DONE,
   SIGNED_OUT_PARAM,
   SIGNED_OUT_PENDING,
 } from '../../elements/signOut.constants';
+import { CHANGE_PASSWORD_ROUTE_PATH } from '../../elements/router.constants';
 import { supabase } from '../../supabase';
-import { ChangePassword } from './elements/ChangePassword';
 import './page.css';
 
 export function Account() {
@@ -25,10 +25,12 @@ export function Account() {
   return (
     <section className="account-card">
       <h1 className="account-heading">Account</h1>
+      <Link to={CHANGE_PASSWORD_ROUTE_PATH} className="account-action">
+        Change password
+      </Link>
       <button type="button" className="account-action" onClick={signOut}>
         Sign out
       </button>
-      <ChangePassword />
     </section>
   );
 }

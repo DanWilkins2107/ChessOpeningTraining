@@ -30,7 +30,6 @@ password_requirements = "lower_upper_letters_digits_symbols"
 
 [auth.email]
 enable_confirmations = true
-# A password change from a session over 24h old needs an emailed code.
 secure_password_change = true
 
 # Sign-up only hides that an email is already registered when neither email nor

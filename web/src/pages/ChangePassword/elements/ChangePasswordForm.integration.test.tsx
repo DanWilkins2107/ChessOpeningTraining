@@ -7,7 +7,7 @@ import {
 } from '../../../tests-shared/newPasswordForm';
 import { registerTestUser } from '../../../tests-shared/testUser';
 import { supabase } from '../../../supabase';
-import { ChangePassword } from './ChangePassword';
+import { ChangePasswordForm } from './ChangePasswordForm';
 
 const changing = registerTestUser();
 const confirming = registerTestUser();
@@ -71,7 +71,7 @@ function answerRequests(...answers: Answer[]) {
 it('changes the account password to the one submitted', async () => {
   // Given a signed-in user on the change password form
   await changing.signIn();
-  render(<ChangePassword />);
+  render(<ChangePasswordForm />);
   const password = newPassword();
 
   // When they save a password meeting every rule
@@ -91,7 +91,7 @@ it('changes the account password to the one submitted', async () => {
 it('confirms the change and clears the fields', async () => {
   // Given a signed-in user on the change password form
   await confirming.signIn();
-  render(<ChangePassword />);
+  render(<ChangePasswordForm />);
 
   // When they save a password meeting every rule
   await savePassword(newPassword());
@@ -105,7 +105,7 @@ it('confirms the change and clears the fields', async () => {
 it('asks for an emailed code when the server wants reauthentication', async () => {
   // Given a signed-in user whose session is too old to change the password
   await reauthenticating.signIn();
-  render(<ChangePassword />);
+  render(<ChangePasswordForm />);
   const updates = answerRequests(once(askForReauthentication));
 
   // When they save a new password
@@ -132,7 +132,7 @@ it('asks for an emailed code when the server wants reauthentication', async () =
 it('asks them to retry when the code cannot be sent', async () => {
   // Given a user asked to reauthenticate, and a server that fails to send the code
   await unsent.signIn();
-  render(<ChangePassword />);
+  render(<ChangePasswordForm />);
   answerRequests(askForReauthentication, failToSendCode);
 
   // When they save a new password

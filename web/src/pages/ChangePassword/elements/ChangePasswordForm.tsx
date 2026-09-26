@@ -1,16 +1,15 @@
 import { useState } from 'react';
 import { NewPasswordForm } from '../../../elements/NewPasswordForm';
 import { SuccessMessage } from '../../../elements/SuccessMessage';
-import './ChangePassword.css';
+import './ChangePasswordForm.css';
 
-export function ChangePassword() {
+export function ChangePasswordForm() {
   const [changed, setChanged] = useState(false);
 
   return (
-    <section className="change-password">
-      <h2 className="change-password-heading">Change password</h2>
+    <div className="change-password-form">
       {changed && <SuccessMessage>Password changed</SuccessMessage>}
       <NewPasswordForm onSaved={() => setChanged(true)} />
-    </section>
+    </div>
   );
 }
