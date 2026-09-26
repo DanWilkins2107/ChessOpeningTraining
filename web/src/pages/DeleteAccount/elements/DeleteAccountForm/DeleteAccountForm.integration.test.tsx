@@ -1,14 +1,13 @@
 import { fireEvent, screen } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
 import { pathOf, renderSettledAt } from '../../../../tests-shared/renderAt';
-import { registerTestUser } from '../../../../tests-shared/testUser';
+import {
+  createTestUser,
+  registerTestUser,
+} from '../../../../tests-shared/testUser';
 import { supabase } from '../../../../supabase';
 
 const keeping = registerTestUser();
-const deleting = registerTestUser({ deletedByTest: true });
-const noticed = registerTestUser({ deletedByTest: true });
-const leaving = registerTestUser({ deletedByTest: true });
-const goingBack = registerTestUser({ deletedByTest: true });
 
 // Confirming re-hashes the password on the test stack, which outlasts Testing
 // Library's default one-second wait.
@@ -45,7 +44,7 @@ const signedOut = () =>
     expect(data.session).toBeNull();
   }, HASHING_WAIT);
 
-async function signedInOnDeletePage(user: ReturnType<typeof registerTestUser>) {
+async function signedInOnDeletePage(user: Pick<typeof keeping, 'signIn'>) {
   await user.signIn();
   return renderSettledAt('/account/delete');
 }
@@ -98,16 +97,17 @@ it('disables delete until the attempt finishes', async () => {
 
 it('says so when the server fails to delete the account', async () => {
   // Given a signed-in user, and a server that fails the delete
-  await signedInOnDeletePage(keeping);
+  const memoryRouter = await signedInOnDeletePage(keeping);
   failTheDeleteRequest();
 
   // When they confirm with their password
   await deleteWith(keeping.credentials.password);
 
-  // Then they are asked to try again
+  // Then they are asked to try again, still on their delete account page
   expect(await refusal()).toHaveTextContent(
     "Couldn't delete your account, try again",
   );
+  expect(pathOf(memoryRouter)).toBe('/account/delete');
 });
 
 it('gives an error without the browser submitting the form', async () => {
@@ -124,26 +124,26 @@ it('gives an error without the browser submitting the form', async () => {
 
 it('deletes the account', async () => {
   // Given a signed-in user on their delete account page
-  await signedInOnDeletePage(deleting);
+  const user = await createTestUser();
+  await signedInOnDeletePage(user);
 
   // When they confirm with their password
-  await deleteWith(deleting.credentials.password);
+  await deleteWith(user.credentials.password);
   await deletedNotice();
   await signedOut();
 
   // Then the account no longer signs in
-  const { error } = await supabase.auth.signInWithPassword(
-    deleting.credentials,
-  );
+  const { error } = await supabase.auth.signInWithPassword(user.credentials);
   expect(error?.code).toBe('invalid_credentials');
 });
 
 it('says the account was deleted on the sign-in page', async () => {
   // Given a signed-in user on their delete account page
-  const memoryRouter = await signedInOnDeletePage(noticed);
+  const user = await createTestUser();
+  const memoryRouter = await signedInOnDeletePage(user);
 
   // When they confirm with their password
-  await deleteWith(noticed.credentials.password);
+  await deleteWith(user.credentials.password);
 
   // Then the sign-in page says so
   await deletedNotice();
@@ -152,10 +152,11 @@ it('says the account was deleted on the sign-in page', async () => {
 
 it('signs them out', async () => {
   // Given a signed-in user on their delete account page
-  await signedInOnDeletePage(leaving);
+  const user = await createTestUser();
+  await signedInOnDeletePage(user);
 
   // When they confirm with their password
-  await deleteWith(leaving.credentials.password);
+  await deleteWith(user.credentials.password);
 
   // Then this device's session is gone
   await signedOut();
@@ -163,8 +164,9 @@ it('signs them out', async () => {
 
 it('leaves no way back to the delete account page', async () => {
   // Given a user who deleted their account
-  const memoryRouter = await signedInOnDeletePage(goingBack);
-  await deleteWith(goingBack.credentials.password);
+  const user = await createTestUser();
+  const memoryRouter = await signedInOnDeletePage(user);
+  await deleteWith(user.credentials.password);
   await deletedNotice();
   await signedOut();
 

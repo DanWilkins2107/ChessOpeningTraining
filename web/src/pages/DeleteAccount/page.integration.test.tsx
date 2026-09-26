@@ -1,12 +1,11 @@
 import { fireEvent, screen } from '@testing-library/react';
 import { expect, it } from 'vitest';
 import { pathOf, renderSettledAt } from '../../tests-shared/renderAt';
-import { registerTestUser } from '../../tests-shared/testUser';
-
-const { signIn } = registerTestUser();
+import { createTestUser } from '../../tests-shared/testUser';
 
 it('leads back to the account page', async () => {
   // Given a signed-in user on their delete account page
+  const { signIn } = await createTestUser();
   await signIn();
   const memoryRouter = await renderSettledAt('/account/delete');
 
