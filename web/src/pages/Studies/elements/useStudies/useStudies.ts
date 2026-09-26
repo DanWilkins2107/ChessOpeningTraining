@@ -1,19 +1,12 @@
-import type { PostgrestResponse } from '@supabase/supabase-js';
-import { useEffect, useEffectEvent, useReducer, useState } from 'react';
+import { useEffect, useEffectEvent, useState } from 'react';
 import { useUser } from '../../../../shared/useUser/useUser';
 import { supabase } from '../../../../supabase';
-
-export type Study = {
-  id: string;
-  name: string;
-  side: 'white' | 'black';
-};
-
-export type StudiesResponse = PostgrestResponse<Study>;
+import type { StudiesResponse } from '../StudiesResponse/StudiesResponse';
 
 export function useStudies() {
   const userId = useUser()?.id;
-  const [version, refresh] = useReducer((n: number) => n + 1, 0);
+  const [version, setVersion] = useState({});
+  const refresh = () => setVersion({});
   const [loaded, setLoaded] = useState<{
     userId?: string;
     response?: StudiesResponse;
