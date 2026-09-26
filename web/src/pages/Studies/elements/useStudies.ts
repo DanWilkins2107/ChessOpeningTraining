@@ -1,5 +1,5 @@
 import type { PostgrestResponse } from '@supabase/supabase-js';
-import { useEffect, useEffectEvent, useState } from 'react';
+import { useEffect, useEffectEvent, useReducer, useState } from 'react';
 import { useUser } from '../../../elements/session';
 import { supabase } from '../../../supabase';
 
@@ -13,8 +13,7 @@ export type StudiesResponse = PostgrestResponse<Study>;
 
 export function useStudies() {
   const userId = useUser()?.id;
-  // A fresh object per refresh: the effect has no use for it beyond re-running.
-  const [request, setRequest] = useState({});
+  const [version, refresh] = useReducer((n: number) => n + 1, 0);
   const [loaded, setLoaded] = useState<{
     userId?: string;
     response?: StudiesResponse;
@@ -37,10 +36,10 @@ export function useStudies() {
       .select('id, name, side')
       .order('created_at', { ascending: false })
       .then((response) => onResponse(userId, response));
-  }, [userId, request]);
+  }, [userId, version]);
 
   return {
     response: loaded.userId === userId ? loaded.response : undefined,
-    refresh: () => setRequest({}),
+    refresh,
   };
 }
