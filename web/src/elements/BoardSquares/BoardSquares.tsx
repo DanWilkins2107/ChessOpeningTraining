@@ -7,6 +7,8 @@ type BoardSquaresProps = {
   files: string[];
   ranks: number[];
   pieces: PlacedPiece[];
+  selected?: string;
+  targets?: string[];
   onSquareClick?: (square: string) => void;
 };
 
@@ -16,6 +18,8 @@ export function BoardSquares({
   files,
   ranks,
   pieces,
+  selected,
+  targets,
   onSquareClick,
 }: BoardSquaresProps) {
   const placement = new Map(pieces.map(({ square, piece }) => [square, piece]));
@@ -34,11 +38,19 @@ export function BoardSquares({
                 aria-label={
                   piece === undefined ? square : `${square}, ${piece.name}`
                 }
-                className={
+                className={[
+                  'board-square',
                   (FILES.indexOf(file) + rank) % 2 === 1
-                    ? 'board-square board-square-dark'
-                    : 'board-square board-square-light'
-                }
+                    ? 'board-square-dark'
+                    : 'board-square-light',
+                  square === selected && 'board-square-selected',
+                  targets?.includes(square) &&
+                    (piece === undefined
+                      ? 'board-square-target'
+                      : 'board-square-capture'),
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
                 onClick={onSquareClick && (() => onSquareClick(square))}
               >
                 {column === 0 && (

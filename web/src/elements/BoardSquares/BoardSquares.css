@@ -44,3 +44,33 @@
   right: 0.25em;
   bottom: 0.2em;
 }
+
+.board-square-selected {
+  background-image: linear-gradient(
+    color-mix(in srgb, var(--ink) 25%, transparent),
+    color-mix(in srgb, var(--ink) 25%, transparent)
+  );
+}
+
+.board-square-target::after,
+.board-square-capture::after {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  border-radius: 50%;
+  content: '';
+}
+
+.board-square-target::after {
+  width: 30%;
+  height: 30%;
+  background: color-mix(in srgb, var(--ink) 35%, transparent);
+}
+
+.board-square-capture::after {
+  background: radial-gradient(
+    closest-side,
+    transparent 80%,
+    color-mix(in srgb, var(--ink) 35%, transparent) 81%
+  );
+}
