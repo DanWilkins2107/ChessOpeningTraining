@@ -1,10 +1,10 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { CHANGE_EMAIL_ROUTE_PATH } from '../../elements/router.constants';
+import { CHANGE_EMAIL_ROUTE_PATH } from '../../shared/router/router.constants';
 import {
   SIGNED_OUT_DONE,
   SIGNED_OUT_PARAM,
   SIGNED_OUT_PENDING,
-} from '../../elements/signOut.constants';
+} from '../../shared/signOut/signOut.constants';
 import { supabase } from '../../supabase';
 import './page.css';
 

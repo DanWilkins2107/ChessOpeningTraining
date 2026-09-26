@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { ACCOUNT_ROUTE_PATH } from '../../elements/router.constants';
-import { ChangeEmailForm } from './elements/ChangeEmailForm';
+import { ACCOUNT_ROUTE_PATH } from '../../shared/router/router.constants';
+import { ChangeEmailForm } from './elements/ChangeEmailForm/ChangeEmailForm';
 import './page.css';
 
 export function ChangeEmail() {

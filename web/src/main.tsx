@@ -3,7 +3,7 @@ import './theme.css';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
-import { router } from './elements/router';
+import { router } from './shared/router/router';
 
 const container = document.getElementById('root');
 if (!container) {
