@@ -1,0 +1,12 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`EmailLinkMessage > matches snapshot 1`] = `
+<div>
+  <p
+    class="success-message"
+    role="status"
+  >
+    Confirmed, now open the link sent to your other email
+  </p>
+</div>
+`;

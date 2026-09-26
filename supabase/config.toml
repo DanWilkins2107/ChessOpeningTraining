@@ -30,6 +30,9 @@ password_requirements = "lower_upper_letters_digits_symbols"
 
 [auth.email]
 enable_confirmations = true
+# Pinned for change email: both the old and new inbox must confirm, so a
+# hijacked session cannot quietly move the account to another address.
+double_confirm_changes = true
 
 # Sign-up only hides that an email is already registered when neither email nor
 # SMS autoconfirms, so SMS confirmations are on even though SMS sign-up is not.

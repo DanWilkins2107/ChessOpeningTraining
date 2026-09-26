@@ -38,5 +38,5 @@ export async function signedInUser() {
   const client = anonClient();
   const signIn = await client.auth.signInWithPassword(credentials);
   if (signIn.error) throw signIn.error;
-  return { id: data.user.id, client };
+  return { id: data.user.id, email: credentials.email, client };
 }
