@@ -381,13 +381,15 @@ it('clears the selection when the position changes', () => {
   );
   clickSquares('e2');
 
-  // When a new position arrives with white to move and e4 clicked
+  // When a new position arrives with white to move
   rerender(
     <Board position={AFTER_KNIGHTS_OUT} orientation="white" onMove={onMove} />,
   );
-  clickSquares('e4');
 
-  // Then no move is made
+  // Then no hints remain, and clicking e4 makes no move
+  expect(squaresMarked('board-square-selected')).toEqual([]);
+  expect(squaresMarked('board-square-target')).toEqual([]);
+  clickSquares('e4');
   expect(onMove).not.toHaveBeenCalled();
 });
 
@@ -518,24 +520,6 @@ it('clears hints on a deselecting click', () => {
 
   // When e5 is clicked
   clickSquares('e5');
-
-  // Then no hints remain
-  expect(squaresMarked('board-square-selected')).toEqual([]);
-  expect(squaresMarked('board-square-target')).toEqual([]);
-});
-
-it('clears hints when the position changes', () => {
-  // Given the e2 pawn is selected
-  const onMove = vi.fn();
-  const { rerender } = render(
-    <Board position={START} orientation="white" onMove={onMove} />,
-  );
-  clickSquares('e2');
-
-  // When a new position arrives
-  rerender(
-    <Board position={AFTER_KNIGHTS_OUT} orientation="white" onMove={onMove} />,
-  );
 
   // Then no hints remain
   expect(squaresMarked('board-square-selected')).toEqual([]);

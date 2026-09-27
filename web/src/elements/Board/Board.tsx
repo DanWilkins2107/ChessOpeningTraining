@@ -12,6 +12,11 @@ const RANKS = [8, 7, 6, 5, 4, 3, 2, 1];
 
 type Selection = { position: string; square: string; moves: Move[] };
 
+const hintsFor = (selection?: Selection) => ({
+  selected: selection?.square,
+  targets: selection?.moves.map((move) => move.to),
+});
+
 type BoardProps = {
   position: string;
   orientation: 'white' | 'black';
@@ -60,8 +65,7 @@ export function Board({ position, orientation, onMove }: BoardProps) {
         files={files}
         ranks={ranks}
         pieces={pieces}
-        selected={selected?.square}
-        targets={selected?.moves.map((move) => move.to)}
+        {...hintsFor(selected)}
         onSquareClick={clickSquare}
       />
       <BoardPieces files={files} ranks={ranks} pieces={pieces} />

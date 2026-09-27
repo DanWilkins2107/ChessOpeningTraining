@@ -12,6 +12,17 @@ type BoardSquaresProps = {
   onSquareClick?: (square: string) => void;
 };
 
+function hintClass(
+  square: string,
+  occupied: boolean,
+  selected?: string,
+  targets?: string[],
+) {
+  if (square === selected) return 'board-square-selected';
+  if (!targets?.includes(square)) return undefined;
+  return occupied ? 'board-square-capture' : 'board-square-target';
+}
+
 // The squares carry the position for a screen reader; the images over them are
 // decoration, so this is the layer that has to name what stands where.
 export function BoardSquares({
@@ -43,11 +54,7 @@ export function BoardSquares({
                   (FILES.indexOf(file) + rank) % 2 === 1
                     ? 'board-square-dark'
                     : 'board-square-light',
-                  square === selected && 'board-square-selected',
-                  targets?.includes(square) &&
-                    (piece === undefined
-                      ? 'board-square-target'
-                      : 'board-square-capture'),
+                  hintClass(square, piece !== undefined, selected, targets),
                 ]
                   .filter(Boolean)
                   .join(' ')}
