@@ -8,9 +8,21 @@ type BoardSquaresProps = {
   files: string[];
   ranks: number[];
   pieces: PlacedPiece[];
-  selected?: string | null;
+  selected?: string;
+  targets?: string[];
   onSquareClick?: (square: string) => void;
 };
+
+function hintClass(
+  square: string,
+  occupied: boolean,
+  selected?: string,
+  targets?: string[],
+) {
+  if (square === selected) return 'board-square-selected';
+  if (!targets?.includes(square)) return undefined;
+  return occupied ? 'board-square-capture' : 'board-square-target';
+}
 
 // The squares carry the position for a screen reader; the images over them are
 // decoration, so this is the layer that has to name what stands where.
@@ -19,6 +31,7 @@ export function BoardSquares({
   ranks,
   pieces,
   selected,
+  targets,
   onSquareClick,
 }: BoardSquaresProps) {
   const placement = new Map(pieces.map(({ square, piece }) => [square, piece]));
@@ -38,11 +51,15 @@ export function BoardSquares({
                 aria-label={
                   piece === undefined ? square : `${square}, ${piece.name}`
                 }
-                className={
+                className={[
+                  'board-square',
                   (FILES.indexOf(file) + rank) % 2 === 1
-                    ? 'board-square board-square-dark'
-                    : 'board-square board-square-light'
-                }
+                    ? 'board-square-dark'
+                    : 'board-square-light',
+                  hintClass(square, piece !== undefined, selected, targets),
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
                 {...(onSquareClick && {
                   'aria-selected': square === selected,
                   onClick: () => onSquareClick(square),
