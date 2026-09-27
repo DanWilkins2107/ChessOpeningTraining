@@ -1,25 +1,18 @@
-import { ErrorMessage } from '../../../../shared/ErrorMessage/ErrorMessage';
-import type { StudyResponse } from '../StudyResponse/StudyResponse';
-import './StudyHeader.css';
+import { Suspense } from 'react';
+import { StudyLoading } from '../StudyLoading/StudyLoading';
+import { StudyName } from '../StudyName/StudyName';
+import { useStudy } from '../useStudy/useStudy';
 
-export function StudyHeader({
-  response,
-}: {
-  response: StudyResponse | undefined;
-}) {
-  if (response === undefined) {
-    return (
-      <div
-        role="status"
-        aria-label="Loading study"
-        className="study-header-spinner"
-      />
-    );
-  }
+export function StudyHeader({ studyId }: { studyId: string }) {
+  const study = useStudy(studyId);
 
-  if (response.data === null) {
-    return <ErrorMessage>Couldn't load this study, try again</ErrorMessage>;
-  }
+  if (study === undefined) return <StudyLoading />;
 
-  return <h1>{response.data.name}</h1>;
+  // Keyed so moving to another study shows the fallback, rather than the
+  // router's transition keeping the previous study on screen.
+  return (
+    <Suspense key={studyId} fallback={<StudyLoading />}>
+      <StudyName study={study} />
+    </Suspense>
+  );
 }

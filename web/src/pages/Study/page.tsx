@@ -1,14 +1,20 @@
 import { useParams } from 'react-router-dom';
+import { z } from '../../z';
 import { StudyHeader } from './elements/StudyHeader/StudyHeader';
-import { useStudy } from './elements/useStudy/useStudy';
+import { StudyLoadError } from './elements/StudyLoadError/StudyLoadError';
+
+const paramsSchema = z.object({ studyId: z.uuid() });
 
 export function Study() {
-  const { studyId } = useParams() as { studyId: string };
-  const response = useStudy(studyId);
+  const params = paramsSchema.safeParse(useParams());
 
   return (
     <section aria-label="Study">
-      <StudyHeader response={response} />
+      {params.success ? (
+        <StudyHeader studyId={params.data.studyId} />
+      ) : (
+        <StudyLoadError />
+      )}
     </section>
   );
 }

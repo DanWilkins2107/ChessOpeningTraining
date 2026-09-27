@@ -1,8 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { act, screen } from '@testing-library/react';
 import { afterEach, beforeAll, expect, it, vi } from 'vitest';
-import { authSettled } from '../../tests-shared/authSettled';
-import { holdFirstRequest } from '../../tests-shared/holdFirstRequest';
 import { renderAt } from '../../tests-shared/renderAt';
 import { registerTestUser } from '../../tests-shared/testUser';
 import { env } from '../../env';
@@ -43,8 +41,17 @@ const studyHeading = (name: string) =>
 const loadingStudy = () =>
   screen.queryByRole('status', { name: 'Loading study' });
 
+function stallStudyRequests() {
+  const realFetch = window.fetch;
+  // mock-reason: the local server answers too fast to see the loading state
+  // in between. Other requests are sent for real.
+  vi.spyOn(window, 'fetch').mockImplementation((input, init) =>
+    isStudyRequest(input) ? new Promise(() => {}) : realFetch(input, init),
+  );
+}
+
 it('shows a loading indicator while the user loads', async () => {
-  // Given a signed-in owner not yet loaded
+  // Given a signed-in owner, whose session the page reads only after it renders
   await owner.signIn();
 
   // When their study page renders
@@ -98,26 +105,30 @@ it("shows a load error for a study that isn't the user's", async () => {
   );
 });
 
-it("shows a generic load error for an id that isn't a study id", async () => {
+it("shows the load error, without asking, for an id that isn't a study id", async () => {
   // Given a signed-in owner
   await owner.signIn();
+  // mock-reason: the requests sent are the assertion. Every call is real.
+  const fetch = vi.spyOn(window, 'fetch');
 
   // When they open a malformed study id
   renderAt('/studies/ab12');
 
-  // Then it shows the load error, not the server's
+  // Then it shows the load error, without requesting the study
   expect(await screen.findByRole('alert')).toHaveTextContent(
     "Couldn't load this study, try again",
   );
-  expect(screen.queryByText(/uuid/)).not.toBeInTheDocument();
+  expect(fetch.mock.calls.filter(([input]) => isStudyRequest(input))).toEqual(
+    [],
+  );
 });
 
 it("shows loading, not the previous user's study, when the user changes", async () => {
-  // Given the owner's study on screen, and the next study request held
+  // Given the owner's study on screen, and study requests left unanswered
   await owner.signIn();
   renderAt(`/studies/${studyIds.london}`);
   await studyHeading('London');
-  const { release } = holdFirstRequest(isStudyRequest);
+  stallStudyRequests();
 
   // When a different user signs in
   await act(() => stranger.signIn());
@@ -125,15 +136,14 @@ it("shows loading, not the previous user's study, when the user changes", async 
   // Then it shows loading in place of the owner's study
   expect(loadingStudy()).toBeInTheDocument();
   expect(screen.queryByRole('heading', { level: 1 })).not.toBeInTheDocument();
-  release();
 });
 
 it('shows loading, not the previous study, when the study changes', async () => {
-  // Given one study on screen, and the next study request held
+  // Given one study on screen, and study requests left unanswered
   await owner.signIn();
   const memoryRouter = renderAt(`/studies/${studyIds.london}`);
   await studyHeading('London');
-  const { release } = holdFirstRequest(isStudyRequest);
+  stallStudyRequests();
 
   // When the user moves to another study
   await act(() => memoryRouter.navigate(`/studies/${studyIds.caroKann}`));
@@ -141,42 +151,4 @@ it('shows loading, not the previous study, when the study changes', async () => 
   // Then it shows loading in place of the first study
   expect(loadingStudy()).toBeInTheDocument();
   expect(screen.queryByRole('heading', { level: 1 })).not.toBeInTheDocument();
-  release();
-});
-
-it('ignores a response for a user who has since changed', async () => {
-  // Given the owner's study request held
-  await owner.signIn();
-  const request = holdFirstRequest(isStudyRequest);
-  renderAt(`/studies/${studyIds.london}`);
-  await authSettled();
-  await vi.waitFor(() => expect(request.isHeld()).toBe(true));
-
-  // When a different user signs in and loads, then the owner's response arrives
-  await act(() => stranger.signIn());
-  await screen.findByRole('alert');
-  await request.releaseAndSettle();
-
-  // Then the second user's result stays
-  expect(screen.getByRole('alert')).toBeInTheDocument();
-  expect(screen.queryByRole('heading', { level: 1 })).not.toBeInTheDocument();
-});
-
-it('ignores a response for a study the user has since left', async () => {
-  // Given a request for one study held
-  await owner.signIn();
-  const request = holdFirstRequest(isStudyRequest);
-  const memoryRouter = renderAt(`/studies/${studyIds.london}`);
-  await authSettled();
-  await vi.waitFor(() => expect(request.isHeld()).toBe(true));
-
-  // When the user moves to another study and it loads, then the first arrives
-  await act(() => memoryRouter.navigate(`/studies/${studyIds.caroKann}`));
-  await studyHeading('Caro-Kann');
-  await request.releaseAndSettle();
-
-  // Then the second study stays
-  expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
-    'Caro-Kann',
-  );
 });

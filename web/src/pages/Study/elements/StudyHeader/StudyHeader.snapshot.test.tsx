@@ -5,16 +5,7 @@ import { StudyHeader } from './StudyHeader';
 describe('StudyHeader', () => {
   it('matches snapshot', () => {
     const { container } = render(
-      <StudyHeader
-        response={{
-          success: true,
-          data: { name: 'London' },
-          error: null,
-          count: null,
-          status: 200,
-          statusText: 'OK',
-        }}
-      />,
+      <StudyHeader studyId="7c3e1d2a-5b4f-4e6a-9c8d-1f2e3a4b5c6d" />,
     );
     expect(container).toMatchSnapshot();
   });
