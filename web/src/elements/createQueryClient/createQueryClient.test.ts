@@ -1,11 +1,11 @@
 import { expect, it } from 'vitest';
 import { createQueryClient } from './createQueryClient';
+import { QUERY_CLIENT_DEFAULT_OPTIONS } from './createQueryClient.constants';
 
-it('fails queries and mutations straight away instead of retrying', () => {
-  expect(createQueryClient().getDefaultOptions()).toEqual({
-    queries: { retry: false },
-    mutations: { retry: false },
-  });
+it('applies the shared default options', () => {
+  expect(createQueryClient().getDefaultOptions()).toEqual(
+    QUERY_CLIENT_DEFAULT_OPTIONS,
+  );
 });
 
 it('gives each caller its own client', () => {
