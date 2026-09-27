@@ -32,7 +32,8 @@ const isCheckedModule = (file: string) =>
   isScannedModule(file) && !CONSTANTS.test(file);
 
 function moduleRule(file: string): Rule {
-  const expected = file.replace(EXTENSION, '').split('/').pop() as string;
+  const segments = file.replace(EXTENSION, '').split('/');
+  const expected = segments[segments.length - 1];
   const typeName = pascalCase(expected);
   return {
     allowed: (entry) =>
