@@ -1,4 +1,4 @@
-import { useUserFetch } from '../../../../shared/useUserFetch/useUserFetch';
+import { useUserFetch } from '../useUserFetch/useUserFetch';
 import { supabase } from '../../../../supabase';
 import type { StudiesResponse } from '../StudiesResponse/StudiesResponse';
 

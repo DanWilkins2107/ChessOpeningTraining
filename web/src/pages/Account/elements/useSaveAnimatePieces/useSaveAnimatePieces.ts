@@ -1,11 +1,12 @@
 import { useRef, useState } from 'react';
-import { supabase } from '../../../../supabase';
+import { useUpdateAnimatePieces } from '../useUpdateAnimatePieces/useUpdateAnimatePieces';
 
 const SAVE_DELAY_MS = 500;
 
 type SaveOutcome = 'saved' | 'failed';
 
 export function useSaveAnimatePieces(loaded: boolean | undefined) {
+  const update = useUpdateAnimatePieces();
   const [chosen, setChosen] = useState<boolean>();
   const [outcome, setOutcome] = useState<SaveOutcome>();
   const saved = useRef<boolean>(undefined);
@@ -29,11 +30,8 @@ export function useSaveAnimatePieces(loaded: boolean | undefined) {
     sending.current = true;
     let result: SaveOutcome | undefined;
     while (latest.current !== saved.current) {
-      const animatePieces = latest.current;
-      const { error } = await supabase
-        .from('profiles')
-        .upsert({ animate_pieces: animatePieces });
-      if (error) {
+      const animatePieces = latest.current!;
+      if (!(await update(animatePieces))) {
         setChosen(saved.current);
         result = 'failed';
         break;
