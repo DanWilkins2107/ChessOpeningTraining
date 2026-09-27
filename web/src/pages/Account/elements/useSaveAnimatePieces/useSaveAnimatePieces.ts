@@ -31,7 +31,9 @@ export function useSaveAnimatePieces(loaded: boolean | undefined) {
     let result: SaveOutcome | undefined;
     while (latest.current !== saved.current) {
       const animatePieces = latest.current!;
-      if (!(await update(animatePieces))) {
+      try {
+        await update(animatePieces);
+      } catch {
         setChosen(saved.current);
         result = 'failed';
         break;

@@ -23,9 +23,5 @@ export function useUpdateAnimatePieces() {
       ),
   });
 
-  return (animatePieces: boolean) =>
-    mutateAsync(animatePieces).then(
-      () => true,
-      () => false,
-    );
+  return mutateAsync;
 }
