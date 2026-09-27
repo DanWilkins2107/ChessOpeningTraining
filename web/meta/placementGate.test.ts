@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isPlaced } from './placementGate';
+import { isPlaced, routesWithoutPage } from './placementGate';
 
 const EXCEPTIONS = ['singleton.ts'];
 
@@ -102,7 +102,7 @@ describe('isPlaced', () => {
     expect(isPlaced('pages/Alpha/Beta/stray.tsx', EXCEPTIONS)).toBe(false);
   });
 
-  it('accepts a route folder with no page of its own', () => {
+  it('accepts module folders in a group', () => {
     expect(isPlaced('pages/(group)/shared/Widget/Widget.tsx', EXCEPTIONS)).toBe(
       true,
     );
@@ -168,5 +168,47 @@ describe('isPlaced', () => {
     expect(isPlaced('components/Widget/Widget.tsx', EXCEPTIONS)).toBe(false);
     expect(isPlaced('pages/Alpha/helpers/format.ts', EXCEPTIONS)).toBe(false);
     expect(isPlaced('pages/not.a.name/page.tsx', EXCEPTIONS)).toBe(false);
+  });
+});
+
+describe('routesWithoutPage', () => {
+  it('passes route folders that each hold a page.tsx', () => {
+    expect(
+      routesWithoutPage([
+        'pages/Alpha/page.tsx',
+        'pages/Alpha/[betaId]/page.tsx',
+        'pages/Alpha/[betaId]/elements/Widget/Widget.tsx',
+      ]),
+    ).toEqual([]);
+  });
+
+  it('lists plain and dynamic route folders with no page.tsx', () => {
+    expect(
+      routesWithoutPage([
+        'pages/Alpha/page.test.tsx',
+        'pages/Alpha/[betaId]/Gamma/page.tsx',
+      ]),
+    ).toEqual(['pages/Alpha', 'pages/Alpha/[betaId]']);
+  });
+
+  it('lets a group go without a page', () => {
+    expect(
+      routesWithoutPage([
+        'pages/(group)/shared/Widget/Widget.tsx',
+        'pages/(group)/Alpha/page.tsx',
+      ]),
+    ).toEqual([]);
+  });
+
+  it('ignores folders below the route tree and outside pages', () => {
+    expect(
+      routesWithoutPage([
+        'pages/Alpha/page.tsx',
+        'pages/Alpha/elements/Widget/Widget.tsx',
+        'pages/Alpha/tests-shared/renderAt.ts',
+        'pages/Alpha/README',
+        'elements/Widget/Widget.tsx',
+      ]),
+    ).toEqual([]);
   });
 });

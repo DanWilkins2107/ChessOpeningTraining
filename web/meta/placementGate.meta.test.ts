@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { isPlaced } from './placementGate';
+import { isPlaced, routesWithoutPage } from './placementGate';
 
 // App-wide singletons owned by no page or element, so they sit at the src root.
 const ROOT_EXCEPTIONS = [
@@ -19,6 +19,10 @@ it('every module sits in a page, module or tests-shared folder', () => {
   expect(modules.filter((path) => !isPlaced(path, ROOT_EXCEPTIONS))).toEqual(
     [],
   );
+});
+
+it('every route folder but a group has a page.tsx', () => {
+  expect(routesWithoutPage(modules)).toEqual([]);
 });
 
 it('every root exception names a file that exists', () => {

@@ -25,6 +25,7 @@ const placedInLevel = (parts: string[]) =>
 
 const isRouteFolder = (folder: string) =>
   ROUTE_FOLDER.test(folder) && !RESERVED.includes(folder);
+const isGroup = (folder: string) => folder.startsWith('(');
 
 const placedInRoute = ([folder, ...rest]: string[]): boolean =>
   rest.length > 0 &&
@@ -43,4 +44,22 @@ export const isPlaced = (path: string, rootExceptions: string[]) => {
   return parts[0] === 'pages'
     ? placedInRoute(parts.slice(1))
     : placedInLevel(parts);
+};
+
+const routeFoldersOf = (path: string) => {
+  const [root, ...folders] = path.split('/').slice(0, -1);
+  if (root !== 'pages') return [];
+  const end = folders.findIndex((folder) => !isRouteFolder(folder));
+  const route = end === -1 ? folders : folders.slice(0, end);
+  return route.map((_, i) => ['pages', ...route.slice(0, i + 1)]);
+};
+
+export const routesWithoutPage = (paths: string[]) => {
+  const routes = new Set(
+    paths
+      .flatMap(routeFoldersOf)
+      .filter((route) => !isGroup(route[route.length - 1]))
+      .map((route) => route.join('/')),
+  );
+  return [...routes].filter((route) => !paths.includes(`${route}/page.tsx`));
 };
