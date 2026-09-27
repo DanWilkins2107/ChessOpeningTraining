@@ -1208,3 +1208,13 @@ it('lets touches scroll past a board that takes no moves', () => {
   // Then touches are left to the page
   expect(boardElement()).not.toHaveClass('board-interactive');
 });
+
+it('gives a resting, sliding piece only its base class', () => {
+  // Given animation is on
+
+  // When a king renders, not being dragged
+  render(<Board position={KING_ON_E1} orientation="white" animatePieces />);
+
+  // Then it carries nothing but the base class
+  expect(pieceImages()[0]).toHaveAttribute('class', 'board-piece');
+});
