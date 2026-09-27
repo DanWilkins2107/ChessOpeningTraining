@@ -2,11 +2,13 @@
 import './BoardSquares.css';
 import { FILES } from '../files/files.constants';
 import type { PlacedPiece } from '../placedPiece/placedPiece';
+import { useRovingFocus } from '../useRovingFocus/useRovingFocus';
 
 type BoardSquaresProps = {
   files: string[];
   ranks: number[];
   pieces: PlacedPiece[];
+  selected?: string | null;
   onSquareClick?: (square: string) => void;
 };
 
@@ -16,12 +18,14 @@ export function BoardSquares({
   files,
   ranks,
   pieces,
+  selected,
   onSquareClick,
 }: BoardSquaresProps) {
   const placement = new Map(pieces.map(({ square, piece }) => [square, piece]));
+  const { grid, focusProps } = useRovingFocus(`${files[0]}${ranks[0]}`);
 
   return (
-    <div role="grid" aria-label="Chess board" className="board-grid">
+    <div ref={grid} role="grid" aria-label="Chess board" className="board-grid">
       {ranks.map((rank, row) => (
         <div role="row" key={rank} className="board-row">
           {files.map((file, column) => {
@@ -39,7 +43,11 @@ export function BoardSquares({
                     ? 'board-square board-square-dark'
                     : 'board-square board-square-light'
                 }
-                onClick={onSquareClick && (() => onSquareClick(square))}
+                {...(onSquareClick && {
+                  'aria-selected': square === selected,
+                  onClick: () => onSquareClick(square),
+                  ...focusProps(square, row, column),
+                })}
               >
                 {column === 0 && (
                   <span aria-hidden className="board-rank">
