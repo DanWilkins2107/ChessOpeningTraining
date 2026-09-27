@@ -1,5 +1,5 @@
 import { useEffect, useEffectEvent, useState } from 'react';
-import { useUser } from '../useUser/useUser';
+import { useUser } from '../../../../shared/useUser/useUser';
 
 // `fetch` must be stable (e.g. module-level): a new one each render refetches
 // each render.
