@@ -86,10 +86,10 @@ describe('page exports', () => {
 
   const accepted = [
     'export function ChangeEmail() {}',
-    'export const Branch = () => null;',
-    'export default function Branch() {}',
-    'export type BranchProps = {};\nexport function Branch() {}',
-    'export interface Branch {}\nexport function Branch() {}',
+    'export const Folder = () => null;',
+    'export default function Folder() {}',
+    'export type FolderProps = {};\nexport function Folder() {}',
+    'export interface Folder {}\nexport function Folder() {}',
     'function helper() {}\nhelper();',
   ];
 
@@ -99,14 +99,14 @@ describe('page exports', () => {
 
   const rejected: [string, string][] = [
     ['export function changeEmail() {}', 'changeEmail'],
-    ['export function Branch2x_() {}', 'Branch2x_'],
+    ['export function Folder2x_() {}', 'Folder2x_'],
     ['export default function () {}', 'default'],
     ['export function A() {}\nexport function B() {}', 'A, B'],
-    ['export type BranchProps = {};', 'BranchProps'],
-    ['export type Other = {};\nexport function Branch() {}', 'Other'],
+    ['export type FolderProps = {};', 'FolderProps'],
+    ['export type Other = {};\nexport function Folder() {}', 'Other'],
     [
-      'export type BranchState = {};\nexport function Branch() {}',
-      'BranchState',
+      'export type FolderState = {};\nexport function Folder() {}',
+      'FolderState',
     ],
   ];
 
@@ -117,9 +117,9 @@ describe('page exports', () => {
   });
 
   it('applies the module rule to other files named like a page', () => {
-    const file = 'src/pages/Branch/subpage.tsx';
-    expect(problemsIn('export function Branch() {}', file)).toEqual([
-      `${file}: exports Branch — export only subpage (types Subpage or SubpageProps)`,
+    const file = 'src/pages/Folder/subpage.tsx';
+    expect(problemsIn('export function Folder() {}', file)).toEqual([
+      `${file}: exports Folder — export only subpage (types Subpage or SubpageProps)`,
     ]);
   });
 });

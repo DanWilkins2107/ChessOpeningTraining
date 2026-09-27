@@ -1,9 +1,0 @@
-// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
-
-exports[`BranchName > matches snapshot 1`] = `
-<div>
-  <h1>
-    London
-  </h1>
-</div>
-`;

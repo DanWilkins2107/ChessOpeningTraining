@@ -2,46 +2,46 @@
 -- validate_chapter_move_tree checks must change that type too.
 create table public.chapters (
   id uuid primary key default gen_random_uuid(),
-  branch_id uuid not null references public.branches on delete cascade,
+  folder_id uuid not null references public.folders on delete cascade,
   name text not null check (name = trim(name) and char_length(name) between 1 and 100),
   move_tree jsonb not null default '[]',
   created_at timestamptz not null default now()
 );
 
-create index chapters_branch_id_idx on public.chapters (branch_id);
+create index chapters_folder_id_idx on public.chapters (folder_id);
 
 grant select on table public.chapters to authenticated;
-create policy "Branch owners read their chapters" on public.chapters
+create policy "Folder owners read their chapters" on public.chapters
   for select to authenticated
-  using (branch_id in (select id from public.branches where owner_id = (select auth.uid())));
+  using (folder_id in (select id from public.folders where owner_id = (select auth.uid())));
 
-grant insert (branch_id, name, move_tree) on table public.chapters to authenticated;
-create policy "Branch owners create their chapters" on public.chapters
+grant insert (folder_id, name, move_tree) on table public.chapters to authenticated;
+create policy "Folder owners create their chapters" on public.chapters
   for insert to authenticated
-  with check (branch_id in (select id from public.branches where owner_id = (select auth.uid())));
+  with check (folder_id in (select id from public.folders where owner_id = (select auth.uid())));
 
 grant update (name, move_tree) on table public.chapters to authenticated;
-create policy "Branch owners update their chapters" on public.chapters
+create policy "Folder owners update their chapters" on public.chapters
   for update to authenticated
-  using (branch_id in (select id from public.branches where owner_id = (select auth.uid())))
-  with check (branch_id in (select id from public.branches where owner_id = (select auth.uid())));
+  using (folder_id in (select id from public.folders where owner_id = (select auth.uid())))
+  with check (folder_id in (select id from public.folders where owner_id = (select auth.uid())));
 
 grant delete on table public.chapters to authenticated;
-create policy "Branch owners delete their chapters" on public.chapters
+create policy "Folder owners delete their chapters" on public.chapters
   for delete to authenticated
-  using (branch_id in (select id from public.branches where owner_id = (select auth.uid())));
+  using (folder_id in (select id from public.folders where owner_id = (select auth.uid())));
 
-create function public.enforce_chapters_per_branch_limit()
+create function public.enforce_chapters_per_folder_limit()
 returns trigger
 language plpgsql
 set search_path = ''
 as $$
 begin
-  -- Serialises inserts per branch, so concurrent ones cannot all pass the count.
-  perform pg_advisory_xact_lock(hashtext('public.chapters'), hashtext(new.branch_id::text));
+  -- Serialises inserts per folder, so concurrent ones cannot all pass the count.
+  perform pg_advisory_xact_lock(hashtext('public.chapters'), hashtext(new.folder_id::text));
 
-  if (select count(*) from public.chapters where branch_id = new.branch_id) >= 100 then
-    raise exception 'A branch can have at most 100 chapters'
+  if (select count(*) from public.chapters where folder_id = new.folder_id) >= 100 then
+    raise exception 'A folder can have at most 100 chapters'
       using errcode = 'check_violation';
   end if;
 
@@ -49,9 +49,9 @@ begin
 end;
 $$;
 
-create trigger enforce_chapters_per_branch_limit
+create trigger enforce_chapters_per_folder_limit
   before insert on public.chapters
-  for each row execute function public.enforce_chapters_per_branch_limit();
+  for each row execute function public.enforce_chapters_per_folder_limit();
 
 create function public.validate_chapter_move_tree()
 returns trigger

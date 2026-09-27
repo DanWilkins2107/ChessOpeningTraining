@@ -1,4 +1,4 @@
-// fallow-ignore-file unused-file -- ef93ff81 2026-10-15 landed ahead of the branch page, its first consumer.
+// fallow-ignore-file unused-file -- ef93ff81 2026-10-15 landed ahead of the folder page, its first consumer.
 import { useState } from 'react';
 import { trackPieces } from '../trackPieces/trackPieces';
 import type { PlacedPiece } from '../placedPiece/placedPiece';

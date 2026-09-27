@@ -278,14 +278,14 @@ describe('placementProblems in nested and group routes', () => {
       placementProblems(
         {
           'src/shared/Foo/Foo.tsx': '',
-          'src/pages/branches/[branchId]/page.tsx': imports(
+          'src/pages/folders/[folderId]/page.tsx': imports(
             '../../../shared/Foo/Foo',
           ),
         },
         [],
       ),
     ).toEqual([
-      'src/shared/Foo: consumed from src/pages/branches/[branchId], so it belongs in src/pages/branches/[branchId]/elements',
+      'src/shared/Foo: consumed from src/pages/folders/[folderId], so it belongs in src/pages/folders/[folderId]/elements',
     ]);
   });
 

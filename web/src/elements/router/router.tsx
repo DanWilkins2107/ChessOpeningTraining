@@ -5,8 +5,8 @@ import {
   DELETE_ACCOUNT_ROUTE_PATH,
   PROTECTED_ROUTE_HANDLE,
   ROOT_ROUTE_PATH,
-  BRANCHES_ROUTE_PATH,
-  BRANCH_ROUTE_PATH,
+  FOLDERS_ROUTE_PATH,
+  FOLDER_ROUTE_PATH,
 } from '../../shared/routes/routes.constants';
 import { RootLayout } from '../RootLayout/RootLayout';
 import { Account } from '../../pages/Account/page';
@@ -17,8 +17,8 @@ import { NotFound } from '../../pages/NotFound/page';
 import { SetNewPassword } from '../../pages/SetNewPassword/page';
 import { SignIn } from '../../pages/SignIn/page';
 import { SignUp } from '../../pages/SignUp/page';
-import { Branches } from '../../pages/Branches/page';
-import { Branch } from '../../pages/Branch/page';
+import { Folders } from '../../pages/Folders/page';
+import { Folder } from '../../pages/Folder/page';
 
 export const router = createBrowserRouter([
   {
@@ -32,8 +32,8 @@ export const router = createBrowserRouter([
           { index: true, element: <Home /> },
           { path: ACCOUNT_ROUTE_PATH, element: <Account /> },
           { path: DELETE_ACCOUNT_ROUTE_PATH, element: <DeleteAccount /> },
-          { path: BRANCHES_ROUTE_PATH, element: <Branches /> },
-          { path: BRANCH_ROUTE_PATH, element: <Branch /> },
+          { path: FOLDERS_ROUTE_PATH, element: <Folders /> },
+          { path: FOLDER_ROUTE_PATH, element: <Folder /> },
         ],
       },
       { path: 'sign-in', element: <SignIn /> },

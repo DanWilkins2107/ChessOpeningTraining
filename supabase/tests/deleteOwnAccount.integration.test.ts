@@ -74,24 +74,24 @@ it('deletes the account of a user who just entered their password', async () => 
   expect(await accountExists(id)).toBe(false);
 });
 
-it('deletes their branches with it', async () => {
-  // Given a user with a branch
+it('deletes their folders with it', async () => {
+  // Given a user with a folder
   const { id, client } = await signedInUser();
-  const branch = await client
-    .from('branches')
+  const folder = await client
+    .from('folders')
     .insert({ name: 'Caro-Kann', side: 'black' })
     .select()
     .single();
-  expect(branch.error).toBeNull();
+  expect(folder.error).toBeNull();
 
   // When they delete their account
   await deletedOwnAccount(id, client);
 
-  // Then the branch is gone
+  // Then the folder is gone
   const { data } = await admin
-    .from('branches')
+    .from('folders')
     .select()
-    .eq('id', branch.data.id)
+    .eq('id', folder.data.id)
     .maybeSingle();
   expect(data).toBeNull();
 });

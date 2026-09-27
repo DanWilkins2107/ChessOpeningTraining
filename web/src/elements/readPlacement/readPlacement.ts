@@ -1,4 +1,4 @@
-// fallow-ignore-file unused-file -- ef93ff81 2026-10-15 landed ahead of the branch page, its first consumer.
+// fallow-ignore-file unused-file -- ef93ff81 2026-10-15 landed ahead of the folder page, its first consumer.
 import { FILES } from '../files/files.constants';
 import { PIECES } from '../pieces/pieces.constants';
 import type { Piece } from '../pieces/pieces.constants';

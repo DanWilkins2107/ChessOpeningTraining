@@ -48,7 +48,7 @@ export function DeleteAccountForm() {
 
   return (
     <form className="delete-account-form" onSubmit={deleteAccount}>
-      <p>This permanently deletes your account and all your branches.</p>
+      <p>This permanently deletes your account and all your folders.</p>
       <TextInput
         label="Password"
         name="password"
