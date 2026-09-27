@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
-import { expect, it, vi } from 'vitest';
+import { beforeEach, expect, it, vi } from 'vitest';
 import { ROOK_ON_H5, ROOKS_HOME } from '../../tests-shared/rookPositions';
 import { Board } from './Board';
 
@@ -896,4 +896,325 @@ it('keeps pieces still when animation is off', () => {
 
   // Then it moves without sliding
   expect(pieceImages()[0]).toHaveClass('board-piece-still');
+});
+
+// The board sits 100px in and 50px down, each square 100px across.
+const BOARD_LEFT = 100;
+const BOARD_TOP = 50;
+
+const boardElement = () =>
+  screen.getByRole('grid', { name: 'Chess board' }).parentElement!;
+
+beforeEach(() => {
+  // mock-reason: jsdom lays nothing out, so the board has no size to drop onto.
+  vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue(
+    new DOMRect(BOARD_LEFT, BOARD_TOP, 800, 800),
+  );
+  // jsdom has no pointer capture; the stub records the board asking for it.
+  HTMLElement.prototype.setPointerCapture = vi.fn();
+});
+
+type Point = { clientX: number; clientY: number };
+
+const centreOf = (
+  name: string,
+  orientation: 'white' | 'black' = 'white',
+): Point => {
+  const column = 'abcdefgh'.indexOf(name[0]);
+  const row = 8 - Number(name[1]);
+  const [x, y] =
+    orientation === 'white' ? [column, row] : [7 - column, 7 - row];
+  return {
+    clientX: BOARD_LEFT + x * 100 + 50,
+    clientY: BOARD_TOP + y * 100 + 50,
+  };
+};
+
+const POINTER = { pointerId: 7 };
+
+const pressAt = (point: Point) =>
+  fireEvent.pointerDown(boardElement(), { ...POINTER, ...point });
+const moveTo = (point: Point) =>
+  fireEvent.pointerMove(boardElement(), { ...POINTER, ...point });
+const releaseAt = (point: Point) =>
+  fireEvent.pointerUp(boardElement(), { ...POINTER, ...point });
+
+const drag = (from: Point, to: Point) => {
+  pressAt(from);
+  moveTo(to);
+  releaseAt(to);
+};
+
+const draggedPieces = () =>
+  pieceImages().filter((image) =>
+    image.classList.contains('board-piece-dragged'),
+  );
+
+const renderPlayable = (onMove = vi.fn()) =>
+  render(
+    <Board
+      position={START}
+      orientation="white"
+      animatePieces
+      onMove={onMove}
+    />,
+  );
+
+it('plays a piece dragged onto a legal square', () => {
+  // Given the starting position with a move handler
+  const onMove = vi.fn();
+  renderPlayable(onMove);
+
+  // When the e2 pawn is dragged to e4
+  drag(centreOf('e2'), centreOf('e4'));
+
+  // Then the move is handed to the handler
+  expect(onMove).toHaveBeenCalledExactlyOnceWith({ from: 'e2', to: 'e4' });
+});
+
+it('reads drop squares as the board faces, from black', () => {
+  // Given black to move on a board facing black
+  const onMove = vi.fn();
+  render(
+    <Board
+      position={AFTER_E4}
+      orientation="black"
+      animatePieces
+      onMove={onMove}
+    />,
+  );
+
+  // When the e7 pawn is dragged to e5
+  drag(centreOf('e7', 'black'), centreOf('e5', 'black'));
+
+  // Then black's move is handed over
+  expect(onMove).toHaveBeenCalledExactlyOnceWith({ from: 'e7', to: 'e5' });
+});
+
+it('shows hints for a pressed piece before it moves', () => {
+  // Given the starting position with a move handler
+  renderPlayable();
+
+  // When the e2 pawn is pressed
+  pressAt(centreOf('e2'));
+
+  // Then e2 is tinted and its targets dotted
+  expect(squaresMarked('board-square-selected')).toEqual(['e2']);
+  expect(squaresMarked('board-square-target')).toEqual(['e4', 'e3']);
+});
+
+it('keeps the hints on while a piece is dragged', () => {
+  // Given the e2 pawn is pressed
+  renderPlayable();
+  pressAt(centreOf('e2'));
+
+  // When it is dragged over e5
+  moveTo(centreOf('e5'));
+
+  // Then e2 is still tinted and its targets dotted
+  expect(squaresMarked('board-square-selected')).toEqual(['e2']);
+  expect(squaresMarked('board-square-target')).toEqual(['e4', 'e3']);
+});
+
+it('centres a dragged piece on the pointer', () => {
+  // Given the e2 pawn is pressed
+  renderPlayable();
+  pressAt(centreOf('e2'));
+
+  // When the pointer moves to 333px across and 222px down the board
+  moveTo({ clientX: BOARD_LEFT + 333, clientY: BOARD_TOP + 222 });
+
+  // Then only that pawn is lifted, with its middle under the pointer
+  expect(draggedPieces()).toEqual([
+    imageAt('translate(calc(333px - 50%), calc(222px - 50%))'),
+  ]);
+});
+
+it('leaves a piece in place while the pointer has barely moved', () => {
+  // Given the e2 pawn is pressed
+  renderPlayable();
+  pressAt(centreOf('e2'));
+
+  // When the pointer wobbles 3px
+  const { clientX, clientY } = centreOf('e2');
+  moveTo({ clientX: clientX + 3, clientY });
+
+  // Then nothing is lifted
+  expect(draggedPieces()).toEqual([]);
+  expect(boardElement().setPointerCapture).not.toHaveBeenCalled();
+});
+
+it('lifts a piece once the pointer has moved 4px', () => {
+  // Given the e2 pawn is pressed
+  renderPlayable();
+  pressAt(centreOf('e2'));
+
+  // When the pointer moves 4px
+  const { clientX, clientY } = centreOf('e2');
+  moveTo({ clientX, clientY: clientY + 4 });
+
+  // Then the pawn is lifted and the board holds on to the pointer
+  expect(draggedPieces()).toHaveLength(1);
+  expect(boardElement().setPointerCapture).toHaveBeenCalledWith(7);
+});
+
+it('keeps a lifted piece following the pointer back near its square', () => {
+  // Given the e2 pawn is being dragged
+  renderPlayable();
+  pressAt(centreOf('e2'));
+  moveTo(centreOf('e4'));
+
+  // When the pointer comes back to 1px from where it was pressed
+  const { clientX, clientY } = centreOf('e2');
+  moveTo({ clientX: clientX + 1, clientY });
+
+  // Then the pawn is still under the pointer
+  expect(draggedPieces()).toHaveLength(1);
+});
+
+it.each([
+  ['an illegal square', centreOf('e5')],
+  ['past the right edge', { clientX: BOARD_LEFT + 850, clientY: BOARD_TOP }],
+  ['below the board', { clientX: BOARD_LEFT + 450, clientY: BOARD_TOP + 850 }],
+])('sends a piece dropped on %s home', (_where, point) => {
+  // Given the e2 pawn is being dragged
+  const onMove = vi.fn();
+  renderPlayable(onMove);
+
+  // When it is released there
+  drag(centreOf('e2'), point);
+
+  // Then no move is made, and the pawn is back on e2 with no hints
+  expect(onMove).not.toHaveBeenCalled();
+  expect(draggedPieces()).toEqual([]);
+  expect(imageAt('translate(400%, 600%)')).toBeDefined();
+  expect(squaresMarked('board-square-selected')).toEqual([]);
+});
+
+it('sends a piece home still selected when the drag is cancelled', () => {
+  // Given the e2 pawn is being dragged over e4
+  const onMove = vi.fn();
+  renderPlayable(onMove);
+  pressAt(centreOf('e2'));
+  moveTo(centreOf('e4'));
+
+  // When the browser cancels the pointer
+  fireEvent.pointerCancel(boardElement(), POINTER);
+
+  // Then no move is made, and the pawn is back on e2, still selected
+  expect(onMove).not.toHaveBeenCalled();
+  expect(draggedPieces()).toEqual([]);
+  expect(squaresMarked('board-square-selected')).toEqual(['e2']);
+});
+
+it('keeps a piece dropped on its own square picked up for a click', () => {
+  // Given the e2 pawn is dragged away and back to e2
+  const onMove = vi.fn();
+  renderPlayable(onMove);
+  pressAt(centreOf('e2'));
+  moveTo(centreOf('e4'));
+  releaseAt(centreOf('e2'));
+
+  // When e4 is clicked
+  clickSquares('e4');
+
+  // Then the pawn goes there
+  expect(onMove).toHaveBeenCalledExactlyOnceWith({ from: 'e2', to: 'e4' });
+});
+
+it('leaves a press and release without a drag to the click', () => {
+  // Given the starting position with a move handler
+  const onMove = vi.fn();
+  renderPlayable(onMove);
+
+  // When e2 is pressed and the pointer lets go over e4 without dragging
+  pressAt(centreOf('e2'));
+  releaseAt(centreOf('e4'));
+
+  // Then no move is made
+  expect(onMove).not.toHaveBeenCalled();
+});
+
+it('plays a click move through the whole pointer sequence', () => {
+  // Given the starting position with a move handler
+  const onMove = vi.fn();
+  renderPlayable(onMove);
+
+  // When e2 and then e4 are each pressed, released and clicked
+  for (const name of ['e2', 'e4']) {
+    pressAt(centreOf(name));
+    releaseAt(centreOf(name));
+    clickSquares(name);
+  }
+
+  // Then the move is handed over once
+  expect(onMove).toHaveBeenCalledExactlyOnceWith({ from: 'e2', to: 'e4' });
+});
+
+it.each(['e4', 'e7'])('does not lift a pressed %s', (name) => {
+  // Given the e2 pawn is selected
+  renderPlayable();
+  clickSquares('e2');
+
+  // When an empty square or a black piece is pressed and dragged
+  pressAt(centreOf(name));
+  moveTo(centreOf('d4'));
+
+  // Then nothing is lifted and e2 stays selected
+  expect(draggedPieces()).toEqual([]);
+  expect(squaresMarked('board-square-selected')).toEqual(['e2']);
+});
+
+it('ignores a pointer moving over the board without a press', () => {
+  // Given the starting position with a move handler
+  renderPlayable();
+
+  // When the pointer passes over it
+  moveTo(centreOf('e4'));
+
+  // Then nothing is lifted
+  expect(draggedPieces()).toEqual([]);
+});
+
+it('ignores dragging without a move handler', () => {
+  // Given a board with no move handler
+  render(<Board position={START} animatePieces orientation="white" />);
+
+  // When the e2 pawn is dragged
+  pressAt(centreOf('e2'));
+  moveTo(centreOf('e4'));
+
+  // Then nothing is lifted or selected
+  expect(draggedPieces()).toEqual([]);
+  expect(squaresMarked('board-square-selected')).toEqual([]);
+});
+
+it('stops touch scrolling on a board that takes moves', () => {
+  // Given a board with a move handler
+
+  // When it renders
+  renderPlayable();
+
+  // Then it claims touches for itself
+  expect(boardElement()).toHaveClass('board-interactive');
+});
+
+it('lets touches scroll past a board that takes no moves', () => {
+  // Given a board with no move handler
+
+  // When it renders
+  render(<Board position={START} animatePieces orientation="white" />);
+
+  // Then touches are left to the page
+  expect(boardElement()).not.toHaveClass('board-interactive');
+});
+
+it('gives a resting, sliding piece only its base class', () => {
+  // Given animation is on
+
+  // When a king renders, not being dragged
+  render(<Board position={KING_ON_E1} orientation="white" animatePieces />);
+
+  // Then it carries nothing but the base class
+  expect(pieceImages()[0]).toHaveAttribute('class', 'board-piece');
 });
