@@ -3,9 +3,11 @@ import { supabase } from '../../../../supabase';
 
 const SAVE_DELAY_MS = 500;
 
+type SaveOutcome = 'saved' | 'failed';
+
 export function useSaveAnimatePieces(loaded: boolean | undefined) {
   const [chosen, setChosen] = useState<boolean>();
-  const [saveFailed, setSaveFailed] = useState(false);
+  const [outcome, setOutcome] = useState<SaveOutcome>();
   const saved = useRef<boolean>(undefined);
   const latest = useRef<boolean>(undefined);
   const sending = useRef(false);
@@ -15,7 +17,7 @@ export function useSaveAnimatePieces(loaded: boolean | undefined) {
     saved.current ??= loaded;
     latest.current = animatePieces;
     setChosen(animatePieces);
-    setSaveFailed(false);
+    setOutcome(undefined);
     clearTimeout(timer.current);
     timer.current = setTimeout(saveLatest, SAVE_DELAY_MS);
   }
@@ -25,6 +27,7 @@ export function useSaveAnimatePieces(loaded: boolean | undefined) {
   async function saveLatest() {
     if (sending.current) return;
     sending.current = true;
+    let result: SaveOutcome | undefined;
     while (latest.current !== saved.current) {
       const animatePieces = latest.current;
       const { error } = await supabase
@@ -32,13 +35,15 @@ export function useSaveAnimatePieces(loaded: boolean | undefined) {
         .upsert({ animate_pieces: animatePieces });
       if (error) {
         setChosen(saved.current);
-        setSaveFailed(true);
+        result = 'failed';
         break;
       }
       saved.current = animatePieces;
+      result = 'saved';
     }
+    setOutcome(result);
     sending.current = false;
   }
 
-  return { animatePieces: chosen ?? loaded, choose, saveFailed };
+  return { animatePieces: chosen ?? loaded, choose, outcome };
 }

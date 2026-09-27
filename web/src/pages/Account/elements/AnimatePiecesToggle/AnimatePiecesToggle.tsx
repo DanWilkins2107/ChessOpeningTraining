@@ -1,4 +1,5 @@
 import { ErrorMessage } from '../../../../shared/ErrorMessage/ErrorMessage';
+import { SuccessMessage } from '../../../../shared/SuccessMessage/SuccessMessage';
 import type { AnimatePiecesSetting } from '../AnimatePiecesSetting/AnimatePiecesSetting';
 import { useSaveAnimatePieces } from '../useSaveAnimatePieces/useSaveAnimatePieces';
 import './AnimatePiecesToggle.css';
@@ -6,7 +7,7 @@ import './AnimatePiecesToggle.css';
 type AnimatePiecesToggleProps = { setting: AnimatePiecesSetting };
 
 export function AnimatePiecesToggle({ setting }: AnimatePiecesToggleProps) {
-  const { animatePieces, choose, saveFailed } = useSaveAnimatePieces(
+  const { animatePieces, choose, outcome } = useSaveAnimatePieces(
     setting.animatePieces,
   );
 
@@ -38,9 +39,10 @@ export function AnimatePiecesToggle({ setting }: AnimatePiecesToggleProps) {
       {setting.status === 'failed' && (
         <ErrorMessage>Couldn't load your settings, try again</ErrorMessage>
       )}
-      {saveFailed && (
+      {outcome === 'failed' && (
         <ErrorMessage>Couldn't save your setting, try again</ErrorMessage>
       )}
+      {outcome === 'saved' && <SuccessMessage>Saved</SuccessMessage>}
     </div>
   );
 }

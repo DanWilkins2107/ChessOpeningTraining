@@ -12,6 +12,7 @@ import { supabase } from '../../../../supabase';
 const firstVisit = registerTestUser();
 const savedOff = registerTestUser();
 const turningOff = registerTestUser();
+const confirming = registerTestUser();
 const clickingOnAndOff = registerTestUser();
 const undoing = registerTestUser();
 const turningBackOn = registerTestUser();
@@ -137,6 +138,23 @@ it('turns off at once, and saves after a pause', async () => {
   expect(screen.queryByRole('alert')).not.toBeInTheDocument();
 });
 
+it('says Saved once saved, until the next click', async () => {
+  // Given a user on the toggle
+  await renderFor(confirming);
+
+  // When they turn it off
+  fireEvent.click(await loadedToggle());
+
+  // Then it says Saved only once the save returns
+  expect(screen.queryByRole('status')).not.toBeInTheDocument();
+  expect(await screen.findByRole('status')).toHaveTextContent('Saved');
+
+  // And the note goes when they click again
+  fireEvent.click(toggle());
+  expect(screen.queryByRole('status')).not.toBeInTheDocument();
+  expect(await screen.findByRole('status')).toHaveTextContent('Saved');
+});
+
 it('saves only once the clicks stop', async () => {
   // Given a user on the toggle
   await renderFor(clickingOnAndOff);
@@ -167,6 +185,7 @@ it('saves nothing when a click is undone', async () => {
   await pause(700);
   expect(toggle()).toBeChecked();
   expect(saves).toEqual([]);
+  expect(screen.queryByRole('status')).not.toBeInTheDocument();
 });
 
 it('saves over a setting already saved', async () => {
@@ -233,6 +252,7 @@ it('turns back on and says so when saving fails', async () => {
     "Couldn't save your setting, try again",
   );
   expect(toggle()).toBeChecked();
+  expect(screen.queryByRole('status')).not.toBeInTheDocument();
 
   // And the message goes when they try again
   vi.restoreAllMocks();
