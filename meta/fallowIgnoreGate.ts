@@ -1,17 +1,22 @@
 import { execFileSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import path from 'node:path';
+import { z } from '../web/src/z';
 import { expiryProblem, startOfTodayUtc } from './expiry';
 
-type Suppression = {
-  line: number;
-  kind: string;
-  reason: string | null;
-};
+const suppressionSchema = z.object({
+  line: z.number(),
+  kind: z.string(),
+  reason: z.string().nullable(),
+});
 
-type Inventory = {
-  files: { path: string; suppressions: Suppression[] }[];
-};
+type Suppression = z.infer<typeof suppressionSchema>;
+
+const inventorySchema = z.object({
+  files: z.array(
+    z.object({ path: z.string(), suppressions: z.array(suppressionSchema) }),
+  ),
+});
 
 const FORMAT =
   'fallow-ignore-file unused-file -- <8-hex AgentJira node id> <YYYY-MM-DD> description';
@@ -50,11 +55,11 @@ function suppressionProblems(
   return problem === null ? [] : [`${file}:${suppression.line}: ${problem}`];
 }
 
-function inventory(): Inventory {
+function inventory() {
   const output = execFileSync(
     process.execPath,
     [fallowBin, 'suppressions', '--format', 'json'],
     { cwd: repoRoot },
   ).toString('utf8');
-  return JSON.parse(output) as Inventory;
+  return inventorySchema.parse(JSON.parse(output));
 }

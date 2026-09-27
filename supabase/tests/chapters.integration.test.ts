@@ -14,14 +14,14 @@ const MAX_TREE_BYTES = 512 * 1024;
 
 const TREE = [move('e4', move('c6', move('d4'), move('Nc3')))];
 
-async function existingStudyId(client: SupabaseClient) {
+async function existingStudyId(client: SupabaseClient): Promise<string> {
   const { data, error } = await client
     .from('studies')
     .insert({ name: 'Caro-Kann', side: 'black' })
     .select()
     .single();
   if (error) throw error;
-  return data.id as string;
+  return data.id;
 }
 
 async function studyOwner() {
@@ -71,7 +71,7 @@ async function createChapterWithLine(
   client: SupabaseClient,
   studyId: string,
   plies: number,
-) {
+): Promise<{ code: string } | null> {
   const tree =
     '[{"san":"e4","children":'.repeat(plies) + '[]' + '}]'.repeat(plies);
   const { data } = await client.auth.getSession();
@@ -84,7 +84,7 @@ async function createChapterWithLine(
     },
     body: `{"study_id":"${studyId}","name":"Main line","move_tree":${tree}}`,
   });
-  return response.ok ? null : ((await response.json()) as { code: string });
+  return response.ok ? null : await response.json();
 }
 
 const treeOfTextLength = (bytes: number) => {
@@ -297,6 +297,8 @@ it.each([
   ],
   [
     'an invalid move deep in a sideline',
+    // as-reason: the move deliberately lacks the children MoveNode requires,
+    // to prove a malformed move deep in the tree is refused.
     { move_tree: [move('e4', move('c6', { san: 'd4' } as MoveNode))] },
     CHECK_VIOLATION,
   ],
