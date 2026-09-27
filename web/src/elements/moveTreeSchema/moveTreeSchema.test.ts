@@ -13,7 +13,7 @@ const line = (plies: number) =>
 // The empty tree is not first: zod reads the recursive children schema once, on
 // the first parse, and Stryker only credits that first test with covering it.
 it.each([
-  ['a tree with variations', [move('e4', move('c6', move('d4'), move('Nc3')))]],
+  ['a tree with sidelines', [move('e4', move('c6', move('d4'), move('Nc3')))]],
   ['a 600-ply line', line(600)],
   ['1000 lines at one ply', leaves(1000)],
   [
@@ -41,7 +41,7 @@ it.each([
   ['a move whose children are not an array', [{ san: 'e4', children: {} }]],
   ['a move with an extra key', [{ ...move('e4'), comment: 'Best by test' }]],
   [
-    'an invalid move deep in a variation',
+    'an invalid move deep in a sideline',
     // as-reason: the move deliberately lacks the children MoveNode requires,
     // to prove a malformed move deep in the tree is refused.
     [move('e4', move('c6', { san: 'd4' } as MoveNode))],

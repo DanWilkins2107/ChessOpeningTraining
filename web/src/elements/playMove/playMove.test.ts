@@ -12,8 +12,8 @@ it('plays the first move into an empty tree', () => {
   expect(played).toEqual({ tree: [move('e4')], line: ['e4'] });
 });
 
-it('adds a new move after the existing children as a variation', () => {
-  // Given 1. e4 e5 with a 1. d4 variation
+it('adds a new move after the existing children as a sideline', () => {
+  // Given 1. e4 e5 with a 1. d4 sideline
   const tree = [move('e4', move('e5')), move('d4')];
 
   // When c5 is played after e4

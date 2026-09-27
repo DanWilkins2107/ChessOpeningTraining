@@ -7,7 +7,7 @@
   // The Vite plugin finds no entries in production mode.
   "entry": ["web/src/main.tsx", "web/vite.config.ts"],
   // Only tests consume these, so the default pass checks them.
-  "ignoreFindings": ["meta/**", "web/meta/**", "web/src/tests-shared/**"],
+  "ignoreFindings": ["meta/**", "web/meta/**", "web/src/**/tests-shared/**"],
   "rules": {
     "stale-suppressions": "error",
   },
