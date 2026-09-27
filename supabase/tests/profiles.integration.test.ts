@@ -29,7 +29,7 @@ const storedProfile = async (userId: string) =>
   (await admin.from('profiles').select().eq('user_id', userId).maybeSingle())
     .data;
 
-it('creates a profile for the signed-in user with animation on by default', async () => {
+it('creates a profile for the signed-in user with animation and move hints on by default', async () => {
   // Given a signed-in user
   const { id, client } = await signedInUser();
 
@@ -40,23 +40,50 @@ it('creates a profile for the signed-in user with animation on by default', asyn
     .select()
     .single();
 
-  // Then it is theirs, with animation on
+  // Then it is theirs, with animation and move hints on
   expect(error).toBeNull();
-  expect(data).toEqual({ user_id: id, animate_pieces: true });
+  expect(data).toEqual({
+    user_id: id,
+    animate_pieces: true,
+    show_move_hints: true,
+  });
 });
 
-it('saves a first setting and then changes it', async () => {
-  // Given a signed-in user with no profile
-  const { id, client } = await signedInUser();
+it.each(['animate_pieces', 'show_move_hints'])(
+  'saves a first %s and then changes it',
+  async (setting) => {
+    // Given a signed-in user with no profile
+    const { id, client } = await signedInUser();
 
-  // When they save a setting, then save it again
-  await saveProfile(client, { animate_pieces: false });
-  const { data, error } = await saveProfile(client, { animate_pieces: true });
+    // When they save the setting off, then save it on again
+    await saveProfile(client, { [setting]: false });
+    const { data, error } = await saveProfile(client, { [setting]: true });
 
-  // Then the one profile holds the latest setting
+    // Then the one profile holds the latest setting
+    expect(error).toBeNull();
+    expect(data).toEqual({
+      user_id: id,
+      animate_pieces: true,
+      show_move_hints: true,
+    });
+    expect(await storedProfile(id)).toEqual(data);
+  },
+);
+
+it('saves move hints off without changing animation', async () => {
+  // Given a user with animation off
+  const { id, client } = await existingProfile();
+
+  // When they turn move hints off
+  const { data, error } = await saveProfile(client, { show_move_hints: false });
+
+  // Then only move hints change
   expect(error).toBeNull();
-  expect(data).toEqual({ user_id: id, animate_pieces: true });
-  expect(await storedProfile(id)).toEqual(data);
+  expect(data).toEqual({
+    user_id: id,
+    animate_pieces: false,
+    show_move_hints: false,
+  });
 });
 
 it('lets the owner read their profile', async () => {
@@ -67,19 +94,24 @@ it('lets the owner read their profile', async () => {
   const { data } = await client.from('profiles').select();
 
   // Then they see theirs
-  expect(data).toEqual([{ user_id: id, animate_pieces: false }]);
+  expect(data).toEqual([
+    { user_id: id, animate_pieces: false, show_move_hints: true },
+  ]);
 });
 
-it('refuses a missing animate_pieces', async () => {
-  // Given a signed-in user
-  const { client } = await signedInUser();
+it.each(['animate_pieces', 'show_move_hints'])(
+  'refuses a missing %s',
+  async (setting) => {
+    // Given a signed-in user
+    const { client } = await signedInUser();
 
-  // When they save a null setting
-  const { error } = await saveProfile(client, { animate_pieces: null });
+    // When they save a null setting
+    const { error } = await saveProfile(client, { [setting]: null });
 
-  // Then it is refused
-  expect(error?.code).toBe(NOT_NULL_VIOLATION);
-});
+    // Then it is refused
+    expect(error?.code).toBe(NOT_NULL_VIOLATION);
+  },
+);
 
 it('refuses a client-supplied user_id on create', async () => {
   // Given a signed-in user, and another user
@@ -112,6 +144,7 @@ it('refuses changing a profile’s user_id', async () => {
   expect(await storedProfile(id)).toEqual({
     user_id: id,
     animate_pieces: false,
+    show_move_hints: true,
   });
 });
 
@@ -156,6 +189,7 @@ it('stops other users changing a profile', async () => {
   expect(await storedProfile(owner.id)).toEqual({
     user_id: owner.id,
     animate_pieces: false,
+    show_move_hints: true,
   });
 });
 
@@ -183,6 +217,7 @@ it.each([
   expect(await storedProfile(owner.id)).toEqual({
     user_id: owner.id,
     animate_pieces: false,
+    show_move_hints: true,
   });
 });
 
