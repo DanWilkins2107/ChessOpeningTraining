@@ -1,9 +1,9 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`StudyLoading > matches snapshot 1`] = `
+exports[`Spinner > matches snapshot 1`] = `
 <div>
   <div
-    aria-label="Loading study"
+    aria-label="Loading things"
     class="spinner"
     role="status"
   />

@@ -4,24 +4,26 @@ import type { ModuleSources } from './lowestCommonFolderGate';
 
 type Export = { name: string; isType: boolean };
 
+type Rule = { allowed: (entry: Export) => boolean; hint: string };
+
 // A named bag of constants is the point of a *.constants.ts file.
 const CONSTANTS = /\.constants\.ts$/;
 const EXTENSION = /\.tsx?$/;
+const PAGE = /\/page\.tsx$/;
+const PASCAL_CASE = /^[A-Z][A-Za-z0-9]*$/;
 
 export function exportNameProblems(sources: ModuleSources): string[] {
   return Object.entries(sources)
     .filter(([file]) => isCheckedModule(file))
     .flatMap(([file, text]) => {
-      const expected = expectedName(file);
-      const typeName = pascalCase(expected);
-      const allowed = (entry: Export) =>
-        entry.isType
-          ? entry.name === typeName || entry.name === `${typeName}Props`
-          : entry.name === expected;
-      const wrong = exportsOf(file, text).filter((entry) => !allowed(entry));
+      const entries = exportsOf(file, text);
+      const { allowed, hint } = PAGE.test(file)
+        ? pageRule(entries)
+        : moduleRule(file);
+      const wrong = entries.filter((entry) => !allowed(entry));
       if (wrong.length === 0) return [];
       return [
-        `${file}: exports ${wrong.map((entry) => entry.name).join(', ')} — export only ${expected} (types ${typeName} or ${typeName}Props)`,
+        `${file}: exports ${wrong.map((entry) => entry.name).join(', ')} — ${hint}`,
       ];
     });
 }
@@ -29,11 +31,32 @@ export function exportNameProblems(sources: ModuleSources): string[] {
 const isCheckedModule = (file: string) =>
   isScannedModule(file) && !CONSTANTS.test(file);
 
-function expectedName(file: string): string {
-  const segments = file.replace(EXTENSION, '').split('/');
-  const basename = segments[segments.length - 1];
-  return basename === 'page' ? segments[segments.length - 2] : basename;
+function moduleRule(file: string): Rule {
+  const expected = file.replace(EXTENSION, '').split('/').pop() as string;
+  const typeName = pascalCase(expected);
+  return {
+    allowed: (entry) =>
+      entry.isType ? isTypeOf(entry, typeName) : entry.name === expected,
+    hint: `export only ${expected} (types ${typeName} or ${typeName}Props)`,
+  };
 }
+
+function pageRule(entries: Export[]): Rule {
+  const values = entries.filter((entry) => !entry.isType);
+  const component =
+    values.length === 1 && PASCAL_CASE.test(values[0].name)
+      ? values[0].name
+      : undefined;
+  return {
+    allowed: (entry) =>
+      component !== undefined &&
+      (entry.isType ? isTypeOf(entry, component) : entry.name === component),
+    hint: 'export only one PascalCase component (types <Name> or <Name>Props)',
+  };
+}
+
+const isTypeOf = (entry: Export, name: string) =>
+  entry.name === name || entry.name === `${name}Props`;
 
 const pascalCase = (name: string) => name[0].toUpperCase() + name.slice(1);
 

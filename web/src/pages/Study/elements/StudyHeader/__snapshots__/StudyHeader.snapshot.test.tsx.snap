@@ -4,7 +4,7 @@ exports[`StudyHeader > matches snapshot 1`] = `
 <div>
   <div
     aria-label="Loading study"
-    class="study-loading-spinner"
+    class="spinner"
     role="status"
   />
 </div>

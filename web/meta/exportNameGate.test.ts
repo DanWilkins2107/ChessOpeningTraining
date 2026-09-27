@@ -58,14 +58,6 @@ describe('exportNameProblems', () => {
     ).toEqual([`${MODULE}: exports a, B — ${HINT}`]);
   });
 
-  it('names a page after its folder', () => {
-    const page = 'src/pages/Home/page.tsx';
-    expect(problemsIn('export function Home() {}', page)).toEqual([]);
-    expect(problemsIn('export function page() {}', page)).toEqual([
-      `${page}: exports page — export only Home (types Home or HomeProps)`,
-    ]);
-  });
-
   it('names a component module after its file', () => {
     expect(
       problemsIn(
@@ -83,6 +75,48 @@ describe('exportNameProblems', () => {
       }),
     ).toEqual([
       'src/shared/fen/fen.ts: exports FILES — export only fen (types Fen or FenProps)',
+    ]);
+  });
+});
+
+describe('page exports', () => {
+  const PAGE = 'src/pages/account/email/page.tsx';
+  const PAGE_HINT =
+    'export only one PascalCase component (types <Name> or <Name>Props)';
+
+  const accepted = [
+    'export function ChangeEmail() {}',
+    'export const Study = () => null;',
+    'export default function Study() {}',
+    'export type StudyProps = {};\nexport function Study() {}',
+    'export interface Study {}\nexport function Study() {}',
+    'function helper() {}\nhelper();',
+  ];
+
+  it.each(accepted)('accepts %s', (text) => {
+    expect(problemsIn(text, PAGE)).toEqual([]);
+  });
+
+  const rejected: [string, string][] = [
+    ['export function changeEmail() {}', 'changeEmail'],
+    ['export function Study2x_() {}', 'Study2x_'],
+    ['export default function () {}', 'default'],
+    ['export function A() {}\nexport function B() {}', 'A, B'],
+    ['export type StudyProps = {};', 'StudyProps'],
+    ['export type Other = {};\nexport function Study() {}', 'Other'],
+    ['export type StudyState = {};\nexport function Study() {}', 'StudyState'],
+  ];
+
+  it.each(rejected)('rejects %s', (text, names) => {
+    expect(problemsIn(text, PAGE)).toEqual([
+      `${PAGE}: exports ${names} — ${PAGE_HINT}`,
+    ]);
+  });
+
+  it('applies the module rule to other files named like a page', () => {
+    const file = 'src/pages/Study/subpage.tsx';
+    expect(problemsIn('export function Study() {}', file)).toEqual([
+      `${file}: exports Study — export only subpage (types Subpage or SubpageProps)`,
     ]);
   });
 });
