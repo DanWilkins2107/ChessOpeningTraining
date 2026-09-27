@@ -45,6 +45,33 @@
   bottom: 0.2em;
 }
 
+.board-square-selected {
+  background: var(--highlight);
+}
+
+.board-square-target::after,
+.board-square-capture::after {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  border-radius: 50%;
+  content: '';
+}
+
+.board-square-target::after {
+  width: 30%;
+  height: 30%;
+  background: var(--highlight);
+}
+
+.board-square-capture::after {
+  background: radial-gradient(
+    closest-side,
+    transparent 80%,
+    var(--highlight) 81%
+  );
+}
+
 .board-square:focus-visible {
   outline-color: currentColor;
   outline-offset: -4px;

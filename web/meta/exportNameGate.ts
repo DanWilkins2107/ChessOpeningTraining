@@ -32,7 +32,8 @@ const isCheckedModule = (file: string) =>
   isScannedModule(file) && !CONSTANTS.test(file);
 
 function moduleRule(file: string): Rule {
-  const expected = file.replace(EXTENSION, '').split('/').pop() as string;
+  const segments = file.replace(EXTENSION, '').split('/');
+  const expected = segments[segments.length - 1];
   const typeName = pascalCase(expected);
   return {
     allowed: (entry) =>
@@ -103,6 +104,8 @@ const assignedExport = (statement: ts.ExportAssignment): Export => ({
 });
 
 const declaredExport = (statement: ts.Statement): Export => ({
+  // as-reason: statementExports only gets here with an exported declaration
+  // other than a variable statement, and every such one is a DeclarationStatement.
   name: (statement as ts.DeclarationStatement).name?.text ?? 'default',
   isType:
     ts.isInterfaceDeclaration(statement) ||
