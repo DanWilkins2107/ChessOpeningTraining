@@ -71,3 +71,8 @@
     var(--highlight) 81%
   );
 }
+
+.board-square:focus-visible {
+  outline-color: currentColor;
+  outline-offset: -4px;
+}
