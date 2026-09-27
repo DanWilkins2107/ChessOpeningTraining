@@ -6,7 +6,7 @@ import { unjustifiedCalls, unjustifiedMocks } from './mockJustificationGate';
 // built inside vi.hoisted - and static imports are not evaluated by then
 // either, hence the dynamic import of the shared helper.
 const repo = await vi.hoisted(async () => {
-  const { fakeRepo } = await import('./tests-shared/fakeRepo');
+  const { fakeRepo } = await import('../../tests-shared/fakeRepo');
   return fakeRepo(
     [
       'src/pages/Home/page.test.tsx',

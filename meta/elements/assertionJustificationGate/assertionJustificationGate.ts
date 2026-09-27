@@ -1,6 +1,9 @@
 import ts from 'typescript';
-import { reasonAbove } from './shared/reasonAbove';
-import { problemsIn, trackedTypeScript } from './shared/trackedTypeScript';
+import { reasonAbove } from '../../shared/reasonAbove/reasonAbove';
+import {
+  problemsIn,
+  trackedTypeScript,
+} from '../../shared/trackedTypeScript/trackedTypeScript';
 
 const MARKER = 'as-reason';
 

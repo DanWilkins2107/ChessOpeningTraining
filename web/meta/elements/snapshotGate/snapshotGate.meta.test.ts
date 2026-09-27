@@ -5,16 +5,20 @@ import { needsSnapshot, snapshotPathFor } from './snapshotGate';
 const NON_COMPONENTS = ['main.tsx', 'elements/router/router.tsx'];
 
 const fromSrc = (keys: string[]) =>
-  keys.map((key) => key.replace('../src/', ''));
+  keys.map((key) => key.replace('../../../src/', ''));
 
-const tsxFiles = fromSrc(Object.keys(import.meta.glob('../src/**/*.tsx')));
+const tsxFiles = fromSrc(
+  Object.keys(import.meta.glob('../../../src/**/*.tsx')),
+);
 
 const components = tsxFiles.filter((path) =>
   needsSnapshot(path, NON_COMPONENTS),
 );
 
 const snapshots = new Set(
-  fromSrc(Object.keys(import.meta.glob('../src/**/__snapshots__/*.snap'))),
+  fromSrc(
+    Object.keys(import.meta.glob('../../../src/**/__snapshots__/*.snap')),
+  ),
 );
 
 it('every component has a committed snapshot', () => {

@@ -18,7 +18,7 @@ const NAMED = new RegExp(
   'gi',
 );
 
-const repoRoot = path.join(import.meta.dirname, '..');
+const repoRoot = path.join(import.meta.dirname, '..', '..', '..');
 
 export function colourLiteralsIn(file: string, source: string): string[] {
   const isStylesheet = file.endsWith('.css');

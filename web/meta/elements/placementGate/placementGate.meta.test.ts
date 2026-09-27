@@ -10,8 +10,8 @@ const ROOT_EXCEPTIONS = [
   'z.ts',
 ];
 
-const modules = Object.keys(import.meta.glob('../src/**/*')).map((key) =>
-  key.replace('../src/', ''),
+const modules = Object.keys(import.meta.glob('../../../src/**/*')).map((key) =>
+  key.replace('../../../src/', ''),
 );
 
 it('every module sits in a page, module or tests-shared folder', () => {

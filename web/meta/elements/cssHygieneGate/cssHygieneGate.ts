@@ -11,7 +11,7 @@ const CSS_COMMENT = /\/\*[\s\S]*?\*\//g;
 const CLASS_SELECTOR = /\.(-?[A-Za-z_][A-Za-z0-9_-]*)/g;
 const MODULE_EXTENSIONS = ['.tsx', '.ts'];
 
-const repoRoot = path.join(import.meta.dirname, '..');
+const repoRoot = path.join(import.meta.dirname, '..', '..', '..');
 
 export type SourceFile = { path: string; text: string };
 
