@@ -7,6 +7,7 @@ type BoardPiecesProps = {
   ranks: number[];
   pieces: PlacedPiece[];
   animate: boolean;
+  dragged?: { square: string; x: number; y: number };
 };
 
 // One layer over the whole board rather than a child per square: a piece that
@@ -16,7 +17,13 @@ export function BoardPieces({
   ranks,
   pieces,
   animate,
+  dragged,
 }: BoardPiecesProps) {
+  const placeOf = (square: string) =>
+    square === dragged?.square
+      ? `translate(calc(${dragged.x}px - 50%), calc(${dragged.y}px - 50%))`
+      : `translate(${files.indexOf(square[0]) * 100}%, ${ranks.indexOf(Number(square[1])) * 100}%)`;
+
   return (
     <>
       {pieces.map(({ id, square, piece }) => (
@@ -24,12 +31,16 @@ export function BoardPieces({
         // no more than it does a stylesheet.
         <img
           key={id}
-          className={animate ? 'board-piece' : 'board-piece board-piece-still'}
+          className={[
+            'board-piece',
+            !animate && 'board-piece-still',
+            square === dragged?.square && 'board-piece-dragged',
+          ]
+            .filter(Boolean)
+            .join(' ')}
           src={piece.image}
           alt=""
-          style={{
-            transform: `translate(${files.indexOf(square[0]) * 100}%, ${ranks.indexOf(Number(square[1])) * 100}%)`,
-          }}
+          style={{ transform: placeOf(square) }}
         />
       ))}
     </>

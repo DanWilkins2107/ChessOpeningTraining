@@ -9,3 +9,9 @@
   overflow: hidden;
   border: 1px solid var(--border);
 }
+
+/* A finger on the board moves pieces rather than scrolling the page. */
+.board-interactive {
+  touch-action: none;
+  user-select: none;
+}
