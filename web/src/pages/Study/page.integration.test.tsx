@@ -130,18 +130,24 @@ it('requests the study once, only once the user has loaded', async () => {
   expect(searchParams.get('chapters.order')).toBe('created_at.asc,id.asc');
 });
 
-it("shows a load error for a study that isn't the user's", async () => {
-  // Given a signed-in user who does not own the study
+it.each([
+  ['a study that does not exist', () => crypto.randomUUID()],
+  ["another user's study", () => studyIds.london],
+])('shows not found, asking once, for %s', async (_, studyId) => {
+  // Given a signed-in stranger to the study
   await stranger.signIn();
+  // mock-reason: the requests sent are the assertion. Every call is real.
+  const fetch = vi.spyOn(window, 'fetch');
 
   // When they open it
-  renderAt(`/studies/${studyIds.london}`);
+  renderAt(`/studies/${studyId()}`);
 
-  // Then it shows the load error, and no chapters
-  expect(await screen.findByRole('alert')).toHaveTextContent(
-    "Couldn't load this study, try again",
-  );
+  // Then it shows not found, and no chapters, after a single study request
+  expect(await screen.findByRole('alert')).toHaveTextContent('Study not found');
   expect(chapterList()).not.toBeInTheDocument();
+  expect(
+    fetch.mock.calls.filter(([input]) => isStudyRequest(input)),
+  ).toHaveLength(1);
 });
 
 it('shows a load error when the request fails', async () => {
@@ -165,7 +171,7 @@ it('shows a load error when the request fails', async () => {
   );
 });
 
-it("shows the load error, without asking, for an id that isn't a study id", async () => {
+it("shows not found, without asking, for an id that isn't a study id", async () => {
   // Given a signed-in owner
   await owner.signIn();
   // mock-reason: the requests sent are the assertion. Every call is real.
@@ -174,10 +180,8 @@ it("shows the load error, without asking, for an id that isn't a study id", asyn
   // When they open a malformed study id
   renderAt('/studies/ab12');
 
-  // Then it shows the load error, without requesting the study
-  expect(await screen.findByRole('alert')).toHaveTextContent(
-    "Couldn't load this study, try again",
-  );
+  // Then it shows not found, without requesting the study
+  expect(await screen.findByRole('alert')).toHaveTextContent('Study not found');
   expect(fetch.mock.calls.filter(([input]) => isStudyRequest(input))).toEqual(
     [],
   );

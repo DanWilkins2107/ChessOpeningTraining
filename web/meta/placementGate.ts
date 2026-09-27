@@ -26,13 +26,13 @@ const placedInLevel = (parts: string[]) =>
 const isRouteFolder = (folder: string) =>
   ROUTE_FOLDER.test(folder) && !RESERVED.includes(folder);
 const isGroup = (folder: string) => folder.startsWith('(');
+const isRouteFile = (file: string) =>
+  file === 'router.constants.ts' || companionOf('page').test(file);
 
 const placedInRoute = ([folder, ...rest]: string[]): boolean =>
   rest.length > 0 &&
   isRouteFolder(folder) &&
-  (companionOf('page').test(rest.join('/')) ||
-    placedInLevel(rest) ||
-    placedInRoute(rest));
+  (isRouteFile(rest.join('/')) || placedInLevel(rest) || placedInRoute(rest));
 
 export const isPlaced = (path: string, rootExceptions: string[]) => {
   if (!path.includes('/')) {
