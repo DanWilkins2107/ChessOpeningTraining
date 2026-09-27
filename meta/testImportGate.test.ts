@@ -21,17 +21,19 @@ describe('testImportProblems', () => {
     ]);
   });
 
-  it('rejects app code importing from either meta folder', () => {
+  it('rejects app code importing from any meta folder', () => {
     expect(
       testImportProblems({
         'web/src/elements/Foo.tsx': imports(
           '../../../meta/expiry',
           '../../meta/paletteGate',
+          '../../../supabase/meta/migrationNumberGate',
         ),
       }),
     ).toEqual([
       'web/src/elements/Foo.tsx: imports meta/expiry, which only tests may import',
       'web/src/elements/Foo.tsx: imports web/meta/paletteGate, which only tests may import',
+      'web/src/elements/Foo.tsx: imports supabase/meta/migrationNumberGate, which only tests may import',
     ]);
   });
 
