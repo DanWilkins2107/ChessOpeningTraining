@@ -1,0 +1,19 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`AnimatePiecesToggle > matches snapshot 1`] = `
+<div>
+  <div
+    class="animate-pieces"
+  >
+    <label
+      class="animate-pieces-label"
+    >
+      <input
+        disabled=""
+        type="checkbox"
+      />
+      Animate pieces
+    </label>
+  </div>
+</div>
+`;
