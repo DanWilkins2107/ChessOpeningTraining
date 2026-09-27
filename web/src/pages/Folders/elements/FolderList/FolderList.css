@@ -1,0 +1,39 @@
+.folder-list-empty {
+  color: var(--ink-muted);
+}
+
+.folder-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.folder-list-item {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--gap-md);
+  padding: var(--gap-md);
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 120ms ease;
+}
+
+.folder-list-item:hover,
+.folder-list-item:focus-visible {
+  border-color: var(--accent);
+}
+
+.folder-list-name {
+  font-weight: 600;
+}
+
+.folder-list-side {
+  color: var(--ink-muted);
+  text-transform: capitalize;
+}

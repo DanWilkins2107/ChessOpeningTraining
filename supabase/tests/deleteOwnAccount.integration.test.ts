@@ -74,24 +74,24 @@ it('deletes the account of a user who just entered their password', async () => 
   expect(await accountExists(id)).toBe(false);
 });
 
-it('deletes their studies with it', async () => {
-  // Given a user with a study
+it('deletes their folders with it', async () => {
+  // Given a user with a folder
   const { id, client } = await signedInUser();
-  const study = await client
-    .from('studies')
+  const folder = await client
+    .from('folders')
     .insert({ name: 'Caro-Kann', side: 'black' })
     .select()
     .single();
-  expect(study.error).toBeNull();
+  expect(folder.error).toBeNull();
 
   // When they delete their account
   await deletedOwnAccount(id, client);
 
-  // Then the study is gone
+  // Then the folder is gone
   const { data } = await admin
-    .from('studies')
+    .from('folders')
     .select()
-    .eq('id', study.data.id)
+    .eq('id', folder.data.id)
     .maybeSingle();
   expect(data).toBeNull();
 });

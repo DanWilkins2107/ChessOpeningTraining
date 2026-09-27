@@ -8,9 +8,9 @@ exports[`HeaderNav > matches snapshot on a protected page 1`] = `
     <a
       class="header-nav-link"
       data-discover="true"
-      href="/studies"
+      href="/folders"
     >
-      Studies
+      Folders
     </a>
     <a
       class="header-nav-link"

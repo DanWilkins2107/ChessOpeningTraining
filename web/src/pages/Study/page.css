@@ -1,5 +1,0 @@
-.study {
-  display: flex;
-  flex-direction: column;
-  gap: var(--gap-md);
-}
