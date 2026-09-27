@@ -105,6 +105,27 @@ it("shows a load error for a study that isn't the user's", async () => {
   );
 });
 
+it('shows a load error when the request fails', async () => {
+  // Given a signed-in owner, and study requests failing on the server
+  await owner.signIn();
+  const realFetch = window.fetch;
+  // mock-reason: the local server has no way to make this request fail. Other
+  // requests are sent for real.
+  vi.spyOn(window, 'fetch').mockImplementation((input, init) =>
+    isStudyRequest(input)
+      ? Promise.resolve(new Response('{}', { status: 500 }))
+      : realFetch(input, init),
+  );
+
+  // When their study page renders
+  renderAt(`/studies/${studyIds.london}`);
+
+  // Then it shows the load error
+  expect(await screen.findByRole('alert')).toHaveTextContent(
+    "Couldn't load this study, try again",
+  );
+});
+
 it("shows the load error, without asking, for an id that isn't a study id", async () => {
   // Given a signed-in owner
   await owner.signIn();

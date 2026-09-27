@@ -1,4 +1,6 @@
 import { Suspense } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
+import { StudyLoadError } from '../StudyLoadError/StudyLoadError';
 import { StudyLoading } from '../StudyLoading/StudyLoading';
 import { StudyName } from '../StudyName/StudyName';
 import { useStudy } from '../useStudy/useStudy';
@@ -8,11 +10,11 @@ export function StudyHeader({ studyId }: { studyId: string }) {
 
   if (study === undefined) return <StudyLoading />;
 
-  // Keyed so moving to another study shows the fallback, rather than the
-  // router's transition keeping the previous study on screen.
   return (
-    <Suspense key={studyId} fallback={<StudyLoading />}>
-      <StudyName study={study} />
-    </Suspense>
+    <ErrorBoundary key={studyId} fallback={<StudyLoadError />}>
+      <Suspense fallback={<StudyLoading />}>
+        <StudyName study={study} />
+      </Suspense>
+    </ErrorBoundary>
   );
 }

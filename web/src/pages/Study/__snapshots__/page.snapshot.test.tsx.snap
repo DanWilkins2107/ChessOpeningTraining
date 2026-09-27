@@ -5,12 +5,11 @@ exports[`Study > matches snapshot 1`] = `
   <section
     aria-label="Study"
   >
-    <p
-      class="error-message"
-      role="alert"
-    >
-      Couldn't load this study, try again
-    </p>
+    <div
+      aria-label="Loading study"
+      class="study-loading-spinner"
+      role="status"
+    />
   </section>
 </div>
 `;
