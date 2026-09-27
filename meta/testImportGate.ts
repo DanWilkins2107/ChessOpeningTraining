@@ -7,7 +7,7 @@ type Sources = Record<string, string>;
 const SCANNED_FOLDERS = ['web/src', 'web/meta', 'meta', 'supabase'];
 const TYPESCRIPT_EXTENSION = /\.tsx?$/;
 const TEST = /\.test(\.tsx?)?$/;
-const META = /^(web\/)?meta\//;
+const META = /^((web|supabase)\/)?meta\//;
 const RELATIVE_IMPORT = /\b(?:from|import)\s*\(?\s*['"](\.[^'"]*)['"]/g;
 
 const repoRoot = path.join(import.meta.dirname, '..');
