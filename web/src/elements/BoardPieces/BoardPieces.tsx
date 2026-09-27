@@ -6,11 +6,17 @@ type BoardPiecesProps = {
   files: string[];
   ranks: number[];
   pieces: PlacedPiece[];
+  animate: boolean;
 };
 
 // One layer over the whole board rather than a child per square: a piece that
 // changes square keeps its element, so the transform animates it there.
-export function BoardPieces({ files, ranks, pieces }: BoardPiecesProps) {
+export function BoardPieces({
+  files,
+  ranks,
+  pieces,
+  animate,
+}: BoardPiecesProps) {
   return (
     <>
       {pieces.map(({ id, square, piece }) => (
@@ -18,7 +24,7 @@ export function BoardPieces({ files, ranks, pieces }: BoardPiecesProps) {
         // no more than it does a stylesheet.
         <img
           key={id}
-          className="board-piece"
+          className={animate ? 'board-piece' : 'board-piece board-piece-still'}
           src={piece.image}
           alt=""
           style={{
