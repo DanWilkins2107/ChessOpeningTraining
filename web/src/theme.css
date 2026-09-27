@@ -1,5 +1,6 @@
-/* The only file allowed to hold colour literals: meta/paletteGate.ts exempts
-   this path by name, so move or rename it and that gate must change too. */
+/* The only file allowed to hold colour literals:
+   web/meta/elements/paletteGate/paletteGate.ts exempts this path by name, so
+   move or rename it and that gate must change too. */
 
 :root {
   --surface-page: #f7f9fc;

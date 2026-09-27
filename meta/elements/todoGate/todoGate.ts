@@ -1,4 +1,4 @@
-import { expiryProblem } from './expiry';
+import { expiryProblem } from '../../shared/expiry/expiry';
 
 const MARKER = 'TODO';
 

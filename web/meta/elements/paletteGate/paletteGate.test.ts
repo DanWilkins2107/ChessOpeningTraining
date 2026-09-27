@@ -5,7 +5,7 @@ import { colourLiteralsIn, strayColourLiterals } from './paletteGate';
 // exists in time if vi.hoisted builds it; the helper import is dynamic because
 // static imports have not been evaluated that early either.
 const repo = await vi.hoisted(async () => {
-  const { fakeRepo } = await import('../../meta/tests-shared/fakeRepo');
+  const { fakeRepo } = await import('../../../../meta/tests-shared/fakeRepo');
   return fakeRepo(
     [
       'src/pages/Home/page.css',

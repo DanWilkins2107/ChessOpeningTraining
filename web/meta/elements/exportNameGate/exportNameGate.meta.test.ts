@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest';
 import { exportNameProblems } from './exportNameGate';
-import { moduleSources } from './lowestCommonFolderGate';
+import { moduleSources } from '../lowestCommonFolderGate/lowestCommonFolderGate';
 
 const sources = moduleSources();
 

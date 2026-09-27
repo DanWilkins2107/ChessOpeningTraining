@@ -15,7 +15,7 @@ const CAPITALISED = /^[A-Z]/;
 const ALL_CAPS = /^[A-Z0-9_]+$/;
 const HOOK = /^use[A-Z]/;
 
-const repoRoot = path.join(import.meta.dirname, '..');
+const repoRoot = path.join(import.meta.dirname, '..', '..', '..');
 
 export function componentSources(): ComponentSources {
   return Object.fromEntries(

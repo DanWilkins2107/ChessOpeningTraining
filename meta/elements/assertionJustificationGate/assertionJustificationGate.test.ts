@@ -9,7 +9,7 @@ import {
 // built inside vi.hoisted - and static imports are not evaluated by then
 // either, hence the dynamic import of the shared helper.
 const repo = await vi.hoisted(async () => {
-  const { fakeRepo } = await import('./tests-shared/fakeRepo');
+  const { fakeRepo } = await import('../../tests-shared/fakeRepo');
   return fakeRepo(['src/parse.ts', 'src/sides.ts', 'src/logo.svg'], (file) =>
     file.endsWith('parse.ts')
       ? 'const x = JSON.parse(text) as Thing;'

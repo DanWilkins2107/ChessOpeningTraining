@@ -2,8 +2,8 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { startOfTodayUtc } from './expiry';
-import { gateFilePrefix, repoRoot } from './repoPaths';
+import { startOfTodayUtc } from '../../shared/expiry/expiry';
+import { gateFilePrefix, repoRoot } from '../../shared/repoPaths/repoPaths';
 import { lineProblems } from './todoGate';
 
 const LOCKFILE = /(^|\/)(package-lock\.json|npm-shrinkwrap\.json|[^/]*\.lock)$/;

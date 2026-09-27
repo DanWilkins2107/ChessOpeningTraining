@@ -10,7 +10,7 @@ const TEST = /\.test(\.tsx?)?$/;
 const META = /^((web|supabase)\/)?meta\//;
 const RELATIVE_IMPORT = /\b(?:from|import)\s*\(?\s*['"](\.[^'"]*)['"]/g;
 
-const repoRoot = path.join(import.meta.dirname, '..');
+const repoRoot = path.join(import.meta.dirname, '..', '..', '..');
 
 export function repoSources(): Sources {
   return Object.fromEntries(

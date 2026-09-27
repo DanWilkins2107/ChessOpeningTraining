@@ -5,7 +5,7 @@ const MIGRATIONS_FOLDER = 'supabase/migrations';
 const FORMAT = '<4-digit number>_<snake_case name>.sql';
 const MIGRATION_NAME = /^(\d{4})_[a-z0-9_]+\.sql$/;
 
-const repoRoot = path.join(import.meta.dirname, '..', '..');
+const repoRoot = path.join(import.meta.dirname, '..', '..', '..', '..');
 
 export function repoMigrations(): string[] {
   return execFileSync('git', ['ls-files', '-z', MIGRATIONS_FOLDER], {

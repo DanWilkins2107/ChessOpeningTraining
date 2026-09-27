@@ -1,7 +1,10 @@
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { expiryProblem, startOfTodayUtc } from '../../meta/expiry';
+import {
+  expiryProblem,
+  startOfTodayUtc,
+} from '../../../../meta/shared/expiry/expiry';
 
 export type TemporaryExclude = {
   path: string;
@@ -18,7 +21,7 @@ const PLACEMENT_FOLDERS = ['elements', 'shared', TEST_HELPER_FOLDER];
 const RELATIVE_IMPORT = /\b(?:from|import)\s*\(?\s*['"](\.[^'"]*)['"]/g;
 const RESOLVED_EXTENSIONS = ['', '.ts', '.tsx'];
 
-const repoRoot = path.join(import.meta.dirname, '..');
+const repoRoot = path.join(import.meta.dirname, '..', '..', '..');
 
 export function moduleSources(): ModuleSources {
   return Object.fromEntries(
