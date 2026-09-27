@@ -16,18 +16,10 @@ exports[`Account > matches snapshot 1`] = `
       <div
         class="animate-pieces-row"
       >
-        <label
-          class="animate-pieces-label"
-        >
-          <input
-            disabled=""
-            type="checkbox"
-          />
-          Animate pieces
-        </label>
+        Animate pieces
         <span
           aria-label="Loading your setting"
-          class="animate-pieces-spinner"
+          class="animate-pieces-placeholder"
           role="status"
         />
       </div>

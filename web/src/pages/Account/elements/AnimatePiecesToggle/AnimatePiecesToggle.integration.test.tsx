@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react';
+import { act, fireEvent, screen } from '@testing-library/react';
 import { afterEach, beforeAll, expect, it, vi } from 'vitest';
 import { holdFirstRequest } from '../../../../tests-shared/heldRequest';
 import {
@@ -10,10 +10,12 @@ import { registerTestUser } from '../../../../tests-shared/testUser';
 import { supabase } from '../../../../supabase';
 
 const firstVisit = registerTestUser();
-const turningOff = registerTestUser();
 const savedOff = registerTestUser();
+const turningOff = registerTestUser();
+const clickingOnAndOff = registerTestUser();
+const undoing = registerTestUser();
 const turningBackOn = registerTestUser();
-const savingOff = registerTestUser();
+const clickingDuringSave = registerTestUser();
 const failing = registerTestUser();
 
 beforeAll(() => turnOffAnimationFor(savedOff));
@@ -22,15 +24,14 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-const checkbox = () =>
-  screen.getByRole<HTMLInputElement>('checkbox', { name: 'Animate pieces' });
+const toggle = () =>
+  screen.getByRole<HTMLInputElement>('switch', { name: 'Animate pieces' });
 
-const spinner = (name: string) => screen.queryByRole('status', { name });
+const loadedToggle = () =>
+  screen.findByRole<HTMLInputElement>('switch', { name: 'Animate pieces' });
 
-const loadedCheckbox = async () => {
-  await vi.waitFor(() => expect(checkbox()).toBeEnabled());
-  return checkbox();
-};
+const pause = (ms: number) =>
+  act(() => new Promise((resolve) => setTimeout(resolve, ms)));
 
 async function renderFor(user: ReturnType<typeof registerTestUser>) {
   await user.signIn();
@@ -53,6 +54,26 @@ function failProfilesRequests(method: 'GET' | 'POST') {
   );
 }
 
+// Lists the value each save sends. With holdFirst, the first save waits for
+// release() before it goes out.
+function recordSaves({ holdFirst = false } = {}) {
+  const realFetch = window.fetch;
+  const saves: boolean[] = [];
+  let release = () => {};
+  const released = new Promise<void>((resolve) => (release = resolve));
+  // mock-reason: the local server keeps no count of requests, and answers too
+  // fast for a save to still be in flight at the next click. Every request is
+  // sent for real.
+  vi.spyOn(window, 'fetch').mockImplementation(async (input, init) => {
+    if (isProfilesRequest(input) && init?.method === 'POST') {
+      saves.push(JSON.parse(String(init.body)).animate_pieces);
+      if (holdFirst && saves.length === 1) await released;
+    }
+    return realFetch(input, init);
+  });
+  return { saves, release };
+}
+
 async function savedAnimatePieces() {
   const { data, error } = await supabase
     .from('profiles')
@@ -62,7 +83,7 @@ async function savedAnimatePieces() {
   return data.animate_pieces;
 }
 
-it('holds the checkbox until the setting loads', async () => {
+it('shows a placeholder until the setting loads', async () => {
   // Given a signed-in user, whose setting request is held
   const request = holdFirstRequest(isProfilesRequest);
 
@@ -70,13 +91,14 @@ it('holds the checkbox until the setting loads', async () => {
   await renderFor(firstVisit);
   await request.sent();
 
-  // Then it is unticked, cannot be changed yet, and shows it is loading
-  expect(checkbox()).not.toBeChecked();
-  expect(checkbox()).toBeDisabled();
-  expect(spinner('Loading your setting')).toBeInTheDocument();
+  // Then there is no switch yet, only a sign that it is loading
+  expect(screen.queryByRole('switch')).not.toBeInTheDocument();
+  expect(
+    screen.getByRole('status', { name: 'Loading your setting' }),
+  ).toBeInTheDocument();
   await request.answer();
-  await loadedCheckbox();
-  expect(spinner('Loading your setting')).not.toBeInTheDocument();
+  await loadedToggle();
+  expect(screen.queryByRole('status')).not.toBeInTheDocument();
 });
 
 it('animates pieces for a user who never changed the setting', async () => {
@@ -85,39 +107,8 @@ it('animates pieces for a user who never changed the setting', async () => {
   // When the toggle loads
   await renderFor(firstVisit);
 
-  // Then it is ticked
-  expect(await loadedCheckbox()).toBeChecked();
-});
-
-it('saves the setting when it is unticked', async () => {
-  // Given a user on the toggle
-  await renderFor(turningOff);
-
-  // When they untick it
-  fireEvent.click(await loadedCheckbox());
-
-  // Then it shows unticked, the profile says so, and nothing is wrong
-  expect(checkbox()).not.toBeChecked();
-  await vi.waitFor(async () => expect(await savedAnimatePieces()).toBe(false));
-  expect(screen.queryByRole('alert')).not.toBeInTheDocument();
-});
-
-it('holds the checkbox while the setting saves', async () => {
-  // Given a user on the toggle, whose save request is held
-  await renderFor(savingOff);
-  const box = await loadedCheckbox();
-  const request = holdFirstRequest(isProfilesRequest);
-
-  // When they untick it
-  fireEvent.click(box);
-  await request.sent();
-
-  // Then it cannot be changed and shows it is saving, until the save lands
-  expect(checkbox()).toBeDisabled();
-  expect(spinner('Saving your setting')).toBeInTheDocument();
-  await request.answer();
-  await loadedCheckbox();
-  expect(spinner('Saving your setting')).not.toBeInTheDocument();
+  // Then it is on
+  expect(await loadedToggle()).toBeChecked();
 });
 
 it('shows a setting saved earlier', async () => {
@@ -126,51 +117,126 @@ it('shows a setting saved earlier', async () => {
   // When the toggle loads
   await renderFor(savedOff);
 
-  // Then it is unticked
-  expect(await loadedCheckbox()).not.toBeChecked();
+  // Then it is off
+  expect(await loadedToggle()).not.toBeChecked();
+});
+
+it('turns off at once, and saves after a pause', async () => {
+  // Given a user on the toggle
+  await renderFor(turningOff);
+  const { saves } = recordSaves();
+
+  // When they turn it off
+  fireEvent.click(await loadedToggle());
+
+  // Then it shows off straight away, and the profile says so soon after
+  expect(toggle()).not.toBeChecked();
+  expect(saves).toEqual([]);
+  await vi.waitFor(async () => expect(await savedAnimatePieces()).toBe(false));
+  expect(saves).toEqual([false]);
+  expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+});
+
+it('saves only once the clicks stop', async () => {
+  // Given a user on the toggle
+  await renderFor(clickingOnAndOff);
+  const { saves } = recordSaves();
+
+  // When they turn it off, and after a moment on and off again
+  fireEvent.click(await loadedToggle());
+  await pause(300);
+  fireEvent.click(toggle());
+  fireEvent.click(toggle());
+
+  // Then nothing is saved until they stop, and then only off
+  await pause(350);
+  expect(saves).toEqual([]);
+  await vi.waitFor(() => expect(saves).toEqual([false]));
+});
+
+it('saves nothing when a click is undone', async () => {
+  // Given a user on the toggle
+  await renderFor(undoing);
+  const { saves } = recordSaves();
+
+  // When they turn it off and straight back on
+  fireEvent.click(await loadedToggle());
+  fireEvent.click(toggle());
+
+  // Then it is on, and nothing was sent
+  await pause(700);
+  expect(toggle()).toBeChecked();
+  expect(saves).toEqual([]);
 });
 
 it('saves over a setting already saved', async () => {
   // Given a user who turned animation off
   await renderFor(turningBackOn);
-  fireEvent.click(await loadedCheckbox());
+  fireEvent.click(await loadedToggle());
   await vi.waitFor(async () => expect(await savedAnimatePieces()).toBe(false));
 
-  // When they tick it again
-  fireEvent.click(checkbox());
+  // When they turn it on again
+  fireEvent.click(toggle());
 
   // Then the profile says to animate
   await vi.waitFor(async () => expect(await savedAnimatePieces()).toBe(true));
 });
 
-it('says so and keeps the checkbox held when the setting fails to load', async () => {
+it('sends a later choice only after the save in flight', async () => {
+  // Given a user whose save of off is in flight
+  await renderFor(clickingDuringSave);
+  const { saves, release } = recordSaves({ holdFirst: true });
+  fireEvent.click(await loadedToggle());
+  await vi.waitFor(() => expect(saves).toEqual([false]));
+
+  // When they click on and off, then on, while it waits
+  fireEvent.click(toggle());
+  fireEvent.click(toggle());
+  await pause(700);
+  expect(saves).toEqual([false]);
+  fireEvent.click(toggle());
+  await pause(700);
+  expect(saves).toEqual([false]);
+  release();
+
+  // Then their last choice is sent once the first save returns
+  await vi.waitFor(async () => expect(await savedAnimatePieces()).toBe(true));
+  expect(saves).toEqual([false, true]);
+});
+
+it('says so when the setting fails to load', async () => {
   // Given a server that fails the profile request
   failProfilesRequests('GET');
 
   // When the toggle renders
   await renderFor(failing);
 
-  // Then it shows a generic message and cannot be changed
+  // Then it shows a generic message, and no switch
   expect(await screen.findByRole('alert')).toHaveTextContent(
     "Couldn't load your settings, try again",
   );
-  expect(checkbox()).toBeDisabled();
+  expect(screen.queryByRole('switch')).not.toBeInTheDocument();
   expect(screen.queryByRole('status')).not.toBeInTheDocument();
 });
 
-it('puts the tick back and says so when saving fails', async () => {
+it('turns back on and says so when saving fails', async () => {
   // Given a user on the toggle, and a server that fails the save
   await renderFor(failing);
-  const box = await loadedCheckbox();
+  const box = await loadedToggle();
   failProfilesRequests('POST');
 
-  // When they untick it
+  // When they turn it off
   fireEvent.click(box);
 
-  // Then it is ticked again, with a generic message
+  // Then it is on again, with a generic message
   expect(await screen.findByRole('alert')).toHaveTextContent(
     "Couldn't save your setting, try again",
   );
-  expect(checkbox()).toBeChecked();
-  expect(checkbox()).toBeEnabled();
+  expect(toggle()).toBeChecked();
+
+  // And the message goes when they try again
+  vi.restoreAllMocks();
+  fireEvent.click(toggle());
+  expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  await vi.waitFor(async () => expect(await savedAnimatePieces()).toBe(false));
 });
