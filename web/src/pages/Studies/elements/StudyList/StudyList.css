@@ -35,6 +35,14 @@
   background: var(--surface-raised);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 120ms ease;
+}
+
+.study-list-item:hover,
+.study-list-item:focus-visible {
+  border-color: var(--accent);
 }
 
 .study-list-name {
