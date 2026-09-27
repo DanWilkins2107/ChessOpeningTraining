@@ -6,7 +6,7 @@ import {
   ROOT_ROUTE_PATH,
   STUDIES_ROUTE_PATH,
   STUDY_ROUTE_PATH,
-} from './router.constants';
+} from '../../shared/routes/routes.constants';
 import { RootLayout } from '../RootLayout/RootLayout';
 import { Account } from '../../pages/Account/page';
 import { ForgotPassword } from '../../pages/ForgotPassword/page';
