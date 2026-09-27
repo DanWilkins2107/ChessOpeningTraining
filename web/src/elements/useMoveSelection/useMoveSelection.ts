@@ -5,7 +5,6 @@ import type { Move, PartialMove } from 'chess.ts';
 
 type Selection = { position: string; square: string; moves: Move[] };
 
-// Only a side-to-move piece can be selected.
 const selectionAt = (position: string, square: string) => {
   const chess = new Chess(position);
   return chess.get(square)?.color === chess.turn()
@@ -24,12 +23,9 @@ export function useMoveSelection(
   position: string,
   onMove?: (move: PartialMove) => void,
 ) {
-  // Kept with the position it was made in, so a new position drops it.
   const [selection, setSelection] = useState<Selection | null>(null);
   const selected = selection?.position === position ? selection : undefined;
 
-  // Plays the selected piece there if it can go there; otherwise selects
-  // whatever side-to-move piece is there, or nothing.
   const choose = (square: string) => {
     const move = selected?.moves.find((legal) => legal.to === square);
     if (move === undefined) {
@@ -41,8 +37,6 @@ export function useMoveSelection(
     onMove!(toPartialMove(move));
   };
 
-  // Selects a side-to-move piece without touching the selection otherwise, so
-  // a press that is not a pick-up leaves the click to decide.
   const pickUp = (square: string) => {
     const picked = selectionAt(position, square);
     if (picked !== null) setSelection(picked);
