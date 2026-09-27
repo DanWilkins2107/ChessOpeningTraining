@@ -296,7 +296,7 @@ it.each([
     CHECK_VIOLATION,
   ],
   [
-    'an invalid move deep in a variation',
+    'an invalid move deep in a sideline',
     { move_tree: [move('e4', move('c6', { san: 'd4' } as MoveNode))] },
     CHECK_VIOLATION,
   ],
