@@ -82,7 +82,6 @@ it('lays out rank 1 at the top from black', () => {
   ]);
 });
 
-// as-reason: Board's orientation prop takes the literal sides, not any string.
 it.each(['white', 'black'] as const)(
   'colours squares the same from %s',
   (orientation) => {

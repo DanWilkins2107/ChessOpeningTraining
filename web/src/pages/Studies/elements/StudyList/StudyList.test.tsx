@@ -1,14 +1,13 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { expect, it } from 'vitest';
-import type { Study } from '../Study/Study';
 import { StudyList } from './StudyList';
 
 it("links each study, named by the study, to that study's page", () => {
   // Given two studies
-  const data: Study[] = [
-    { id: 'a4f1', name: 'London', side: 'white' },
-    { id: 'b7c2', name: 'Caro-Kann', side: 'black' },
+  const data = [
+    { id: 'a4f1', name: 'London', side: 'white' as const },
+    { id: 'b7c2', name: 'Caro-Kann', side: 'black' as const },
   ];
 
   // When the list renders

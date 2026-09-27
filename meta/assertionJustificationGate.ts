@@ -1,6 +1,6 @@
 import ts from 'typescript';
-import { reasonAbove } from './reasonAbove';
-import { problemsIn, trackedTypeScript } from './trackedTypeScript';
+import { reasonAbove } from './shared/reasonAbove';
+import { problemsIn, trackedTypeScript } from './shared/trackedTypeScript';
 
 const MARKER = 'as-reason';
 
@@ -19,14 +19,20 @@ export function unjustifiedCasts(file: string, text: string): string[] {
 function assertionsIn(source: ts.SourceFile): ts.Node[] {
   const found: ts.Node[] = [];
   const visit = (node: ts.Node) => {
-    if (ts.isAsExpression(node) || ts.isTypeAssertionExpression(node)) {
-      found.push(node);
-    }
+    if (isAssertion(node) && !isConstAssertion(node)) found.push(node);
     ts.forEachChild(node, visit);
   };
   ts.forEachChild(source, visit);
   return found;
 }
+
+const isAssertion = (
+  node: ts.Node,
+): node is ts.AsExpression | ts.TypeAssertion =>
+  ts.isAsExpression(node) || ts.isTypeAssertionExpression(node);
+
+const isConstAssertion = (node: ts.AsExpression | ts.TypeAssertion) =>
+  ts.isConstTypeReference(node.type);
 
 const startLine = (source: ts.SourceFile, node: ts.Node) =>
   source.getLineAndCharacterOfPosition(node.getStart(source)).line;

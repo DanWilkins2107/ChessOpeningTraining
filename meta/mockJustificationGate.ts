@@ -1,6 +1,6 @@
-import { reasonAbove } from './reasonAbove';
+import { reasonAbove } from './shared/reasonAbove';
 import { gateFilePrefix } from './repoPaths';
-import { problemsIn, trackedTypeScript } from './trackedTypeScript';
+import { problemsIn, trackedTypeScript } from './shared/trackedTypeScript';
 
 const MARKER = 'mock-reason';
 
