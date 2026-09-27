@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { act, screen } from '@testing-library/react';
+import { act, screen, within } from '@testing-library/react';
 import { afterEach, beforeAll, expect, it, vi } from 'vitest';
 import { renderAt } from '../../tests-shared/renderAt';
 import { registerTestUser } from '../../tests-shared/testUser';
@@ -26,6 +26,12 @@ beforeAll(async () => {
   if (error) throw error;
   studyIds.london = data.find(({ name }) => name === 'London')!.id;
   studyIds.caroKann = data.find(({ name }) => name === 'Caro-Kann')!.id;
+  for (const name of ['Main line', 'Alternatives']) {
+    const inserted = await client
+      .from('chapters')
+      .insert({ study_id: studyIds.london, name });
+    if (inserted.error) throw inserted.error;
+  }
 });
 
 afterEach(() => {
@@ -37,6 +43,8 @@ const isStudyRequest = (input: RequestInfo | URL) =>
 
 const studyHeading = (name: string) =>
   screen.findByRole('heading', { level: 1, name });
+
+const chapterList = () => screen.queryByRole('list', { name: 'Chapters' });
 
 const loadingStudy = () =>
   screen.queryByRole('status', { name: 'Loading study' });
@@ -73,7 +81,36 @@ it("shows the study's name as the page heading", async () => {
   expect(loadingStudy()).not.toBeInTheDocument();
 });
 
-it('requests the name once, only once the user has loaded', async () => {
+it("lists the study's chapters, oldest first", async () => {
+  // Given a signed-in owner of a study with chapters
+  await owner.signIn();
+
+  // When their study page renders
+  renderAt(`/studies/${studyIds.london}`);
+
+  // Then it lists the chapter names in the order they were created
+  await studyHeading('London');
+  expect(
+    within(chapterList()!)
+      .getAllByRole('listitem')
+      .map(({ textContent }) => textContent),
+  ).toEqual(['Main line', 'Alternatives']);
+});
+
+it('says so when the study has no chapters', async () => {
+  // Given a signed-in owner of a study without chapters
+  await owner.signIn();
+
+  // When their study page renders
+  renderAt(`/studies/${studyIds.caroKann}`);
+
+  // Then it says there are no chapters yet
+  await studyHeading('Caro-Kann');
+  expect(screen.getByText('No chapters yet')).toBeInTheDocument();
+  expect(chapterList()).not.toBeInTheDocument();
+});
+
+it('requests the study once, only once the user has loaded', async () => {
   // Given a signed-in owner not yet loaded
   await owner.signIn();
   // mock-reason: the requests sent are the assertion, and the page shows the
@@ -84,12 +121,13 @@ it('requests the name once, only once the user has loaded', async () => {
   renderAt(`/studies/${studyIds.london}`);
   await studyHeading('London');
 
-  // Then it requested the study once, for its name alone
+  // Then it requested the study once, with chapter names oldest first but
+  // never their move trees
   const requests = fetch.mock.calls.filter(([input]) => isStudyRequest(input));
   expect(requests).toHaveLength(1);
-  expect(new URL(String(requests[0][0])).searchParams.get('select')).toBe(
-    'name',
-  );
+  const { searchParams } = new URL(String(requests[0][0]));
+  expect(searchParams.get('select')).toBe('name,chapters(id,name)');
+  expect(searchParams.get('chapters.order')).toBe('created_at.asc,id.asc');
 });
 
 it.each([
@@ -104,8 +142,9 @@ it.each([
   // When they open it
   renderAt(`/studies/${studyId()}`);
 
-  // Then it shows not found, after a single study request
+  // Then it shows not found, and no chapters, after a single study request
   expect(await screen.findByRole('alert')).toHaveTextContent('Study not found');
+  expect(chapterList()).not.toBeInTheDocument();
   expect(
     fetch.mock.calls.filter(([input]) => isStudyRequest(input)),
   ).toHaveLength(1);
