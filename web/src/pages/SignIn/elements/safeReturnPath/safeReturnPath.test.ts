@@ -39,7 +39,7 @@ it('drops the fragment', () => {
 
 it.each([
   ['no return path', null],
-  ['another origin', 'https://evil.example/studies'],
+  ['another origin', 'https://evil.example/branches'],
   ['a protocol-relative URL', '//evil.example'],
   ['a backslash protocol-relative URL', '/\\evil.example'],
   ['a same-origin path resolving to //', '/.//evil.example'],

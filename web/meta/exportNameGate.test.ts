@@ -86,10 +86,10 @@ describe('page exports', () => {
 
   const accepted = [
     'export function ChangeEmail() {}',
-    'export const Study = () => null;',
-    'export default function Study() {}',
-    'export type StudyProps = {};\nexport function Study() {}',
-    'export interface Study {}\nexport function Study() {}',
+    'export const Branch = () => null;',
+    'export default function Branch() {}',
+    'export type BranchProps = {};\nexport function Branch() {}',
+    'export interface Branch {}\nexport function Branch() {}',
     'function helper() {}\nhelper();',
   ];
 
@@ -99,12 +99,15 @@ describe('page exports', () => {
 
   const rejected: [string, string][] = [
     ['export function changeEmail() {}', 'changeEmail'],
-    ['export function Study2x_() {}', 'Study2x_'],
+    ['export function Branch2x_() {}', 'Branch2x_'],
     ['export default function () {}', 'default'],
     ['export function A() {}\nexport function B() {}', 'A, B'],
-    ['export type StudyProps = {};', 'StudyProps'],
-    ['export type Other = {};\nexport function Study() {}', 'Other'],
-    ['export type StudyState = {};\nexport function Study() {}', 'StudyState'],
+    ['export type BranchProps = {};', 'BranchProps'],
+    ['export type Other = {};\nexport function Branch() {}', 'Other'],
+    [
+      'export type BranchState = {};\nexport function Branch() {}',
+      'BranchState',
+    ],
   ];
 
   it.each(rejected)('rejects %s', (text, names) => {
@@ -114,9 +117,9 @@ describe('page exports', () => {
   });
 
   it('applies the module rule to other files named like a page', () => {
-    const file = 'src/pages/Study/subpage.tsx';
-    expect(problemsIn('export function Study() {}', file)).toEqual([
-      `${file}: exports Study — export only subpage (types Subpage or SubpageProps)`,
+    const file = 'src/pages/Branch/subpage.tsx';
+    expect(problemsIn('export function Branch() {}', file)).toEqual([
+      `${file}: exports Branch — export only subpage (types Subpage or SubpageProps)`,
     ]);
   });
 });

@@ -1,4 +1,4 @@
-// fallow-ignore-file unused-file -- ef93ff81 2026-10-15 landed ahead of the study page, its first consumer.
+// fallow-ignore-file unused-file -- ef93ff81 2026-10-15 landed ahead of the branch page, its first consumer.
 import type { PlacedPiece } from '../placedPiece/placedPiece';
 import type { Piece } from '../pieces/pieces.constants';
 import { readPlacement } from '../readPlacement/readPlacement';

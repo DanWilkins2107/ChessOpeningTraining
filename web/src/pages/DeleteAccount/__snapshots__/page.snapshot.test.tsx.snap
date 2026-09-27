@@ -14,7 +14,7 @@ exports[`DeleteAccount > matches snapshot 1`] = `
       class="delete-account-form"
     >
       <p>
-        This permanently deletes your account and all your studies.
+        This permanently deletes your account and all your branches.
       </p>
       <div
         class="text-input"

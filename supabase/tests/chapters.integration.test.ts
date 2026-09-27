@@ -14,9 +14,9 @@ const MAX_TREE_BYTES = 512 * 1024;
 
 const TREE = [move('e4', move('c6', move('d4'), move('Nc3')))];
 
-async function existingStudyId(client: SupabaseClient): Promise<string> {
+async function existingBranchId(client: SupabaseClient): Promise<string> {
   const { data, error } = await client
-    .from('studies')
+    .from('branches')
     .insert({ name: 'Caro-Kann', side: 'black' })
     .select()
     .single();
@@ -24,24 +24,24 @@ async function existingStudyId(client: SupabaseClient): Promise<string> {
   return data.id;
 }
 
-async function studyOwner() {
+async function branchOwner() {
   const { client } = await signedInUser();
-  return { client, studyId: await existingStudyId(client) };
+  return { client, branchId: await existingBranchId(client) };
 }
 
 const createChapter = (
   client: SupabaseClient,
-  studyId: string,
+  branchId: string,
   chapter: object = {},
 ) =>
   client
     .from('chapters')
-    .insert({ study_id: studyId, name: 'Main line', ...chapter })
+    .insert({ branch_id: branchId, name: 'Main line', ...chapter })
     .select()
     .single();
 
-async function existingChapter(client: SupabaseClient, studyId: string) {
-  const { data, error } = await createChapter(client, studyId, {
+async function existingChapter(client: SupabaseClient, branchId: string) {
+  const { data, error } = await createChapter(client, branchId, {
     move_tree: TREE,
   });
   if (error) throw error;
@@ -51,17 +51,17 @@ async function existingChapter(client: SupabaseClient, studyId: string) {
 const storedChapter = async (id: string) =>
   (await admin.from('chapters').select().eq('id', id).maybeSingle()).data;
 
-const chapterCount = async (studyId: string) =>
+const chapterCount = async (branchId: string) =>
   (
     await admin
       .from('chapters')
       .select('*', { count: 'exact', head: true })
-      .eq('study_id', studyId)
+      .eq('branch_id', branchId)
   ).count;
 
-const chapters = (studyId: string, count: number) =>
+const chapters = (branchId: string, count: number) =>
   Array.from({ length: count }, (_, index) => ({
-    study_id: studyId,
+    branch_id: branchId,
     name: `Chapter ${index}`,
   }));
 
@@ -69,7 +69,7 @@ const chapters = (studyId: string, count: number) =>
 // (578 through supabase-js), so deep lines are sent as a prebuilt body. Chromium stringifies 100,000.
 async function createChapterWithLine(
   client: SupabaseClient,
-  studyId: string,
+  branchId: string,
   plies: number,
 ): Promise<{ code: string } | null> {
   const tree =
@@ -82,7 +82,7 @@ async function createChapterWithLine(
       Authorization: `Bearer ${data.session!.access_token}`,
       'Content-Type': 'application/json',
     },
-    body: `{"study_id":"${studyId}","name":"Main line","move_tree":${tree}}`,
+    body: `{"branch_id":"${branchId}","name":"Main line","move_tree":${tree}}`,
   });
   return response.ok ? null : await response.json();
 }
@@ -92,18 +92,18 @@ const treeOfTextLength = (bytes: number) => {
   return [move('a'.repeat(bytes - padding))];
 };
 
-it('creates a chapter with an empty move tree in the owner’s study', async () => {
-  // Given a user with a study
-  const { client, studyId } = await studyOwner();
+it('creates a chapter with an empty move tree in the owner’s branch', async () => {
+  // Given a user with a branch
+  const { client, branchId } = await branchOwner();
 
   // When they create a chapter with just a name
-  const { data, error } = await createChapter(client, studyId);
+  const { data, error } = await createChapter(client, branchId);
 
-  // Then it is in their study, with an empty tree and the id and timestamp filled in
+  // Then it is in their branch, with an empty tree and the id and timestamp filled in
   expect(error).toBeNull();
   expect(data).toEqual({
     id: expect.any(String),
-    study_id: studyId,
+    branch_id: branchId,
     name: 'Main line',
     move_tree: [],
     created_at: expect.any(String),
@@ -112,8 +112,8 @@ it('creates a chapter with an empty move tree in the owner’s study', async () 
 
 it('lets the owner read their chapter', async () => {
   // Given a user with a chapter
-  const { client, studyId } = await studyOwner();
-  const chapter = await existingChapter(client, studyId);
+  const { client, branchId } = await branchOwner();
+  const chapter = await existingChapter(client, branchId);
 
   // When they read it
   const { data } = await client.from('chapters').select().eq('id', chapter.id);
@@ -125,8 +125,8 @@ it('lets the owner read their chapter', async () => {
 
 it('lets the owner rename a chapter and change its move tree', async () => {
   // Given a user with a chapter
-  const { client, studyId } = await studyOwner();
-  const chapter = await existingChapter(client, studyId);
+  const { client, branchId } = await branchOwner();
+  const chapter = await existingChapter(client, branchId);
   const tree = [move('d4', move('d5'))];
 
   // When they change its name and tree
@@ -144,11 +144,11 @@ it('lets the owner rename a chapter and change its move tree', async () => {
 it.each([
   ['id', async () => crypto.randomUUID()],
   ['created_at', async () => '2000-01-01T00:00:00+00:00'],
-  ['study_id', existingStudyId],
+  ['branch_id', existingBranchId],
 ])('refuses changing a chapter’s %s', async (column, newValue) => {
   // Given a user with a chapter
-  const { client, studyId } = await studyOwner();
-  const chapter = await existingChapter(client, studyId);
+  const { client, branchId } = await branchOwner();
+  const chapter = await existingChapter(client, branchId);
 
   // When they change the column
   const { error } = await client
@@ -163,8 +163,8 @@ it.each([
 
 it('lets the owner delete their chapter', async () => {
   // Given a user with a chapter
-  const { client, studyId } = await studyOwner();
-  const chapter = await existingChapter(client, studyId);
+  const { client, branchId } = await branchOwner();
+  const chapter = await existingChapter(client, branchId);
 
   // When they delete it
   const { error } = await client.from('chapters').delete().eq('id', chapter.id);
@@ -176,8 +176,8 @@ it('lets the owner delete their chapter', async () => {
 
 it('hides a chapter from other users', async () => {
   // Given a chapter, and a different signed-in user
-  const owner = await studyOwner();
-  await existingChapter(owner.client, owner.studyId);
+  const owner = await branchOwner();
+  await existingChapter(owner.client, owner.branchId);
   const { client } = await signedInUser();
 
   // When the other user reads chapters
@@ -200,8 +200,8 @@ it.each([
   ],
 ])('stops other users %s a chapter', async (_, request) => {
   // Given a chapter, and a different signed-in user
-  const owner = await studyOwner();
-  const chapter = await existingChapter(owner.client, owner.studyId);
+  const owner = await branchOwner();
+  const chapter = await existingChapter(owner.client, owner.branchId);
   const { client } = await signedInUser();
 
   // When the other user makes the request
@@ -212,25 +212,25 @@ it.each([
   expect(await storedChapter(chapter.id)).toEqual(chapter);
 });
 
-it('refuses a chapter in another user’s study', async () => {
-  // Given a study, and a different signed-in user
-  const owner = await studyOwner();
+it('refuses a chapter in another user’s branch', async () => {
+  // Given a branch, and a different signed-in user
+  const owner = await branchOwner();
   const { client } = await signedInUser();
 
   // When the other user adds a chapter to it
-  const { error } = await createChapter(client, owner.studyId);
+  const { error } = await createChapter(client, owner.branchId);
 
   // Then it is refused
   expect(error?.code).toBe(PERMISSION_DENIED);
-  expect(await chapterCount(owner.studyId)).toBe(0);
+  expect(await chapterCount(owner.branchId)).toBe(0);
 });
 
 it.each([
   ['read', (anon: SupabaseClient) => anon.from('chapters').select()],
   [
     'create',
-    (anon: SupabaseClient, chapter: { study_id: string }) =>
-      createChapter(anon, chapter.study_id),
+    (anon: SupabaseClient, chapter: { branch_id: string }) =>
+      createChapter(anon, chapter.branch_id),
   ],
   [
     'rename',
@@ -244,8 +244,8 @@ it.each([
   ],
 ])('refuses a %s by a signed-out visitor', async (_, request) => {
   // Given a chapter, and a signed-out visitor
-  const owner = await studyOwner();
-  const chapter = await existingChapter(owner.client, owner.studyId);
+  const owner = await branchOwner();
+  const chapter = await existingChapter(owner.client, owner.branchId);
 
   // When the visitor makes the request
   const { error } = await request(anonClient(), chapter);
@@ -259,11 +259,11 @@ it.each([
   ['id', crypto.randomUUID()],
   ['created_at', '2000-01-01T00:00:00+00:00'],
 ])('refuses a client-supplied %s on create', async (column, value) => {
-  // Given a user with a study
-  const { client, studyId } = await studyOwner();
+  // Given a user with a branch
+  const { client, branchId } = await branchOwner();
 
   // When they create a chapter supplying the column
-  const { error } = await createChapter(client, studyId, { [column]: value });
+  const { error } = await createChapter(client, branchId, { [column]: value });
 
   // Then it is refused
   expect(error?.code).toBe(PERMISSION_DENIED);
@@ -314,11 +314,11 @@ it.each([
     CHECK_VIOLATION,
   ],
 ])('refuses a chapter with %s', async (_, change, code) => {
-  // Given a user with a study
-  const { client, studyId } = await studyOwner();
+  // Given a user with a branch
+  const { client, branchId } = await branchOwner();
 
   // When they create a chapter with the invalid value
-  const { error } = await createChapter(client, studyId, change);
+  const { error } = await createChapter(client, branchId, change);
 
   // Then it is refused
   expect(error?.code).toBe(code);
@@ -336,43 +336,43 @@ it.each([
     { move_tree: treeOfTextLength(MAX_TREE_BYTES) },
   ],
 ])('accepts a chapter with %s', async (_, change) => {
-  // Given a user with a study
-  const { client, studyId } = await studyOwner();
+  // Given a user with a branch
+  const { client, branchId } = await branchOwner();
 
   // When they create a chapter with the value at its limit
-  const { error } = await createChapter(client, studyId, change);
+  const { error } = await createChapter(client, branchId, change);
 
   // Then it is created
   expect(error).toBeNull();
 });
 
 it('accepts a 600-ply line', async () => {
-  // Given a user with a study
-  const { client, studyId } = await studyOwner();
+  // Given a user with a branch
+  const { client, branchId } = await branchOwner();
 
   // When they create a chapter whose tree is one 600-ply line
-  const error = await createChapterWithLine(client, studyId, 600);
+  const error = await createChapterWithLine(client, branchId, 600);
 
   // Then it is created
   expect(error).toBeNull();
 });
 
 it.each([601, 5000])('refuses a %i-ply line', async (plies) => {
-  // Given a user with a study
-  const { client, studyId } = await studyOwner();
+  // Given a user with a branch
+  const { client, branchId } = await branchOwner();
 
   // When they create a chapter whose tree is one line that long
-  const error = await createChapterWithLine(client, studyId, plies);
+  const error = await createChapterWithLine(client, branchId, plies);
 
   // Then it is refused
   expect(error?.code).toBe(CHECK_VIOLATION);
-  expect(await chapterCount(studyId)).toBe(0);
+  expect(await chapterCount(branchId)).toBe(0);
 });
 
 it('refuses changing a move tree to an invalid one', async () => {
   // Given a user with a chapter
-  const { client, studyId } = await studyOwner();
-  const chapter = await existingChapter(client, studyId);
+  const { client, branchId } = await branchOwner();
+  const chapter = await existingChapter(client, branchId);
 
   // When they change its tree to an invalid one
   const { error } = await client
@@ -385,43 +385,43 @@ it('refuses changing a move tree to an invalid one', async () => {
   expect(await storedChapter(chapter.id)).toEqual(chapter);
 });
 
-it('refuses a 101st chapter in a study', async () => {
-  // Given a study with 100 chapters
-  const { client, studyId } = await studyOwner();
-  const seeded = await client.from('chapters').insert(chapters(studyId, 100));
+it('refuses a 101st chapter in a branch', async () => {
+  // Given a branch with 100 chapters
+  const { client, branchId } = await branchOwner();
+  const seeded = await client.from('chapters').insert(chapters(branchId, 100));
   expect(seeded.error).toBeNull();
 
   // When the owner creates another
-  const { error } = await createChapter(client, studyId);
+  const { error } = await createChapter(client, branchId);
 
   // Then it is refused
   expect(error?.code).toBe(CHECK_VIOLATION);
-  expect(await chapterCount(studyId)).toBe(100);
+  expect(await chapterCount(branchId)).toBe(100);
 });
 
 it('holds the 100-chapter cap against concurrent creates', async () => {
-  // Given a study with 90 chapters
-  const { client, studyId } = await studyOwner();
-  const seeded = await client.from('chapters').insert(chapters(studyId, 90));
+  // Given a branch with 90 chapters
+  const { client, branchId } = await branchOwner();
+  const seeded = await client.from('chapters').insert(chapters(branchId, 90));
   expect(seeded.error).toBeNull();
 
   // When the owner creates 20 more at once
   const results = await Promise.all(
-    Array.from({ length: 20 }, () => createChapter(client, studyId)),
+    Array.from({ length: 20 }, () => createChapter(client, branchId)),
   );
 
   // Then only enough to reach 100 are created
   expect(results.filter(({ error }) => error === null)).toHaveLength(10);
-  expect(await chapterCount(studyId)).toBe(100);
+  expect(await chapterCount(branchId)).toBe(100);
 });
 
-it('deletes a study’s chapters with the study', async () => {
+it('deletes a branch’s chapters with the branch', async () => {
   // Given a user with a chapter
-  const { client, studyId } = await studyOwner();
-  const chapter = await existingChapter(client, studyId);
+  const { client, branchId } = await branchOwner();
+  const chapter = await existingChapter(client, branchId);
 
-  // When they delete the study
-  const { error } = await client.from('studies').delete().eq('id', studyId);
+  // When they delete the branch
+  const { error } = await client.from('branches').delete().eq('id', branchId);
 
   // Then the chapter is gone
   expect(error).toBeNull();

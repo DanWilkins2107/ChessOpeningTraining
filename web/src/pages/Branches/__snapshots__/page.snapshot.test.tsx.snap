@@ -1,0 +1,99 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Branches > matches snapshot 1`] = `
+<div>
+  <section
+    class="branches"
+  >
+    <h1>
+      Branches
+    </h1>
+    <form
+      class="create-branch-form"
+    >
+      <div
+        class="create-branch-fields"
+      >
+        <div
+          class="text-input"
+        >
+          <label
+            for="_r_0_"
+          >
+            Branch name
+          </label>
+          <div
+            class="text-input-control"
+          >
+            <input
+              autocomplete="off"
+              class="text-input-field"
+              id="_r_0_"
+              maxlength="100"
+              name="name"
+              required=""
+              type="text"
+            />
+          </div>
+        </div>
+        <fieldset
+          class="side-picker"
+        >
+          <legend
+            class="side-picker-legend"
+          >
+            Side
+          </legend>
+          <div
+            class="side-picker-options"
+          >
+            <label
+              class="side-picker-option"
+            >
+              <input
+                checked=""
+                class="side-picker-input"
+                name="side"
+                type="radio"
+                value="white"
+              />
+              <span
+                class="side-picker-name"
+              >
+                white
+              </span>
+            </label>
+            <label
+              class="side-picker-option"
+            >
+              <input
+                class="side-picker-input"
+                name="side"
+                type="radio"
+                value="black"
+              />
+              <span
+                class="side-picker-name"
+              >
+                black
+              </span>
+            </label>
+          </div>
+        </fieldset>
+        <button
+          class="button"
+          disabled=""
+          type="submit"
+        >
+          Create branch
+        </button>
+      </div>
+    </form>
+    <div
+      aria-label="Loading branches"
+      class="spinner"
+      role="status"
+    />
+  </section>
+</div>
+`;

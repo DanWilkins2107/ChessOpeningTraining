@@ -56,51 +56,51 @@ it('shows the account page to a signed-in user', async () => {
   expect(screen.getByRole('heading', { name: 'Account' })).toBeInTheDocument();
 });
 
-it('opens studies from the header link for a signed-in user', async () => {
+it('opens branches from the header link for a signed-in user', async () => {
   // Given a signed-in user on the home page
   await signIn();
   const memoryRouter = renderAt('/');
   await authSettled();
 
-  // When they follow the Studies link
-  fireEvent.click(screen.getByRole('link', { name: 'Studies' }));
+  // When they follow the Branches link
+  fireEvent.click(screen.getByRole('link', { name: 'Branches' }));
 
-  // Then they are on the studies page
-  expect(pathOf(memoryRouter)).toBe('/studies');
-  expect(screen.getByRole('heading', { name: 'Studies' })).toBeInTheDocument();
+  // Then they are on the branches page
+  expect(pathOf(memoryRouter)).toBe('/branches');
+  expect(screen.getByRole('heading', { name: 'Branches' })).toBeInTheDocument();
 });
 
-it('shows a study page to a signed-in user', async () => {
+it('shows a branch page to a signed-in user', async () => {
   // Given a signed-in user
   await signIn();
 
-  // When the router renders a study path and the user loads
-  renderAt('/studies/ab12');
+  // When the router renders a branch path and the user loads
+  renderAt('/branches/ab12');
   await authSettled();
 
-  // Then it shows the study page
-  expect(screen.getByRole('region', { name: 'Study' })).toBeInTheDocument();
+  // Then it shows the branch page
+  expect(screen.getByRole('region', { name: 'Branch' })).toBeInTheDocument();
 });
 
-it('sends a signed-out visitor from a study page to sign in', async () => {
+it('sends a signed-out visitor from a branch page to sign in', async () => {
   // Given a signed-out visitor
 
-  // When they open a study page
-  const memoryRouter = renderAt('/studies/ab12');
+  // When they open a branch page
+  const memoryRouter = renderAt('/branches/ab12');
   await authSettled();
 
-  // Then they are at sign in, carrying the study path
-  expect(pathOf(memoryRouter)).toBe('/sign-in?next=%2Fstudies%2Fab12');
+  // Then they are at sign in, carrying the branch path
+  expect(pathOf(memoryRouter)).toBe('/sign-in?next=%2Fbranches%2Fab12');
 });
 
 it('shows the header links on a protected page while the user is loading', () => {
   // Given the user not yet loaded
 
   // When the router renders a protected page
-  renderAt('/studies');
+  renderAt('/branches');
 
   // Then the header links show straight away
-  expect(screen.getByRole('link', { name: 'Studies' })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Branches' })).toBeInTheDocument();
   expect(accountLink()).toBeInTheDocument();
 });
 
@@ -114,7 +114,7 @@ it('leaves the signed-in links off a public page, signed in or not', async () =>
 
   // Then only the account link is on offer
   expect(
-    screen.queryByRole('link', { name: 'Studies' }),
+    screen.queryByRole('link', { name: 'Branches' }),
   ).not.toBeInTheDocument();
   expect(accountLink()).toBeInTheDocument();
 });
@@ -162,11 +162,11 @@ it('sends a signed-out visitor to sign in with their path and query', async () =
   // Given a signed-out visitor
 
   // When they open a protected page with a query
-  const memoryRouter = renderAt('/?study=ab12');
+  const memoryRouter = renderAt('/?branch=ab12');
   await authSettled();
 
   // Then they are at sign in, carrying the path and query
-  expect(pathOf(memoryRouter)).toBe('/sign-in?next=%2F%3Fstudy%3Dab12');
+  expect(pathOf(memoryRouter)).toBe('/sign-in?next=%2F%3Fbranch%3Dab12');
 });
 
 it('leaves the protected page out of history when redirecting', async () => {

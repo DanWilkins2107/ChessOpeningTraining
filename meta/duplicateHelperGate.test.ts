@@ -7,10 +7,10 @@ describe('duplicateDeclarations', () => {
       duplicateDeclarations({
         'web/src/pages/Home/page.test.tsx': 'const renderAt = () => {};',
         'web/src/tests-shared/renderAt.ts': 'export function renderAt() {}',
-        'supabase/tests/studies.integration.test.ts': 'const renderAt = 1;',
+        'supabase/tests/branches.integration.test.ts': 'const renderAt = 1;',
       }),
     ).toEqual([
-      'renderAt: declared in web/src/pages/Home/page.test.tsx, web/src/tests-shared/renderAt.ts, supabase/tests/studies.integration.test.ts',
+      'renderAt: declared in web/src/pages/Home/page.test.tsx, web/src/tests-shared/renderAt.ts, supabase/tests/branches.integration.test.ts',
     ]);
   });
 
