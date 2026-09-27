@@ -3,7 +3,7 @@ import { deleteMoveFromMoveTree } from './deleteMoveFromMoveTree';
 import { move } from '../../tests-shared/moveNode';
 
 it('deletes a move and everything after it', () => {
-  // Given a variation part way through a first move that has a sibling
+  // Given a sideline part way through a first move that has a sibling
   const tree = [
     move('e4', move('e5', move('Nf3')), move('c5', move('Nf3'))),
     move('d4', move('d5')),
