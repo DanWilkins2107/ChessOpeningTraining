@@ -152,3 +152,14 @@ it('takes them to change their email', async () => {
   // Then they are on the change email page
   expect(pathOf(memoryRouter)).toBe('/account/email');
 });
+
+it('leads to the delete account page', async () => {
+  // Given a signed-in user on their account page
+  const memoryRouter = await accountPage();
+
+  // When they choose to delete their account
+  fireEvent.click(screen.getByRole('link', { name: 'Delete account' }));
+
+  // Then they are on the delete account page
+  expect(pathOf(memoryRouter)).toBe('/account/delete');
+});

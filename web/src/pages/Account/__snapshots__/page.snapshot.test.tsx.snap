@@ -17,12 +17,33 @@ exports[`Account > matches snapshot 1`] = `
     >
       Change email
     </a>
+    <div
+      class="animate-pieces"
+    >
+      <div
+        class="animate-pieces-row"
+      >
+        Animate pieces
+        <span
+          aria-label="Loading your setting"
+          class="animate-pieces-placeholder"
+          role="status"
+        />
+      </div>
+    </div>
     <button
       class="account-action"
       type="button"
     >
       Sign out
     </button>
+    <a
+      class="account-action account-action-danger"
+      data-discover="true"
+      href="/account/delete"
+    >
+      Delete account
+    </a>
   </section>
 </div>
 `;

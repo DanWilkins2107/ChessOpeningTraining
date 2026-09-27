@@ -5,11 +5,14 @@ import {
   SIGNED_OUT_PENDING,
 } from '../../shared/signOut/signOut.constants';
 import { ACCOUNT_EMAIL_ROUTE_PATH } from '../../shared/routes/routes.constants';
+import { useAnimatePieces } from './elements/useAnimatePieces/useAnimatePieces';
 import { supabase } from '../../supabase';
+import { AnimatePiecesToggle } from './elements/AnimatePiecesToggle/AnimatePiecesToggle';
 import './page.css';
 
 export function Account() {
   const navigate = useNavigate();
+  const animatePieces = useAnimatePieces();
 
   async function signOut() {
     const leaveWith = (outcome: string) =>
@@ -28,9 +31,16 @@ export function Account() {
       <Link to={ACCOUNT_EMAIL_ROUTE_PATH} className="account-action">
         Change email
       </Link>
+      <AnimatePiecesToggle setting={animatePieces} />
       <button type="button" className="account-action" onClick={signOut}>
         Sign out
       </button>
+      <Link
+        to="/account/delete"
+        className="account-action account-action-danger"
+      >
+        Delete account
+      </Link>
     </section>
   );
 }

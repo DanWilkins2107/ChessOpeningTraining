@@ -15,7 +15,9 @@ export function useStudy(studyId: string) {
 async function fetchStudy(studyId: string): Promise<StudyResponse> {
   return supabase
     .from('studies')
-    .select('name')
+    .select('name, chapters(id, name)')
     .eq('id', studyId)
+    .order('created_at', { referencedTable: 'chapters' })
+    .order('id', { referencedTable: 'chapters' })
     .maybeSingle();
 }

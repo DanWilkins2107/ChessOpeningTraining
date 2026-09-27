@@ -17,6 +17,8 @@ export function useRovingFocus(firstSquare: string) {
 
   const focusSquareAt = (row: number, column: number) => {
     const rowElement = grid.current!.children[toEdge(row)];
+    // as-reason: DOM children are typed as Element, but every square the grid
+    // renders is an HTMLElement, which is what has focus().
     (rowElement.children[toEdge(column)] as HTMLElement).focus();
   };
 

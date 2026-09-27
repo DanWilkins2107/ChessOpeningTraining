@@ -3,6 +3,7 @@ import { ProtectedLayout } from '../ProtectedLayout/ProtectedLayout';
 import {
   ACCOUNT_EMAIL_ROUTE_PATH,
   ACCOUNT_ROUTE_PATH,
+  DELETE_ACCOUNT_ROUTE_PATH,
   PROTECTED_ROUTE_HANDLE,
   ROOT_ROUTE_PATH,
   STUDIES_ROUTE_PATH,
@@ -11,6 +12,7 @@ import {
 import { RootLayout } from '../RootLayout/RootLayout';
 import { Account } from '../../pages/Account/page';
 import { ChangeEmail } from '../../pages/ChangeEmail/page';
+import { DeleteAccount } from '../../pages/DeleteAccount/page';
 import { ForgotPassword } from '../../pages/ForgotPassword/page';
 import { Home } from '../../pages/Home/page';
 import { NotFound } from '../../pages/NotFound/page';
@@ -32,6 +34,7 @@ export const router = createBrowserRouter([
           { index: true, element: <Home /> },
           { path: ACCOUNT_ROUTE_PATH, element: <Account /> },
           { path: ACCOUNT_EMAIL_ROUTE_PATH, element: <ChangeEmail /> },
+          { path: DELETE_ACCOUNT_ROUTE_PATH, element: <DeleteAccount /> },
           { path: STUDIES_ROUTE_PATH, element: <Studies /> },
           { path: STUDY_ROUTE_PATH, element: <Study /> },
         ],

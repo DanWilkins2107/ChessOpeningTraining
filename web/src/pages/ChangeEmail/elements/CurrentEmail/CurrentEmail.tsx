@@ -3,7 +3,7 @@ import { SuccessMessage } from '../../../../shared/SuccessMessage/SuccessMessage
 import './CurrentEmail.css';
 
 type CurrentEmailProps = {
-  user: User;
+  user: Pick<User, 'email' | 'new_email'>;
 };
 
 export function CurrentEmail({ user }: CurrentEmailProps) {

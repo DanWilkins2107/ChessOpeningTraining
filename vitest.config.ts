@@ -47,7 +47,12 @@ export default defineConfig({
     coverage: {
       provider: 'istanbul',
       reporter: ['text', 'json'],
-      include: ['meta/**/*.ts', 'web/meta/**/*.ts', 'web/src/**/*.{ts,tsx}'],
+      include: [
+        'meta/**/*.ts',
+        'web/meta/**/*.ts',
+        'supabase/meta/**/*.ts',
+        'web/src/**/*.{ts,tsx}',
+      ],
       exclude: ['**/*.test.{ts,tsx}', '**/tests-shared/**'],
       thresholds: {
         statements: 100,

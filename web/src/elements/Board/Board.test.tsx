@@ -34,6 +34,16 @@ const AFTER_E4 = 'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1';
 const AFTER_KNIGHTS_OUT =
   'rnbqkb1r/pppppppp/5n2/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq - 2 2';
 const PAWN_ABOUT_TO_PROMOTE = '4k3/P7/8/8/8/8/8/4K3 w - - 0 1';
+const PAWNS_FACE_OFF =
+  'rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2';
+const EN_PASSANT_ON_F6 =
+  'rnbqkbnr/ppp1p1pp/8/3pPp2/8/8/PPPP1PPP/RNBQKBNR w KQkq f6 0 3';
+
+const squaresMarked = (className: string) =>
+  screen
+    .getAllByRole('gridcell')
+    .filter((cell) => cell.classList.contains(className))
+    .map((cell) => cell.getAttribute('aria-label')?.split(',')[0]);
 
 const squareStarting = (name: string) =>
   screen.getByRole('gridcell', { name: new RegExp(`^${name}`) });
@@ -428,7 +438,7 @@ it('clears the selection when the position changes', () => {
   );
   clickSquares('e2');
 
-  // When a new position arrives with white to move and e4 clicked
+  // When a new position arrives with white to move
   rerender(
     <Board
       position={AFTER_KNIGHTS_OUT}
@@ -437,9 +447,11 @@ it('clears the selection when the position changes', () => {
       onMove={onMove}
     />,
   );
-  clickSquares('e4');
 
-  // Then no move is made
+  // Then no hints remain, and clicking e4 makes no move
+  expect(squaresMarked('board-square-selected')).toEqual([]);
+  expect(squaresMarked('board-square-target')).toEqual([]);
+  clickSquares('e4');
   expect(onMove).not.toHaveBeenCalled();
 });
 
@@ -475,6 +487,171 @@ it('ignores clicks without a move handler', () => {
 
   // Then the position is unchanged
   expect(square('e2, white pawn')).toBeInTheDocument();
+});
+
+it('tints the square of a selected piece', () => {
+  // Given the starting position with a move handler
+  render(
+    <Board
+      position={START}
+      animatePieces
+      orientation="white"
+      onMove={vi.fn()}
+    />,
+  );
+
+  // When the e2 pawn is clicked
+  clickSquares('e2');
+
+  // Then e2 alone is tinted
+  expect(squaresMarked('board-square-selected')).toEqual(['e2']);
+});
+
+it('tints a selected piece that has no legal moves', () => {
+  // Given the starting position with a move handler
+  render(
+    <Board
+      position={START}
+      animatePieces
+      orientation="white"
+      onMove={vi.fn()}
+    />,
+  );
+
+  // When the boxed-in a1 rook is clicked
+  clickSquares('a1');
+
+  // Then a1 is tinted with nowhere to go
+  expect(squaresMarked('board-square-selected')).toEqual(['a1']);
+  expect(squaresMarked('board-square-target')).toEqual([]);
+});
+
+it.each(['e4', 'e7'])('shows no hints after clicking %s', (name) => {
+  // Given white to move
+  render(
+    <Board
+      position={START}
+      animatePieces
+      orientation="white"
+      onMove={vi.fn()}
+    />,
+  );
+
+  // When an empty square or a black piece is clicked
+  clickSquares(name);
+
+  // Then nothing is tinted or marked
+  expect(squaresMarked('board-square-selected')).toEqual([]);
+  expect(squaresMarked('board-square-target')).toEqual([]);
+});
+
+it('dots the empty squares a selected piece can move to', () => {
+  // Given the starting position with a move handler
+  render(
+    <Board
+      position={START}
+      animatePieces
+      orientation="white"
+      onMove={vi.fn()}
+    />,
+  );
+
+  // When the e2 pawn is clicked
+  clickSquares('e2');
+
+  // Then e3 and e4 carry a dot
+  expect(squaresMarked('board-square-target')).toEqual(['e4', 'e3']);
+});
+
+it('rings a piece that can be captured, and dots the rest', () => {
+  // Given a white pawn on e4 facing a black pawn on d5
+  render(
+    <Board
+      position={PAWNS_FACE_OFF}
+      animatePieces
+      orientation="white"
+      onMove={vi.fn()}
+    />,
+  );
+
+  // When the e4 pawn is clicked
+  clickSquares('e4');
+
+  // Then d5 is ringed and e5 dotted
+  expect(squaresMarked('board-square-capture')).toEqual(['d5']);
+  expect(squaresMarked('board-square-target')).toEqual(['e5']);
+});
+
+it('dots an en passant capture, since its square is empty', () => {
+  // Given a white pawn on e5 that can take f5 en passant
+  render(
+    <Board
+      position={EN_PASSANT_ON_F6}
+      animatePieces
+      orientation="white"
+      onMove={vi.fn()}
+    />,
+  );
+
+  // When the e5 pawn is clicked
+  clickSquares('e5');
+
+  // Then f6 is dotted alongside e6
+  expect(squaresMarked('board-square-target')).toEqual(['e6', 'f6']);
+  expect(squaresMarked('board-square-capture')).toEqual([]);
+});
+
+it('clears hints once a move is played', () => {
+  // Given the e2 pawn is selected
+  render(
+    <Board
+      position={START}
+      animatePieces
+      orientation="white"
+      onMove={vi.fn()}
+    />,
+  );
+  clickSquares('e2');
+
+  // When it is played to e4
+  clickSquares('e4');
+
+  // Then no hints remain
+  expect(squaresMarked('board-square-selected')).toEqual([]);
+  expect(squaresMarked('board-square-target')).toEqual([]);
+});
+
+it('clears hints on a deselecting click', () => {
+  // Given the e2 pawn is selected
+  render(
+    <Board
+      position={START}
+      animatePieces
+      orientation="white"
+      onMove={vi.fn()}
+    />,
+  );
+  clickSquares('e2');
+
+  // When e5 is clicked
+  clickSquares('e5');
+
+  // Then no hints remain
+  expect(squaresMarked('board-square-selected')).toEqual([]);
+  expect(squaresMarked('board-square-target')).toEqual([]);
+});
+
+it('gives a square without hints only its colour classes', () => {
+  // Given the starting position
+
+  // When it renders
+  render(<Board position={START} animatePieces orientation="white" />);
+
+  // Then e4 carries nothing but its base and colour classes
+  expect(square('e4')).toHaveAttribute(
+    'class',
+    'board-square board-square-light',
+  );
 });
 
 const pressOn = (name: string, key: string) =>
@@ -656,6 +833,25 @@ it.each(['Enter', ' '])('plays a move with %j', (key) => {
   // Then the move is handed over, without the key's own default
   expect(onMove).toHaveBeenCalledExactlyOnceWith({ from: 'e2', to: 'e4' });
   expect(unhandled).toBe(false);
+});
+
+it('shows hints for a piece picked with the keyboard', () => {
+  // Given the starting position with a move handler
+  render(
+    <Board
+      position={START}
+      orientation="white"
+      animatePieces
+      onMove={vi.fn()}
+    />,
+  );
+
+  // When Enter is pressed on e2
+  pressOn('e2', 'Enter');
+
+  // Then e2 is tinted and its targets dotted
+  expect(squaresMarked('board-square-selected')).toEqual(['e2']);
+  expect(squaresMarked('board-square-target')).toEqual(['e4', 'e3']);
 });
 
 it('marks the selected square selected and no other', () => {

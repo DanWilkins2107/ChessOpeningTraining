@@ -27,9 +27,10 @@ async function createUser(credentials: Credentials, emailConfirmed: boolean) {
   return data.user.id;
 }
 
+// A test may have deleted the account itself.
 async function removeUser(id: string) {
   const { error } = await adminClient.auth.admin.deleteUser(id);
-  if (error) throw error;
+  if (error && error.code !== 'user_not_found') throw error;
 }
 
 const signOut = () => supabase.auth.signOut({ scope: 'local' });

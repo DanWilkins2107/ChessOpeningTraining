@@ -1,38 +1,14 @@
-import { useEffect, useEffectEvent, useState } from 'react';
-import { useUser } from '../../../../shared/useUser/useUser';
+import { useUserFetch } from '../../../../shared/useUserFetch/useUserFetch';
 import { supabase } from '../../../../supabase';
 import type { StudiesResponse } from '../StudiesResponse/StudiesResponse';
 
+const fetchStudies = (): PromiseLike<StudiesResponse> =>
+  supabase
+    .from('studies')
+    .select('id, name, side')
+    .order('created_at', { ascending: false });
+
 export function useStudies() {
-  const userId = useUser()?.id;
-  const [version, setVersion] = useState({});
-  const refresh = () => setVersion({});
-  const [loaded, setLoaded] = useState<{
-    userId?: string;
-    response?: StudiesResponse;
-  }>({});
-
-  // Called from the response, not from the effect, so it reads the user of that
-  // later moment: a response for a user who has since changed is dropped here,
-  // rather than by the effect carrying a flag its cleanup has to flip.
-  const onResponse = useEffectEvent(
-    (requestedFor: string, response: StudiesResponse) => {
-      if (requestedFor === userId) setLoaded({ userId, response });
-    },
-  );
-
-  useEffect(() => {
-    if (userId === undefined) return;
-
-    supabase
-      .from('studies')
-      .select('id, name, side')
-      .order('created_at', { ascending: false })
-      .then((response) => onResponse(userId, response));
-  }, [userId, version]);
-
-  return {
-    response: loaded.userId === userId ? loaded.response : undefined,
-    refresh,
-  };
+  const { value, refresh } = useUserFetch(fetchStudies);
+  return { response: value, refresh };
 }

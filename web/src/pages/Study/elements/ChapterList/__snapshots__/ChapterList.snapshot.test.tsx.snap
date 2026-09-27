@@ -1,0 +1,26 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ChapterList > matches snapshot with chapters 1`] = `
+<div>
+  <ul
+    aria-label="Chapters"
+    class="chapter-list"
+  >
+    <li
+      class="chapter-list-item"
+    >
+      Main line
+    </li>
+  </ul>
+</div>
+`;
+
+exports[`ChapterList > matches snapshot with no chapters 1`] = `
+<div>
+  <p
+    class="chapter-list-empty"
+  >
+    No chapters yet
+  </p>
+</div>
+`;

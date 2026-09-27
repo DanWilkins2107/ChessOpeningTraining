@@ -35,3 +35,7 @@
 .account-action:hover {
   border-color: var(--accent);
 }
+
+.account-action-danger {
+  color: var(--danger);
+}

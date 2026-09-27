@@ -12,7 +12,7 @@ it('has no lines when no moves are played', () => {
   expect(found).toEqual([]);
 });
 
-it('has one line for a tree with no variations', () => {
+it('has one line for a tree with no sidelines', () => {
   // Given a single main line
   const tree = [move('e4', move('e5', move('Nf3')))];
 
@@ -23,8 +23,8 @@ it('has one line for a tree with no variations', () => {
   expect(found).toEqual([['e4', 'e5', 'Nf3']]);
 });
 
-it('lists the main line first, then each variation in child order', () => {
-  // Given variations at the start and part way through the main line
+it('lists the main line first, then each sideline in child order', () => {
+  // Given sidelines at the start and part way through the main line
   const tree = [
     move('e4', move('e5', move('Nf3'), move('Bc4')), move('c5', move('Nf3'))),
     move('d4', move('d5')),
