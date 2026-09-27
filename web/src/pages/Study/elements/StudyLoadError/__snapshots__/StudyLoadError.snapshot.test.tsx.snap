@@ -1,0 +1,12 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`StudyLoadError > matches snapshot 1`] = `
+<div>
+  <p
+    class="error-message"
+    role="alert"
+  >
+    Couldn't load this study, try again
+  </p>
+</div>
+`;

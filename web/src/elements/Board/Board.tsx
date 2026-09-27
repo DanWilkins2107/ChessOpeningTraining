@@ -60,6 +60,7 @@ export function Board({
         files={files}
         ranks={ranks}
         pieces={pieces}
+        selected={selected}
         onSquareClick={clickSquare}
       />
       <BoardPieces
