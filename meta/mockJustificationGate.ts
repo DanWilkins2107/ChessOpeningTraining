@@ -1,16 +1,12 @@
-import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
-import path from 'node:path';
-import { gateFilePrefix, repoRoot } from './repoPaths';
+import { reasonAbove } from './reasonAbove';
+import { gateFilePrefix } from './repoPaths';
+import { problemsIn, trackedTypeScript } from './trackedTypeScript';
 
 const MARKER = 'mock-reason';
 
 const FORMAT = `// ${MARKER}: <why the real thing can't be used>`;
 
-const SCANNED = /\.tsx?$/;
 const CALL = /\bvi\.(mock|doMock|stubEnv|stubGlobal|spyOn|hoisted)\s*\(/;
-const COMMENT = /^\s*\/\/\s?(.*)$/;
-const REASON = new RegExp(String.raw`^${MARKER}: \S`);
 
 const ownFiles = gateFilePrefix(import.meta.filename);
 
@@ -19,36 +15,14 @@ export function unjustifiedCalls(text: string): string[] {
 
   return lines.flatMap((line, index) => {
     const call = CALL.exec(line);
-    if (call === null || isJustified(lines, index)) return [];
+    if (call === null || reasonAbove(lines, index, MARKER)) return [];
     return [`${index + 1}: vi.${call[1]} needs "${FORMAT}" above it`];
   });
 }
 
-function isJustified(lines: string[], index: number): boolean {
-  let topmost: string | null = null;
-
-  for (let above = index - 1; above >= 0; above -= 1) {
-    const comment = COMMENT.exec(lines[above]);
-    if (comment === null) break;
-    topmost = comment[1];
-  }
-
-  return topmost !== null && REASON.test(topmost);
-}
-
 export function unjustifiedMocks(): string[] {
-  return scannedFiles().flatMap((file) =>
-    unjustifiedCalls(readTextFile(file)).map((problem) => `${file}:${problem}`),
+  const scanned = trackedTypeScript().filter(
+    (file) => !file.startsWith(ownFiles),
   );
-}
-
-function scannedFiles(): string[] {
-  return execFileSync('git', ['ls-files', '-z'], { cwd: repoRoot })
-    .toString('utf8')
-    .split('\0')
-    .filter((file) => SCANNED.test(file) && !file.startsWith(ownFiles));
-}
-
-function readTextFile(file: string): string {
-  return readFileSync(path.join(repoRoot, file), 'utf8');
+  return problemsIn(scanned, (_file, text) => unjustifiedCalls(text));
 }

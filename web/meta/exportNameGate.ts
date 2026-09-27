@@ -80,6 +80,8 @@ const assignedExport = (statement: ts.ExportAssignment): Export => ({
 });
 
 const declaredExport = (statement: ts.Statement): Export => ({
+  // as-reason: statementExports only gets here with an exported declaration
+  // other than a variable statement, and every such one is a DeclarationStatement.
   name: (statement as ts.DeclarationStatement).name?.text ?? 'default',
   isType:
     ts.isInterfaceDeclaration(statement) ||

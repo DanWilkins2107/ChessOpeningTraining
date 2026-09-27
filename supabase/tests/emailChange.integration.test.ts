@@ -29,7 +29,7 @@ async function emailChangeRequested() {
   return { ...user, newEmail };
 }
 
-it.each(['old', 'new'] as const)(
+it.each(['old', 'new'])(
   'keeps the old email while only the %s inbox has confirmed',
   async (inbox) => {
     // Given a user who has asked to change their email

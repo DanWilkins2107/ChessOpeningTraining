@@ -42,6 +42,8 @@ it.each([
   ['a move with an extra key', [{ ...move('e4'), comment: 'Best by test' }]],
   [
     'an invalid move deep in a variation',
+    // as-reason: the move deliberately lacks the children MoveNode requires,
+    // to prove a malformed move deep in the tree is refused.
     [move('e4', move('c6', { san: 'd4' } as MoveNode))],
   ],
 ])('refuses to load a stored move tree with %s', (_, stored) => {

@@ -1,6 +1,6 @@
 import './SidePicker.css';
 
-const SIDES = ['white', 'black'] as const;
+const SIDES = ['white', 'black'];
 
 export function SidePicker() {
   return (
