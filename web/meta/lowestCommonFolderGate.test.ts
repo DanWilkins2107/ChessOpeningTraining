@@ -229,6 +229,117 @@ describe('placementProblems', () => {
   });
 });
 
+describe('placementProblems in nested and group routes', () => {
+  const GROUP_PAGES = {
+    'src/pages/(auth)/SignIn/page.tsx': imports('../../../shared/Foo/Foo'),
+    'src/pages/(auth)/SignUp/page.tsx': imports('../../../shared/Foo/Foo'),
+  };
+
+  it('rejects a module shared within a group left at the src shared folder', () => {
+    expect(
+      placementProblems({ 'src/shared/Foo/Foo.tsx': '', ...GROUP_PAGES }, []),
+    ).toEqual([
+      'src/shared/Foo: consumed from src/pages/(auth)/SignIn, src/pages/(auth)/SignUp, so it belongs in src/pages/(auth)/shared',
+    ]);
+  });
+
+  it('accepts a module shared within a group at the group shared folder', () => {
+    expect(
+      placementProblems(
+        {
+          'src/pages/(auth)/shared/Foo/Foo.tsx': '',
+          'src/pages/(auth)/SignIn/page.tsx': imports('../shared/Foo/Foo'),
+          'src/pages/(auth)/SignUp/page.tsx': imports('../shared/Foo/Foo'),
+        },
+        [],
+      ),
+    ).toEqual([]);
+  });
+
+  it('shares a module used by a page and its nested child page in the parent', () => {
+    expect(
+      placementProblems(
+        {
+          'src/shared/Foo/Foo.tsx': '',
+          'src/pages/account/page.tsx': imports('../../shared/Foo/Foo'),
+          'src/pages/account/email/page.tsx': imports(
+            '../../../shared/Foo/Foo',
+          ),
+        },
+        [],
+      ),
+    ).toEqual([
+      'src/shared/Foo: consumed from src/pages/account, src/pages/account/email, so it belongs in src/pages/account/shared',
+    ]);
+  });
+
+  it('places a module used by one dynamic page in its elements folder', () => {
+    expect(
+      placementProblems(
+        {
+          'src/shared/Foo/Foo.tsx': '',
+          'src/pages/studies/[studyId]/page.tsx': imports(
+            '../../../shared/Foo/Foo',
+          ),
+        },
+        [],
+      ),
+    ).toEqual([
+      'src/shared/Foo: consumed from src/pages/studies/[studyId], so it belongs in src/pages/studies/[studyId]/elements',
+    ]);
+  });
+
+  it.each([
+    [
+      'another group',
+      'src/pages/(app)/Home/page.tsx',
+      '../../(auth)/shared/Foo/Foo',
+      'src/pages/(app)/Home, src/pages/(auth)/SignIn',
+    ],
+    [
+      'a plain route',
+      'src/pages/Home/page.tsx',
+      '../(auth)/shared/Foo/Foo',
+      'src/pages/(auth)/SignIn, src/pages/Home',
+    ],
+  ])(
+    'sends a module shared by a group and %s to the src shared folder',
+    (_, otherPage, target, owners) => {
+      expect(
+        placementProblems(
+          {
+            'src/pages/(auth)/shared/Foo/Foo.tsx': '',
+            'src/pages/(auth)/SignIn/page.tsx': imports('../shared/Foo/Foo'),
+            [otherPage]: imports(target),
+          },
+          [],
+        ),
+      ).toEqual([
+        `src/pages/(auth)/shared/Foo: consumed from ${owners}, so it belongs in src/shared`,
+      ]);
+    },
+  );
+
+  it('places test helpers used within one group in the group tests-shared folder', () => {
+    expect(
+      placementProblems(
+        {
+          'src/tests-shared/signIn.ts': '',
+          'src/pages/(auth)/SignIn/page.test.tsx': imports(
+            '../../../tests-shared/signIn',
+          ),
+          'src/pages/(auth)/SignUp/page.test.tsx': imports(
+            '../../../tests-shared/signIn',
+          ),
+        },
+        [],
+      ),
+    ).toEqual([
+      'src/tests-shared/signIn.ts: consumed from src/pages/(auth)/SignIn, src/pages/(auth)/SignUp, so it belongs in src/pages/(auth)/tests-shared',
+    ]);
+  });
+});
+
 describe('excludeProblems', () => {
   const exclude = (path: string, expiry = '2026-09-20') => [
     { path, expiry, reason: 'moving with the analysis page' },

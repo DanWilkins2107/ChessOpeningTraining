@@ -91,7 +91,7 @@ exports[`Studies > matches snapshot 1`] = `
     </form>
     <div
       aria-label="Loading studies"
-      class="study-list-spinner"
+      class="spinner"
       role="status"
     />
   </section>
