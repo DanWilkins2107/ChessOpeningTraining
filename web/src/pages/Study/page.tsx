@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { z } from '../../z';
-import { StudyHeader } from './elements/StudyHeader/StudyHeader';
+import { StudyDetails } from './elements/StudyDetails/StudyDetails';
 import { StudyLoadError } from './elements/StudyLoadError/StudyLoadError';
 
 const paramsSchema = z.object({ studyId: z.uuid() });
@@ -11,7 +11,7 @@ export function Study() {
   return (
     <section aria-label="Study">
       {params.success ? (
-        <StudyHeader studyId={params.data.studyId} />
+        <StudyDetails studyId={params.data.studyId} />
       ) : (
         <StudyLoadError />
       )}

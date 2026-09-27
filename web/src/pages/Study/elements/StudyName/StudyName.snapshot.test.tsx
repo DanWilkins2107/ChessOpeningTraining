@@ -8,7 +8,7 @@ describe('StudyName', () => {
   it('matches snapshot', async () => {
     const response: StudyResponse = {
       success: true,
-      data: { name: 'London' },
+      data: { name: 'London', chapters: [] },
       error: null,
       count: null,
       status: 200,
