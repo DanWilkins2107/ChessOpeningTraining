@@ -1,10 +1,11 @@
 import { act, render } from '@testing-library/react';
 import { Suspense } from 'react';
 import { describe, expect, it } from 'vitest';
+import type { Chapter } from '../Chapter/Chapter';
 import type { StudyResponse } from '../StudyResponse/StudyResponse';
 import { ChapterList } from './ChapterList';
 
-const respond = (chapters: { id: string; name: string }[]): StudyResponse => ({
+const respond = (chapters: Chapter[]): StudyResponse => ({
   success: true,
   data: { name: 'London', chapters },
   error: null,
