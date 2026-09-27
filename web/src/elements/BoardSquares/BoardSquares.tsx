@@ -10,6 +10,7 @@ type BoardSquaresProps = {
   pieces: PlacedPiece[];
   selected?: string;
   targets?: string[];
+  showHints: boolean;
   onSquareClick?: (square: string) => void;
 };
 
@@ -32,10 +33,12 @@ export function BoardSquares({
   pieces,
   selected,
   targets,
+  showHints,
   onSquareClick,
 }: BoardSquaresProps) {
   const placement = new Map(pieces.map(({ square, piece }) => [square, piece]));
   const { grid, focusProps } = useRovingFocus(`${files[0]}${ranks[0]}`);
+  const hints = showHints ? { selected, targets } : {};
 
   return (
     <div ref={grid} role="grid" aria-label="Chess board" className="board-grid">
@@ -56,7 +59,12 @@ export function BoardSquares({
                   (FILES.indexOf(file) + rank) % 2 === 1
                     ? 'board-square-dark'
                     : 'board-square-light',
-                  hintClass(square, piece !== undefined, selected, targets),
+                  hintClass(
+                    square,
+                    piece !== undefined,
+                    hints.selected,
+                    hints.targets,
+                  ),
                 ]
                   .filter(Boolean)
                   .join(' ')}
