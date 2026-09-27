@@ -5,19 +5,24 @@ exports[`StudyList > matches snapshot 1`] = `
   <ul
     class="study-list"
   >
-    <li
-      class="study-list-item"
-    >
-      <span
-        class="study-list-name"
+    <li>
+      <a
+        aria-label="London"
+        class="study-list-item"
+        data-discover="true"
+        href="/studies/a4f1"
       >
-        London
-      </span>
-      <span
-        class="study-list-side"
-      >
-        white
-      </span>
+        <span
+          class="study-list-name"
+        >
+          London
+        </span>
+        <span
+          class="study-list-side"
+        >
+          white
+        </span>
+      </a>
     </li>
   </ul>
 </div>

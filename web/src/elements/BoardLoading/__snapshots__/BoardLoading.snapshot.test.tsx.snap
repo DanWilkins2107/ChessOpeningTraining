@@ -3,12 +3,12 @@
 exports[`BoardLoading > matches snapshot 1`] = `
 <div>
   <div
-    aria-label="Loading board"
     class="board-loading"
-    role="status"
   >
     <div
-      class="board-loading-spinner"
+      aria-label="Loading board"
+      class="spinner"
+      role="status"
     />
   </div>
 </div>

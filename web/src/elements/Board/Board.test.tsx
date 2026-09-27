@@ -35,11 +35,12 @@ const AFTER_KNIGHTS_OUT =
   'rnbqkb1r/pppppppp/5n2/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq - 2 2';
 const PAWN_ABOUT_TO_PROMOTE = '4k3/P7/8/8/8/8/8/4K3 w - - 0 1';
 
+const squareStarting = (name: string) =>
+  screen.getByRole('gridcell', { name: new RegExp(`^${name}`) });
+
 const clickSquares = (...names: string[]) => {
   for (const name of names) {
-    fireEvent.click(
-      screen.getByRole('gridcell', { name: new RegExp(`^${name}`) }),
-    );
+    fireEvent.click(squareStarting(name));
   }
 };
 
@@ -47,7 +48,7 @@ it('lays out rank 8 at the top from white', () => {
   // Given the board faces white
 
   // When it renders
-  render(<Board position={EMPTY} orientation="white" />);
+  render(<Board position={EMPTY} orientation="white" animatePieces />);
 
   // Then rank 8 is the top row and the a-file is on the left
   expect(squareNames()).toEqual([
@@ -66,7 +67,7 @@ it('lays out rank 1 at the top from black', () => {
   // Given the board faces black
 
   // When it renders
-  render(<Board position={EMPTY} orientation="black" />);
+  render(<Board position={EMPTY} orientation="black" animatePieces />);
 
   // Then rank 1 is the top row and the h-file is on the left
   expect(squareNames()).toEqual([
@@ -87,7 +88,7 @@ it.each(['white', 'black'] as const)(
     // Given the board faces either side
 
     // When it renders
-    render(<Board position={EMPTY} orientation={orientation} />);
+    render(<Board position={EMPTY} orientation={orientation} animatePieces />);
 
     // Then a1 and h8 are dark, and h1 and a8 are light
     for (const name of ['a1', 'h8']) {
@@ -103,7 +104,7 @@ it('labels ranks on the left edge and files on the bottom edge from white', () =
   // Given the board faces white
 
   // When it renders
-  render(<Board position={EMPTY} orientation="white" />);
+  render(<Board position={EMPTY} orientation="white" animatePieces />);
 
   // Then only the left column shows ranks and only the bottom row shows files
   expect(square('a8')).toHaveTextContent(/^8$/);
@@ -116,7 +117,7 @@ it('labels ranks on the left edge and files on the bottom edge from black', () =
   // Given the board faces black
 
   // When it renders
-  render(<Board position={EMPTY} orientation="black" />);
+  render(<Board position={EMPTY} orientation="black" animatePieces />);
 
   // Then the h-file carries the ranks and rank 8 carries the files
   expect(square('h1')).toHaveTextContent(/^1$/);
@@ -127,7 +128,7 @@ it('labels ranks on the left edge and files on the bottom edge from black', () =
 
 it('keeps edge labels out of the accessibility tree', () => {
   // Given a rendered board
-  render(<Board position={EMPTY} orientation="white" />);
+  render(<Board position={EMPTY} orientation="white" animatePieces />);
 
   // When its labels are read
   const labels = square('a1').querySelectorAll('span');
@@ -142,7 +143,7 @@ it('announces the piece standing on a square', () => {
   // Given the starting position
 
   // When it renders
-  render(<Board position={START} orientation="white" />);
+  render(<Board position={START} orientation="white" animatePieces />);
 
   // Then e1 names the king on it
   expect(square('e1, white king')).toBeInTheDocument();
@@ -152,7 +153,7 @@ it('announces an empty square by name alone', () => {
   // Given the starting position
 
   // When it renders
-  render(<Board position={START} orientation="white" />);
+  render(<Board position={START} orientation="white" animatePieces />);
 
   // Then e4 names no piece
   expect(square('e4')).toBeInTheDocument();
@@ -162,7 +163,7 @@ it('shows each piece its own image', () => {
   // Given a lone white king
 
   // When it renders
-  render(<Board position={KING_ON_E1} orientation="white" />);
+  render(<Board position={KING_ON_E1} orientation="white" animatePieces />);
 
   // Then the board holds the white king artwork
   expect(pieceImages()[0]).toHaveAttribute(
@@ -175,7 +176,7 @@ it('shows one image per piece and no more', () => {
   // Given the starting position
 
   // When it renders
-  render(<Board position={START} orientation="white" />);
+  render(<Board position={START} orientation="white" animatePieces />);
 
   // Then the 32 men are all that is drawn
   expect(pieceImages()).toHaveLength(32);
@@ -185,7 +186,7 @@ it('keeps piece images out of the accessibility tree', () => {
   // Given the starting position, whose squares already announce their pieces
 
   // When it renders
-  render(<Board position={START} orientation="white" />);
+  render(<Board position={START} orientation="white" animatePieces />);
 
   // Then the images add nothing for a screen reader to read
   expect(screen.queryAllByRole('img')).toEqual([]);
@@ -195,7 +196,7 @@ it('offsets a piece to its square from white', () => {
   // Given the board faces white
 
   // When a king on e1 renders
-  render(<Board position={KING_ON_E1} orientation="white" />);
+  render(<Board position={KING_ON_E1} orientation="white" animatePieces />);
 
   // Then it sits five files across and eight ranks down
   expect(pieceImages()[0].style.transform).toBe('translate(400%, 700%)');
@@ -205,7 +206,7 @@ it('offsets a piece to its square from black', () => {
   // Given the board faces black
 
   // When a king on e1 renders
-  render(<Board position={KING_ON_E1} orientation="black" />);
+  render(<Board position={KING_ON_E1} orientation="black" animatePieces />);
 
   // Then it sits four files across and on the top rank
   expect(pieceImages()[0].style.transform).toBe('translate(300%, 0%)');
@@ -214,12 +215,12 @@ it('offsets a piece to its square from black', () => {
 it('moves a piece by its offset, so it slides rather than jumps', () => {
   // Given a king on e1
   const { rerender } = render(
-    <Board position={KING_ON_E1} orientation="white" />,
+    <Board position={KING_ON_E1} orientation="white" animatePieces />,
   );
   const before = pieceImages()[0];
 
   // When it steps up to e2
-  rerender(<Board position={KING_ON_E2} orientation="white" />);
+  rerender(<Board position={KING_ON_E2} orientation="white" animatePieces />);
 
   // Then the same image is still on the board
   expect(pieceImages()[0]).toBe(before);
@@ -228,11 +229,11 @@ it('moves a piece by its offset, so it slides rather than jumps', () => {
 it('offsets a moved piece to the square it arrived on', () => {
   // Given a king on e1
   const { rerender } = render(
-    <Board position={KING_ON_E1} orientation="white" />,
+    <Board position={KING_ON_E1} orientation="white" animatePieces />,
   );
 
   // When it steps up to e2
-  rerender(<Board position={KING_ON_E2} orientation="white" />);
+  rerender(<Board position={KING_ON_E2} orientation="white" animatePieces />);
 
   // Then its offset is one rank higher
   expect(pieceImages()[0].style.transform).toBe('translate(400%, 600%)');
@@ -241,13 +242,15 @@ it('offsets a moved piece to the square it arrived on', () => {
 it('keeps a piece its own image across a run of moves', () => {
   // Given a rook on a1 and another on h1
   const { rerender } = render(
-    <Board position={ROOKS_HOME} orientation="white" />,
+    <Board position={ROOKS_HOME} orientation="white" animatePieces />,
   );
   const fromA1 = imageAt('translate(0%, 700%)');
 
   // When the h1 rook goes to h5 and the a1 rook then follows it onto h1
-  rerender(<Board position={ROOK_ON_H5} orientation="white" />);
-  rerender(<Board position={ROOKS_ON_THE_H_FILE} orientation="white" />);
+  rerender(<Board position={ROOK_ON_H5} orientation="white" animatePieces />);
+  rerender(
+    <Board position={ROOKS_ON_THE_H_FILE} orientation="white" animatePieces />,
+  );
 
   // Then h1 shows the rook that started on a1, not the one that left it
   expect(imageAt('translate(700%, 700%)')).toBe(fromA1);
@@ -256,11 +259,11 @@ it('keeps a piece its own image across a run of moves', () => {
 it('announces the square a piece moved to', () => {
   // Given a king on e1
   const { rerender } = render(
-    <Board position={KING_ON_E1} orientation="white" />,
+    <Board position={KING_ON_E1} orientation="white" animatePieces />,
   );
 
   // When it steps up to e2
-  rerender(<Board position={KING_ON_E2} orientation="white" />);
+  rerender(<Board position={KING_ON_E2} orientation="white" animatePieces />);
 
   // Then e2 names the king standing on it
   expect(square('e2, white king')).toBeInTheDocument();
@@ -270,7 +273,7 @@ it('keeps pieces on their own squares from black', () => {
   // Given the starting position
 
   // When it renders facing black
-  render(<Board position={START} orientation="black" />);
+  render(<Board position={START} orientation="black" animatePieces />);
 
   // Then the white king is still announced on e1
   expect(square('e1, white king')).toBeInTheDocument();
@@ -279,7 +282,14 @@ it('keeps pieces on their own squares from black', () => {
 it('plays a clicked piece to a clicked legal square', () => {
   // Given the starting position with a move handler
   const onMove = vi.fn();
-  render(<Board position={START} orientation="white" onMove={onMove} />);
+  render(
+    <Board
+      position={START}
+      animatePieces
+      orientation="white"
+      onMove={onMove}
+    />,
+  );
 
   // When the e2 pawn is clicked, then e4
   clickSquares('e2', 'e4');
@@ -291,7 +301,14 @@ it('plays a clicked piece to a clicked legal square', () => {
 it('lets the side to move be black', () => {
   // Given black to move
   const onMove = vi.fn();
-  render(<Board position={AFTER_E4} orientation="white" onMove={onMove} />);
+  render(
+    <Board
+      position={AFTER_E4}
+      animatePieces
+      orientation="white"
+      onMove={onMove}
+    />,
+  );
 
   // When the e7 pawn is clicked, then e5
   clickSquares('e7', 'e5');
@@ -303,7 +320,14 @@ it('lets the side to move be black', () => {
 it('plays nothing when a target is clicked with no piece selected', () => {
   // Given the starting position with a move handler
   const onMove = vi.fn();
-  render(<Board position={START} orientation="white" onMove={onMove} />);
+  render(
+    <Board
+      position={START}
+      animatePieces
+      orientation="white"
+      onMove={onMove}
+    />,
+  );
 
   // When e4 is clicked on its own
   clickSquares('e4');
@@ -315,7 +339,14 @@ it('plays nothing when a target is clicked with no piece selected', () => {
 it('does not select a piece of the side not to move', () => {
   // Given white to move
   const onMove = vi.fn();
-  render(<Board position={START} orientation="white" onMove={onMove} />);
+  render(
+    <Board
+      position={START}
+      animatePieces
+      orientation="white"
+      onMove={onMove}
+    />,
+  );
 
   // When the e7 pawn is clicked, then e5
   clickSquares('e7', 'e5');
@@ -327,7 +358,14 @@ it('does not select a piece of the side not to move', () => {
 it('switches the selection to another clicked piece', () => {
   // Given the e2 pawn is selected
   const onMove = vi.fn();
-  render(<Board position={START} orientation="white" onMove={onMove} />);
+  render(
+    <Board
+      position={START}
+      animatePieces
+      orientation="white"
+      onMove={onMove}
+    />,
+  );
   clickSquares('e2');
 
   // When the d2 pawn is clicked, then d4
@@ -340,7 +378,14 @@ it('switches the selection to another clicked piece', () => {
 it('deselects on a click that is not a legal target', () => {
   // Given the e2 pawn is selected
   const onMove = vi.fn();
-  render(<Board position={START} orientation="white" onMove={onMove} />);
+  render(
+    <Board
+      position={START}
+      animatePieces
+      orientation="white"
+      onMove={onMove}
+    />,
+  );
   clickSquares('e2');
 
   // When e5 is clicked, then e4
@@ -353,7 +398,14 @@ it('deselects on a click that is not a legal target', () => {
 it('clears the selection once a move is played', () => {
   // Given e2-e4 has just been played, with the position not yet updated
   const onMove = vi.fn();
-  render(<Board position={START} orientation="white" onMove={onMove} />);
+  render(
+    <Board
+      position={START}
+      animatePieces
+      orientation="white"
+      onMove={onMove}
+    />,
+  );
   clickSquares('e2', 'e4');
 
   // When e4 is clicked again
@@ -367,13 +419,23 @@ it('clears the selection when the position changes', () => {
   // Given the e2 pawn is selected
   const onMove = vi.fn();
   const { rerender } = render(
-    <Board position={START} orientation="white" onMove={onMove} />,
+    <Board
+      position={START}
+      animatePieces
+      orientation="white"
+      onMove={onMove}
+    />,
   );
   clickSquares('e2');
 
   // When a new position arrives with white to move and e4 clicked
   rerender(
-    <Board position={AFTER_KNIGHTS_OUT} orientation="white" onMove={onMove} />,
+    <Board
+      position={AFTER_KNIGHTS_OUT}
+      animatePieces
+      orientation="white"
+      onMove={onMove}
+    />,
   );
   clickSquares('e4');
 
@@ -387,6 +449,7 @@ it('promotes to a queen', () => {
   render(
     <Board
       position={PAWN_ABOUT_TO_PROMOTE}
+      animatePieces
       orientation="white"
       onMove={onMove}
     />,
@@ -405,11 +468,236 @@ it('promotes to a queen', () => {
 
 it('ignores clicks without a move handler', () => {
   // Given a board with no move handler
-  render(<Board position={START} orientation="white" />);
+  render(<Board position={START} animatePieces orientation="white" />);
 
   // When e2 is clicked, then e4
   clickSquares('e2', 'e4');
 
   // Then the position is unchanged
   expect(square('e2, white pawn')).toBeInTheDocument();
+});
+
+const pressOn = (name: string, key: string) =>
+  fireEvent.keyDown(squareStarting(name), { key });
+
+const tabStops = () =>
+  screen
+    .getAllByRole('gridcell')
+    .filter((cell) => cell.tabIndex !== -1)
+    .map((cell) => cell.getAttribute('aria-label'));
+
+const focusedSquare = () => document.activeElement?.getAttribute('aria-label');
+
+it('leaves a board without a move handler out of the tab order', () => {
+  // Given a board with no move handler
+
+  // When it renders
+  render(<Board position={EMPTY} orientation="white" animatePieces />);
+
+  // Then no square can be focused or selected
+  for (const cell of screen.getAllByRole('gridcell')) {
+    expect(cell).not.toHaveAttribute('tabindex');
+    expect(cell).not.toHaveAttribute('aria-selected');
+  }
+});
+
+it('makes the top-left square the one tab stop', () => {
+  // Given a board with a move handler
+
+  // When it renders facing black
+  render(
+    <Board
+      position={EMPTY}
+      orientation="black"
+      animatePieces
+      onMove={vi.fn()}
+    />,
+  );
+
+  // Then only h1 is reached by Tab
+  expect(tabStops()).toEqual(['h1']);
+});
+
+it.each([
+  ['ArrowRight', 'e5'],
+  ['ArrowLeft', 'c5'],
+  ['ArrowUp', 'd6'],
+  ['ArrowDown', 'd4'],
+])('moves focus with %s from white', (key, target) => {
+  // Given the board faces white
+  render(
+    <Board
+      position={EMPTY}
+      orientation="white"
+      animatePieces
+      onMove={vi.fn()}
+    />,
+  );
+
+  // When the key is pressed on d5
+  pressOn('d5', key);
+
+  // Then the neighbouring square has focus
+  expect(focusedSquare()).toBe(target);
+});
+
+it('moves focus as the board faces, from black', () => {
+  // Given the board faces black
+  render(
+    <Board
+      position={EMPTY}
+      orientation="black"
+      animatePieces
+      onMove={vi.fn()}
+    />,
+  );
+
+  // When up then right are pressed on d5
+  pressOn('d5', 'ArrowUp');
+  pressOn('d4', 'ArrowRight');
+
+  // Then focus goes toward rank 1 and the a-file
+  expect(focusedSquare()).toBe('c4');
+});
+
+it.each([
+  ['a8', 'ArrowUp'],
+  ['a8', 'ArrowLeft'],
+  ['h1', 'ArrowDown'],
+  ['h1', 'ArrowRight'],
+])('keeps focus on %s when %s runs off the board', (name, key) => {
+  // Given the board faces white
+  render(
+    <Board
+      position={EMPTY}
+      orientation="white"
+      animatePieces
+      onMove={vi.fn()}
+    />,
+  );
+
+  // When the key points off the edge
+  pressOn(name, key);
+
+  // Then focus stays put
+  expect(focusedSquare()).toBe(name);
+});
+
+it('moves the tab stop to the focused square', () => {
+  // Given a board with a move handler
+  render(
+    <Board
+      position={EMPTY}
+      orientation="white"
+      animatePieces
+      onMove={vi.fn()}
+    />,
+  );
+
+  // When focus moves from a8 to b8
+  pressOn('a8', 'ArrowRight');
+
+  // Then b8 is now the one tab stop
+  expect(tabStops()).toEqual(['b8']);
+});
+
+it('stops arrow keys scrolling the page', () => {
+  // Given a board with a move handler
+  render(
+    <Board
+      position={EMPTY}
+      orientation="white"
+      animatePieces
+      onMove={vi.fn()}
+    />,
+  );
+
+  // When an arrow key is pressed
+  const unhandled = pressOn('d5', 'ArrowDown');
+
+  // Then its default is prevented
+  expect(unhandled).toBe(false);
+});
+
+it('leaves other keys alone', () => {
+  // Given a board with a move handler
+  render(
+    <Board
+      position={EMPTY}
+      orientation="white"
+      animatePieces
+      onMove={vi.fn()}
+    />,
+  );
+
+  // When a key the board does not use is pressed
+  const unhandled = pressOn('d5', 'Tab');
+
+  // Then its default goes ahead
+  expect(unhandled).toBe(true);
+});
+
+it.each(['Enter', ' '])('plays a move with %j', (key) => {
+  // Given the starting position with a move handler
+  const onMove = vi.fn();
+  render(
+    <Board
+      position={START}
+      orientation="white"
+      animatePieces
+      onMove={onMove}
+    />,
+  );
+
+  // When the key is pressed on e2, then e4
+  pressOn('e2', key);
+  const unhandled = pressOn('e4', key);
+
+  // Then the move is handed over, without the key's own default
+  expect(onMove).toHaveBeenCalledExactlyOnceWith({ from: 'e2', to: 'e4' });
+  expect(unhandled).toBe(false);
+});
+
+it('marks the selected square selected and no other', () => {
+  // Given the starting position with a move handler
+  render(
+    <Board
+      position={START}
+      orientation="white"
+      animatePieces
+      onMove={vi.fn()}
+    />,
+  );
+
+  // When e2 is clicked
+  clickSquares('e2');
+
+  // Then e2 alone is selected
+  const selected = screen
+    .getAllByRole('gridcell')
+    .filter((cell) => cell.getAttribute('aria-selected') === 'true');
+  expect(selected).toEqual([square('e2, white pawn')]);
+  expect(square('e4')).toHaveAttribute('aria-selected', 'false');
+});
+
+it('slides pieces when animation is on', () => {
+  // Given animation is on
+
+  // When a king renders
+  render(<Board position={KING_ON_E1} orientation="white" animatePieces />);
+
+  // Then it keeps its slide
+  expect(pieceImages()[0]).not.toHaveClass('board-piece-still');
+});
+
+it('keeps pieces still when animation is off', () => {
+  // Given animation is off
+
+  // When a king renders
+  render(
+    <Board position={KING_ON_E1} orientation="white" animatePieces={false} />,
+  );
+
+  // Then it moves without sliding
+  expect(pieceImages()[0]).toHaveClass('board-piece-still');
 });

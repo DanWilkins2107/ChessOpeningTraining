@@ -44,3 +44,8 @@
   right: 0.25em;
   bottom: 0.2em;
 }
+
+.board-square:focus-visible {
+  outline-color: currentColor;
+  outline-offset: -4px;
+}
