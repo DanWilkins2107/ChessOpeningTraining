@@ -5,15 +5,24 @@ exports[`AnimatePiecesToggle > matches snapshot 1`] = `
   <div
     class="animate-pieces"
   >
-    <label
-      class="animate-pieces-label"
+    <div
+      class="animate-pieces-row"
     >
-      <input
-        disabled=""
-        type="checkbox"
+      <label
+        class="animate-pieces-label"
+      >
+        <input
+          disabled=""
+          type="checkbox"
+        />
+        Animate pieces
+      </label>
+      <span
+        aria-label="Loading your setting"
+        class="animate-pieces-spinner"
+        role="status"
       />
-      Animate pieces
-    </label>
+    </div>
   </div>
 </div>
 `;

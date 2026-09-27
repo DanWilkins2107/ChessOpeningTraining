@@ -13,6 +13,7 @@ const firstVisit = registerTestUser();
 const turningOff = registerTestUser();
 const savedOff = registerTestUser();
 const turningBackOn = registerTestUser();
+const savingOff = registerTestUser();
 const failing = registerTestUser();
 
 beforeAll(() => turnOffAnimationFor(savedOff));
@@ -23,6 +24,8 @@ afterEach(() => {
 
 const checkbox = () =>
   screen.getByRole<HTMLInputElement>('checkbox', { name: 'Animate pieces' });
+
+const spinner = (name: string) => screen.queryByRole('status', { name });
 
 const loadedCheckbox = async () => {
   await vi.waitFor(() => expect(checkbox()).toBeEnabled());
@@ -67,11 +70,13 @@ it('holds the checkbox until the setting loads', async () => {
   await renderFor(firstVisit);
   await request.sent();
 
-  // Then it is unticked and cannot be changed yet
+  // Then it is unticked, cannot be changed yet, and shows it is loading
   expect(checkbox()).not.toBeChecked();
   expect(checkbox()).toBeDisabled();
+  expect(spinner('Loading your setting')).toBeInTheDocument();
   await request.answer();
   await loadedCheckbox();
+  expect(spinner('Loading your setting')).not.toBeInTheDocument();
 });
 
 it('animates pieces for a user who never changed the setting', async () => {
@@ -95,6 +100,24 @@ it('saves the setting when it is unticked', async () => {
   expect(checkbox()).not.toBeChecked();
   await vi.waitFor(async () => expect(await savedAnimatePieces()).toBe(false));
   expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+});
+
+it('holds the checkbox while the setting saves', async () => {
+  // Given a user on the toggle, whose save request is held
+  await renderFor(savingOff);
+  const box = await loadedCheckbox();
+  const request = holdFirstRequest(isProfilesRequest);
+
+  // When they untick it
+  fireEvent.click(box);
+  await request.sent();
+
+  // Then it cannot be changed and shows it is saving, until the save lands
+  expect(checkbox()).toBeDisabled();
+  expect(spinner('Saving your setting')).toBeInTheDocument();
+  await request.answer();
+  await loadedCheckbox();
+  expect(spinner('Saving your setting')).not.toBeInTheDocument();
 });
 
 it('shows a setting saved earlier', async () => {
@@ -132,6 +155,7 @@ it('says so and keeps the checkbox held when the setting fails to load', async (
     "Couldn't load your settings, try again",
   );
   expect(checkbox()).toBeDisabled();
+  expect(screen.queryByRole('status')).not.toBeInTheDocument();
 });
 
 it('puts the tick back and says so when saving fails', async () => {
@@ -148,4 +172,5 @@ it('puts the tick back and says so when saving fails', async () => {
     "Couldn't save your setting, try again",
   );
   expect(checkbox()).toBeChecked();
+  expect(checkbox()).toBeEnabled();
 });

@@ -5,9 +5,30 @@
   margin-bottom: var(--gap-md);
 }
 
+.animate-pieces-row {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-sm);
+}
+
 .animate-pieces-label {
   display: flex;
   align-items: center;
   gap: var(--gap-sm);
   cursor: pointer;
+}
+
+.animate-pieces-spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: var(--radius-pill);
+  animation: animate-pieces-spin 0.8s linear infinite;
+}
+
+@keyframes animate-pieces-spin {
+  to {
+    transform: rotate(1turn);
+  }
 }
