@@ -1,6 +1,7 @@
 import { Link, generatePath } from 'react-router-dom';
 import { STUDY_ROUTE_PATH } from '../../../../shared/routes/routes.constants';
 import { ErrorMessage } from '../../../../shared/ErrorMessage/ErrorMessage';
+import { Spinner } from '../../../../shared/Spinner/Spinner';
 import type { StudiesResponse } from '../StudiesResponse/StudiesResponse';
 import './StudyList.css';
 
@@ -10,13 +11,7 @@ export function StudyList({
   response: StudiesResponse | undefined;
 }) {
   if (response === undefined) {
-    return (
-      <div
-        role="status"
-        aria-label="Loading studies"
-        className="study-list-spinner"
-      />
-    );
+    return <Spinner label="Loading studies" />;
   }
 
   if (response.error) {
