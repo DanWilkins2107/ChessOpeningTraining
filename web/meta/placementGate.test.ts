@@ -81,7 +81,62 @@ describe('isPlaced', () => {
     expect(isPlaced('elements/Widget/tests-shared/knob.ts', EXCEPTIONS)).toBe(
       false,
     );
-    expect(isPlaced('pages/Alpha/pages/Beta/page.tsx', EXCEPTIONS)).toBe(false);
+    expect(isPlaced('elements/Widget/Alpha/Beta/page.tsx', EXCEPTIONS)).toBe(
+      false,
+    );
+  });
+
+  it('nests route folders, dynamic segments and groups to any depth', () => {
+    expect(isPlaced('pages/Alpha/Beta/page.tsx', EXCEPTIONS)).toBe(true);
+    expect(isPlaced('pages/Alpha/[betaId]/page.tsx', EXCEPTIONS)).toBe(true);
+    expect(isPlaced('pages/(group)/Alpha/page.tsx', EXCEPTIONS)).toBe(true);
+    expect(
+      isPlaced('pages/(group)/[alphaId]/Beta/page.test.tsx', EXCEPTIONS),
+    ).toBe(true);
+    expect(
+      isPlaced('pages/Alpha/[betaId]/elements/Widget/Widget.tsx', EXCEPTIONS),
+    ).toBe(true);
+    expect(
+      isPlaced('pages/(group)/Alpha/tests-shared/renderAt.ts', EXCEPTIONS),
+    ).toBe(true);
+    expect(isPlaced('pages/Alpha/Beta/stray.tsx', EXCEPTIONS)).toBe(false);
+  });
+
+  it('accepts a route folder with no page of its own', () => {
+    expect(isPlaced('pages/(group)/shared/Widget/Widget.tsx', EXCEPTIONS)).toBe(
+      true,
+    );
+    expect(isPlaced('pages/Alpha', EXCEPTIONS)).toBe(false);
+    expect(isPlaced('pages/Alpha/Beta', EXCEPTIONS)).toBe(false);
+  });
+
+  it('rejects malformed dynamic segments and groups', () => {
+    expect(isPlaced('pages/[a.b]/page.tsx', EXCEPTIONS)).toBe(false);
+    expect(isPlaced('pages/(a.b)/page.tsx', EXCEPTIONS)).toBe(false);
+    expect(isPlaced('pages/[alphaId)/page.tsx', EXCEPTIONS)).toBe(false);
+    expect(isPlaced('pages/(alphaId]/page.tsx', EXCEPTIONS)).toBe(false);
+    expect(isPlaced('pages/x[alphaId]/page.tsx', EXCEPTIONS)).toBe(false);
+    expect(isPlaced('pages/[alphaId]x/page.tsx', EXCEPTIONS)).toBe(false);
+    expect(isPlaced('pages/[]/page.tsx', EXCEPTIONS)).toBe(false);
+  });
+
+  it('never treats a reserved name as a route folder', () => {
+    expect(isPlaced('pages/elements/page.tsx', EXCEPTIONS)).toBe(false);
+    expect(isPlaced('pages/Alpha/shared/page.tsx', EXCEPTIONS)).toBe(false);
+    expect(isPlaced('pages/Alpha/tests-shared/page.tsx', EXCEPTIONS)).toBe(
+      false,
+    );
+    expect(isPlaced('pages/Alpha/__snapshots__/page.tsx', EXCEPTIONS)).toBe(
+      false,
+    );
+  });
+
+  it('holds only route folders at the pages root', () => {
+    expect(isPlaced('pages/page.tsx', EXCEPTIONS)).toBe(false);
+    expect(isPlaced('pages/elements/Widget/Widget.tsx', EXCEPTIONS)).toBe(
+      false,
+    );
+    expect(isPlaced('pages/tests-shared/renderAt.ts', EXCEPTIONS)).toBe(false);
   });
 
   it('accepts svg assets and their licence file in module folders', () => {
