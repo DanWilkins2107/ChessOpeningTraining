@@ -102,6 +102,39 @@ describe('isPlaced', () => {
     expect(isPlaced('pages/Alpha/Beta/stray.tsx', EXCEPTIONS)).toBe(false);
   });
 
+  it('accepts a router.constants.ts in any route folder', () => {
+    expect(isPlaced('pages/Alpha/router.constants.ts', EXCEPTIONS)).toBe(true);
+    expect(
+      isPlaced('pages/Alpha/[betaId]/router.constants.ts', EXCEPTIONS),
+    ).toBe(true);
+    expect(isPlaced('pages/(group)/router.constants.ts', EXCEPTIONS)).toBe(
+      true,
+    );
+  });
+
+  it('accepts no router.constants.ts companions or near names', () => {
+    expect(isPlaced('pages/Alpha/router.constants.test.ts', EXCEPTIONS)).toBe(
+      false,
+    );
+    expect(isPlaced('pages/Alpha/router.ts', EXCEPTIONS)).toBe(false);
+    expect(isPlaced('pages/Alpha/routes.constants.ts', EXCEPTIONS)).toBe(false);
+    expect(isPlaced('pages/Alpha/router.constants.tsx', EXCEPTIONS)).toBe(
+      false,
+    );
+  });
+
+  it('rejects a router.constants.ts outside a route folder', () => {
+    expect(isPlaced('router.constants.ts', EXCEPTIONS)).toBe(false);
+    expect(isPlaced('pages/router.constants.ts', EXCEPTIONS)).toBe(false);
+    expect(
+      isPlaced('pages/Alpha/elements/Widget/router.constants.ts', EXCEPTIONS),
+    ).toBe(false);
+    expect(
+      isPlaced('pages/Alpha/tests-shared/router.constants.ts', EXCEPTIONS),
+    ).toBe(false);
+    expect(isPlaced('shared/router.constants.ts', EXCEPTIONS)).toBe(false);
+  });
+
   it('accepts module folders in a group', () => {
     expect(isPlaced('pages/(group)/shared/Widget/Widget.tsx', EXCEPTIONS)).toBe(
       true,
