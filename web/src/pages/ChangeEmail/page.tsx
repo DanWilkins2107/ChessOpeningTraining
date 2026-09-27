@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { ACCOUNT_ROUTE_PATH } from '../../shared/routes/routes.constants';
 import { ChangeEmailForm } from './elements/ChangeEmailForm/ChangeEmailForm';
 import './page.css';
 
@@ -7,7 +8,7 @@ export function ChangeEmail() {
     <section className="change-email-card">
       <h1 className="change-email-heading">Change email</h1>
       <ChangeEmailForm />
-      <Link to="/account" className="change-email-back">
+      <Link to={ACCOUNT_ROUTE_PATH} className="change-email-back">
         Back to account
       </Link>
     </section>

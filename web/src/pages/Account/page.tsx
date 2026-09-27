@@ -4,6 +4,7 @@ import {
   SIGNED_OUT_PARAM,
   SIGNED_OUT_PENDING,
 } from '../../shared/signOut/signOut.constants';
+import { ACCOUNT_EMAIL_ROUTE_PATH } from '../../shared/routes/routes.constants';
 import { supabase } from '../../supabase';
 import './page.css';
 
@@ -24,7 +25,7 @@ export function Account() {
   return (
     <section className="account-card">
       <h1 className="account-heading">Account</h1>
-      <Link to="/account/email" className="account-action">
+      <Link to={ACCOUNT_EMAIL_ROUTE_PATH} className="account-action">
         Change email
       </Link>
       <button type="button" className="account-action" onClick={signOut}>
