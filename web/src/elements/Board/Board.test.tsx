@@ -57,7 +57,7 @@ it('lays out rank 8 at the top from white', () => {
   // Given the board faces white
 
   // When it renders
-  render(<Board position={EMPTY} orientation="white" />);
+  render(<Board position={EMPTY} orientation="white" animatePieces />);
 
   // Then rank 8 is the top row and the a-file is on the left
   expect(squareNames()).toEqual([
@@ -76,7 +76,7 @@ it('lays out rank 1 at the top from black', () => {
   // Given the board faces black
 
   // When it renders
-  render(<Board position={EMPTY} orientation="black" />);
+  render(<Board position={EMPTY} orientation="black" animatePieces />);
 
   // Then rank 1 is the top row and the h-file is on the left
   expect(squareNames()).toEqual([
@@ -97,7 +97,7 @@ it.each(['white', 'black'] as const)(
     // Given the board faces either side
 
     // When it renders
-    render(<Board position={EMPTY} orientation={orientation} />);
+    render(<Board position={EMPTY} orientation={orientation} animatePieces />);
 
     // Then a1 and h8 are dark, and h1 and a8 are light
     for (const name of ['a1', 'h8']) {
@@ -113,7 +113,7 @@ it('labels ranks on the left edge and files on the bottom edge from white', () =
   // Given the board faces white
 
   // When it renders
-  render(<Board position={EMPTY} orientation="white" />);
+  render(<Board position={EMPTY} orientation="white" animatePieces />);
 
   // Then only the left column shows ranks and only the bottom row shows files
   expect(square('a8')).toHaveTextContent(/^8$/);
@@ -126,7 +126,7 @@ it('labels ranks on the left edge and files on the bottom edge from black', () =
   // Given the board faces black
 
   // When it renders
-  render(<Board position={EMPTY} orientation="black" />);
+  render(<Board position={EMPTY} orientation="black" animatePieces />);
 
   // Then the h-file carries the ranks and rank 8 carries the files
   expect(square('h1')).toHaveTextContent(/^1$/);
@@ -137,7 +137,7 @@ it('labels ranks on the left edge and files on the bottom edge from black', () =
 
 it('keeps edge labels out of the accessibility tree', () => {
   // Given a rendered board
-  render(<Board position={EMPTY} orientation="white" />);
+  render(<Board position={EMPTY} orientation="white" animatePieces />);
 
   // When its labels are read
   const labels = square('a1').querySelectorAll('span');
@@ -152,7 +152,7 @@ it('announces the piece standing on a square', () => {
   // Given the starting position
 
   // When it renders
-  render(<Board position={START} orientation="white" />);
+  render(<Board position={START} orientation="white" animatePieces />);
 
   // Then e1 names the king on it
   expect(square('e1, white king')).toBeInTheDocument();
@@ -162,7 +162,7 @@ it('announces an empty square by name alone', () => {
   // Given the starting position
 
   // When it renders
-  render(<Board position={START} orientation="white" />);
+  render(<Board position={START} orientation="white" animatePieces />);
 
   // Then e4 names no piece
   expect(square('e4')).toBeInTheDocument();
@@ -172,7 +172,7 @@ it('shows each piece its own image', () => {
   // Given a lone white king
 
   // When it renders
-  render(<Board position={KING_ON_E1} orientation="white" />);
+  render(<Board position={KING_ON_E1} orientation="white" animatePieces />);
 
   // Then the board holds the white king artwork
   expect(pieceImages()[0]).toHaveAttribute(
@@ -185,7 +185,7 @@ it('shows one image per piece and no more', () => {
   // Given the starting position
 
   // When it renders
-  render(<Board position={START} orientation="white" />);
+  render(<Board position={START} orientation="white" animatePieces />);
 
   // Then the 32 men are all that is drawn
   expect(pieceImages()).toHaveLength(32);
@@ -195,7 +195,7 @@ it('keeps piece images out of the accessibility tree', () => {
   // Given the starting position, whose squares already announce their pieces
 
   // When it renders
-  render(<Board position={START} orientation="white" />);
+  render(<Board position={START} orientation="white" animatePieces />);
 
   // Then the images add nothing for a screen reader to read
   expect(screen.queryAllByRole('img')).toEqual([]);
@@ -205,7 +205,7 @@ it('offsets a piece to its square from white', () => {
   // Given the board faces white
 
   // When a king on e1 renders
-  render(<Board position={KING_ON_E1} orientation="white" />);
+  render(<Board position={KING_ON_E1} orientation="white" animatePieces />);
 
   // Then it sits five files across and eight ranks down
   expect(pieceImages()[0].style.transform).toBe('translate(400%, 700%)');
@@ -215,7 +215,7 @@ it('offsets a piece to its square from black', () => {
   // Given the board faces black
 
   // When a king on e1 renders
-  render(<Board position={KING_ON_E1} orientation="black" />);
+  render(<Board position={KING_ON_E1} orientation="black" animatePieces />);
 
   // Then it sits four files across and on the top rank
   expect(pieceImages()[0].style.transform).toBe('translate(300%, 0%)');
@@ -224,12 +224,12 @@ it('offsets a piece to its square from black', () => {
 it('moves a piece by its offset, so it slides rather than jumps', () => {
   // Given a king on e1
   const { rerender } = render(
-    <Board position={KING_ON_E1} orientation="white" />,
+    <Board position={KING_ON_E1} orientation="white" animatePieces />,
   );
   const before = pieceImages()[0];
 
   // When it steps up to e2
-  rerender(<Board position={KING_ON_E2} orientation="white" />);
+  rerender(<Board position={KING_ON_E2} orientation="white" animatePieces />);
 
   // Then the same image is still on the board
   expect(pieceImages()[0]).toBe(before);
@@ -238,11 +238,11 @@ it('moves a piece by its offset, so it slides rather than jumps', () => {
 it('offsets a moved piece to the square it arrived on', () => {
   // Given a king on e1
   const { rerender } = render(
-    <Board position={KING_ON_E1} orientation="white" />,
+    <Board position={KING_ON_E1} orientation="white" animatePieces />,
   );
 
   // When it steps up to e2
-  rerender(<Board position={KING_ON_E2} orientation="white" />);
+  rerender(<Board position={KING_ON_E2} orientation="white" animatePieces />);
 
   // Then its offset is one rank higher
   expect(pieceImages()[0].style.transform).toBe('translate(400%, 600%)');
@@ -251,13 +251,15 @@ it('offsets a moved piece to the square it arrived on', () => {
 it('keeps a piece its own image across a run of moves', () => {
   // Given a rook on a1 and another on h1
   const { rerender } = render(
-    <Board position={ROOKS_HOME} orientation="white" />,
+    <Board position={ROOKS_HOME} orientation="white" animatePieces />,
   );
   const fromA1 = imageAt('translate(0%, 700%)');
 
   // When the h1 rook goes to h5 and the a1 rook then follows it onto h1
-  rerender(<Board position={ROOK_ON_H5} orientation="white" />);
-  rerender(<Board position={ROOKS_ON_THE_H_FILE} orientation="white" />);
+  rerender(<Board position={ROOK_ON_H5} orientation="white" animatePieces />);
+  rerender(
+    <Board position={ROOKS_ON_THE_H_FILE} orientation="white" animatePieces />,
+  );
 
   // Then h1 shows the rook that started on a1, not the one that left it
   expect(imageAt('translate(700%, 700%)')).toBe(fromA1);
@@ -266,11 +268,11 @@ it('keeps a piece its own image across a run of moves', () => {
 it('announces the square a piece moved to', () => {
   // Given a king on e1
   const { rerender } = render(
-    <Board position={KING_ON_E1} orientation="white" />,
+    <Board position={KING_ON_E1} orientation="white" animatePieces />,
   );
 
   // When it steps up to e2
-  rerender(<Board position={KING_ON_E2} orientation="white" />);
+  rerender(<Board position={KING_ON_E2} orientation="white" animatePieces />);
 
   // Then e2 names the king standing on it
   expect(square('e2, white king')).toBeInTheDocument();
@@ -280,7 +282,7 @@ it('keeps pieces on their own squares from black', () => {
   // Given the starting position
 
   // When it renders facing black
-  render(<Board position={START} orientation="black" />);
+  render(<Board position={START} orientation="black" animatePieces />);
 
   // Then the white king is still announced on e1
   expect(square('e1, white king')).toBeInTheDocument();
@@ -289,7 +291,14 @@ it('keeps pieces on their own squares from black', () => {
 it('plays a clicked piece to a clicked legal square', () => {
   // Given the starting position with a move handler
   const onMove = vi.fn();
-  render(<Board position={START} orientation="white" onMove={onMove} />);
+  render(
+    <Board
+      position={START}
+      animatePieces
+      orientation="white"
+      onMove={onMove}
+    />,
+  );
 
   // When the e2 pawn is clicked, then e4
   clickSquares('e2', 'e4');
@@ -301,7 +310,14 @@ it('plays a clicked piece to a clicked legal square', () => {
 it('lets the side to move be black', () => {
   // Given black to move
   const onMove = vi.fn();
-  render(<Board position={AFTER_E4} orientation="white" onMove={onMove} />);
+  render(
+    <Board
+      position={AFTER_E4}
+      animatePieces
+      orientation="white"
+      onMove={onMove}
+    />,
+  );
 
   // When the e7 pawn is clicked, then e5
   clickSquares('e7', 'e5');
@@ -313,7 +329,14 @@ it('lets the side to move be black', () => {
 it('plays nothing when a target is clicked with no piece selected', () => {
   // Given the starting position with a move handler
   const onMove = vi.fn();
-  render(<Board position={START} orientation="white" onMove={onMove} />);
+  render(
+    <Board
+      position={START}
+      animatePieces
+      orientation="white"
+      onMove={onMove}
+    />,
+  );
 
   // When e4 is clicked on its own
   clickSquares('e4');
@@ -325,7 +348,14 @@ it('plays nothing when a target is clicked with no piece selected', () => {
 it('does not select a piece of the side not to move', () => {
   // Given white to move
   const onMove = vi.fn();
-  render(<Board position={START} orientation="white" onMove={onMove} />);
+  render(
+    <Board
+      position={START}
+      animatePieces
+      orientation="white"
+      onMove={onMove}
+    />,
+  );
 
   // When the e7 pawn is clicked, then e5
   clickSquares('e7', 'e5');
@@ -337,7 +367,14 @@ it('does not select a piece of the side not to move', () => {
 it('switches the selection to another clicked piece', () => {
   // Given the e2 pawn is selected
   const onMove = vi.fn();
-  render(<Board position={START} orientation="white" onMove={onMove} />);
+  render(
+    <Board
+      position={START}
+      animatePieces
+      orientation="white"
+      onMove={onMove}
+    />,
+  );
   clickSquares('e2');
 
   // When the d2 pawn is clicked, then d4
@@ -350,7 +387,14 @@ it('switches the selection to another clicked piece', () => {
 it('deselects on a click that is not a legal target', () => {
   // Given the e2 pawn is selected
   const onMove = vi.fn();
-  render(<Board position={START} orientation="white" onMove={onMove} />);
+  render(
+    <Board
+      position={START}
+      animatePieces
+      orientation="white"
+      onMove={onMove}
+    />,
+  );
   clickSquares('e2');
 
   // When e5 is clicked, then e4
@@ -363,7 +407,14 @@ it('deselects on a click that is not a legal target', () => {
 it('clears the selection once a move is played', () => {
   // Given e2-e4 has just been played, with the position not yet updated
   const onMove = vi.fn();
-  render(<Board position={START} orientation="white" onMove={onMove} />);
+  render(
+    <Board
+      position={START}
+      animatePieces
+      orientation="white"
+      onMove={onMove}
+    />,
+  );
   clickSquares('e2', 'e4');
 
   // When e4 is clicked again
@@ -377,13 +428,23 @@ it('clears the selection when the position changes', () => {
   // Given the e2 pawn is selected
   const onMove = vi.fn();
   const { rerender } = render(
-    <Board position={START} orientation="white" onMove={onMove} />,
+    <Board
+      position={START}
+      animatePieces
+      orientation="white"
+      onMove={onMove}
+    />,
   );
   clickSquares('e2');
 
   // When a new position arrives with white to move
   rerender(
-    <Board position={AFTER_KNIGHTS_OUT} orientation="white" onMove={onMove} />,
+    <Board
+      position={AFTER_KNIGHTS_OUT}
+      animatePieces
+      orientation="white"
+      onMove={onMove}
+    />,
   );
 
   // Then no hints remain, and clicking e4 makes no move
@@ -399,6 +460,7 @@ it('promotes to a queen', () => {
   render(
     <Board
       position={PAWN_ABOUT_TO_PROMOTE}
+      animatePieces
       orientation="white"
       onMove={onMove}
     />,
@@ -417,7 +479,7 @@ it('promotes to a queen', () => {
 
 it('ignores clicks without a move handler', () => {
   // Given a board with no move handler
-  render(<Board position={START} orientation="white" />);
+  render(<Board position={START} animatePieces orientation="white" />);
 
   // When e2 is clicked, then e4
   clickSquares('e2', 'e4');
@@ -428,7 +490,14 @@ it('ignores clicks without a move handler', () => {
 
 it('tints the square of a selected piece', () => {
   // Given the starting position with a move handler
-  render(<Board position={START} orientation="white" onMove={vi.fn()} />);
+  render(
+    <Board
+      position={START}
+      animatePieces
+      orientation="white"
+      onMove={vi.fn()}
+    />,
+  );
 
   // When the e2 pawn is clicked
   clickSquares('e2');
@@ -439,7 +508,14 @@ it('tints the square of a selected piece', () => {
 
 it('tints a selected piece that has no legal moves', () => {
   // Given the starting position with a move handler
-  render(<Board position={START} orientation="white" onMove={vi.fn()} />);
+  render(
+    <Board
+      position={START}
+      animatePieces
+      orientation="white"
+      onMove={vi.fn()}
+    />,
+  );
 
   // When the boxed-in a1 rook is clicked
   clickSquares('a1');
@@ -451,7 +527,14 @@ it('tints a selected piece that has no legal moves', () => {
 
 it.each(['e4', 'e7'])('shows no hints after clicking %s', (name) => {
   // Given white to move
-  render(<Board position={START} orientation="white" onMove={vi.fn()} />);
+  render(
+    <Board
+      position={START}
+      animatePieces
+      orientation="white"
+      onMove={vi.fn()}
+    />,
+  );
 
   // When an empty square or a black piece is clicked
   clickSquares(name);
@@ -463,7 +546,14 @@ it.each(['e4', 'e7'])('shows no hints after clicking %s', (name) => {
 
 it('dots the empty squares a selected piece can move to', () => {
   // Given the starting position with a move handler
-  render(<Board position={START} orientation="white" onMove={vi.fn()} />);
+  render(
+    <Board
+      position={START}
+      animatePieces
+      orientation="white"
+      onMove={vi.fn()}
+    />,
+  );
 
   // When the e2 pawn is clicked
   clickSquares('e2');
@@ -475,7 +565,12 @@ it('dots the empty squares a selected piece can move to', () => {
 it('rings a piece that can be captured, and dots the rest', () => {
   // Given a white pawn on e4 facing a black pawn on d5
   render(
-    <Board position={PAWNS_FACE_OFF} orientation="white" onMove={vi.fn()} />,
+    <Board
+      position={PAWNS_FACE_OFF}
+      animatePieces
+      orientation="white"
+      onMove={vi.fn()}
+    />,
   );
 
   // When the e4 pawn is clicked
@@ -489,7 +584,12 @@ it('rings a piece that can be captured, and dots the rest', () => {
 it('dots an en passant capture, since its square is empty', () => {
   // Given a white pawn on e5 that can take f5 en passant
   render(
-    <Board position={EN_PASSANT_ON_F6} orientation="white" onMove={vi.fn()} />,
+    <Board
+      position={EN_PASSANT_ON_F6}
+      animatePieces
+      orientation="white"
+      onMove={vi.fn()}
+    />,
   );
 
   // When the e5 pawn is clicked
@@ -502,7 +602,14 @@ it('dots an en passant capture, since its square is empty', () => {
 
 it('clears hints once a move is played', () => {
   // Given the e2 pawn is selected
-  render(<Board position={START} orientation="white" onMove={vi.fn()} />);
+  render(
+    <Board
+      position={START}
+      animatePieces
+      orientation="white"
+      onMove={vi.fn()}
+    />,
+  );
   clickSquares('e2');
 
   // When it is played to e4
@@ -515,7 +622,14 @@ it('clears hints once a move is played', () => {
 
 it('clears hints on a deselecting click', () => {
   // Given the e2 pawn is selected
-  render(<Board position={START} orientation="white" onMove={vi.fn()} />);
+  render(
+    <Board
+      position={START}
+      animatePieces
+      orientation="white"
+      onMove={vi.fn()}
+    />,
+  );
   clickSquares('e2');
 
   // When e5 is clicked
@@ -530,11 +644,33 @@ it('gives a square without hints only its colour classes', () => {
   // Given the starting position
 
   // When it renders
-  render(<Board position={START} orientation="white" />);
+  render(<Board position={START} animatePieces orientation="white" />);
 
   // Then e4 carries nothing but its base and colour classes
   expect(square('e4')).toHaveAttribute(
     'class',
     'board-square board-square-light',
   );
+});
+
+it('slides pieces when animation is on', () => {
+  // Given animation is on
+
+  // When a king renders
+  render(<Board position={KING_ON_E1} orientation="white" animatePieces />);
+
+  // Then it keeps its slide
+  expect(pieceImages()[0]).not.toHaveClass('board-piece-still');
+});
+
+it('keeps pieces still when animation is off', () => {
+  // Given animation is off
+
+  // When a king renders
+  render(
+    <Board position={KING_ON_E1} orientation="white" animatePieces={false} />,
+  );
+
+  // Then it moves without sliding
+  expect(pieceImages()[0]).toHaveClass('board-piece-still');
 });

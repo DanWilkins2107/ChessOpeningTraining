@@ -1,3 +1,5 @@
+import { Link, generatePath } from 'react-router-dom';
+import { STUDY_ROUTE_PATH } from '../../../../shared/routes/routes.constants';
 import { ErrorMessage } from '../../../../shared/ErrorMessage/ErrorMessage';
 import type { StudiesResponse } from '../StudiesResponse/StudiesResponse';
 import './StudyList.css';
@@ -28,9 +30,15 @@ export function StudyList({
   return (
     <ul className="study-list">
       {response.data.map(({ id, name, side }) => (
-        <li key={id} className="study-list-item">
-          <span className="study-list-name">{name}</span>
-          <span className="study-list-side">{side}</span>
+        <li key={id}>
+          <Link
+            to={generatePath(STUDY_ROUTE_PATH, { studyId: id })}
+            aria-label={name}
+            className="study-list-item"
+          >
+            <span className="study-list-name">{name}</span>
+            <span className="study-list-side">{side}</span>
+          </Link>
         </li>
       ))}
     </ul>

@@ -46,10 +46,7 @@
 }
 
 .board-square-selected {
-  background-image: linear-gradient(
-    color-mix(in srgb, var(--highlight) 70%, transparent),
-    color-mix(in srgb, var(--highlight) 70%, transparent)
-  );
+  background: var(--highlight);
 }
 
 .board-square-target::after,
@@ -64,13 +61,13 @@
 .board-square-target::after {
   width: 30%;
   height: 30%;
-  background: color-mix(in srgb, var(--highlight) 85%, transparent);
+  background: var(--highlight);
 }
 
 .board-square-capture::after {
   background: radial-gradient(
     closest-side,
     transparent 80%,
-    color-mix(in srgb, var(--highlight) 85%, transparent) 81%
+    var(--highlight) 81%
   );
 }

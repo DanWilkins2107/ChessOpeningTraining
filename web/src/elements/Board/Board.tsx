@@ -20,10 +20,16 @@ const hintsFor = (selection?: Selection) => ({
 type BoardProps = {
   position: string;
   orientation: 'white' | 'black';
+  animatePieces: boolean;
   onMove?: (move: PartialMove) => void;
 };
 
-export function Board({ position, orientation, onMove }: BoardProps) {
+export function Board({
+  position,
+  orientation,
+  animatePieces,
+  onMove,
+}: BoardProps) {
   const files = orientation === 'white' ? FILES : [...FILES].reverse();
   const ranks = orientation === 'white' ? RANKS : [...RANKS].reverse();
   const pieces = useTrackedPieces(position);
@@ -68,7 +74,12 @@ export function Board({ position, orientation, onMove }: BoardProps) {
         {...hintsFor(selected)}
         onSquareClick={clickSquare}
       />
-      <BoardPieces files={files} ranks={ranks} pieces={pieces} />
+      <BoardPieces
+        files={files}
+        ranks={ranks}
+        pieces={pieces}
+        animate={animatePieces}
+      />
     </div>
   );
 }
