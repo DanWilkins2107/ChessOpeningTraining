@@ -45,8 +45,6 @@
   bottom: 0.2em;
 }
 
-/* Inset, so the board's overflow doesn't clip it at the edge. The label colour
-   is the other square colour, so the ring reads on light and dark alike. */
 .board-square:focus-visible {
   outline-color: currentColor;
   outline-offset: -4px;
