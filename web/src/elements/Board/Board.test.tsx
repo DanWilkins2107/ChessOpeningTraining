@@ -35,11 +35,12 @@ const AFTER_KNIGHTS_OUT =
   'rnbqkb1r/pppppppp/5n2/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq - 2 2';
 const PAWN_ABOUT_TO_PROMOTE = '4k3/P7/8/8/8/8/8/4K3 w - - 0 1';
 
+const squareStarting = (name: string) =>
+  screen.getByRole('gridcell', { name: new RegExp(`^${name}`) });
+
 const clickSquares = (...names: string[]) => {
   for (const name of names) {
-    fireEvent.click(
-      screen.getByRole('gridcell', { name: new RegExp(`^${name}`) }),
-    );
+    fireEvent.click(squareStarting(name));
   }
 };
 
@@ -474,6 +475,209 @@ it('ignores clicks without a move handler', () => {
 
   // Then the position is unchanged
   expect(square('e2, white pawn')).toBeInTheDocument();
+});
+
+const pressOn = (name: string, key: string) =>
+  fireEvent.keyDown(squareStarting(name), { key });
+
+const tabStops = () =>
+  screen
+    .getAllByRole('gridcell')
+    .filter((cell) => cell.tabIndex !== -1)
+    .map((cell) => cell.getAttribute('aria-label'));
+
+const focusedSquare = () => document.activeElement?.getAttribute('aria-label');
+
+it('leaves a board without a move handler out of the tab order', () => {
+  // Given a board with no move handler
+
+  // When it renders
+  render(<Board position={EMPTY} orientation="white" animatePieces />);
+
+  // Then no square can be focused or selected
+  for (const cell of screen.getAllByRole('gridcell')) {
+    expect(cell).not.toHaveAttribute('tabindex');
+    expect(cell).not.toHaveAttribute('aria-selected');
+  }
+});
+
+it('makes the top-left square the one tab stop', () => {
+  // Given a board with a move handler
+
+  // When it renders facing black
+  render(
+    <Board
+      position={EMPTY}
+      orientation="black"
+      animatePieces
+      onMove={vi.fn()}
+    />,
+  );
+
+  // Then only h1 is reached by Tab
+  expect(tabStops()).toEqual(['h1']);
+});
+
+it.each([
+  ['ArrowRight', 'e5'],
+  ['ArrowLeft', 'c5'],
+  ['ArrowUp', 'd6'],
+  ['ArrowDown', 'd4'],
+])('moves focus with %s from white', (key, target) => {
+  // Given the board faces white
+  render(
+    <Board
+      position={EMPTY}
+      orientation="white"
+      animatePieces
+      onMove={vi.fn()}
+    />,
+  );
+
+  // When the key is pressed on d5
+  pressOn('d5', key);
+
+  // Then the neighbouring square has focus
+  expect(focusedSquare()).toBe(target);
+});
+
+it('moves focus as the board faces, from black', () => {
+  // Given the board faces black
+  render(
+    <Board
+      position={EMPTY}
+      orientation="black"
+      animatePieces
+      onMove={vi.fn()}
+    />,
+  );
+
+  // When up then right are pressed on d5
+  pressOn('d5', 'ArrowUp');
+  pressOn('d4', 'ArrowRight');
+
+  // Then focus goes toward rank 1 and the a-file
+  expect(focusedSquare()).toBe('c4');
+});
+
+it.each([
+  ['a8', 'ArrowUp'],
+  ['a8', 'ArrowLeft'],
+  ['h1', 'ArrowDown'],
+  ['h1', 'ArrowRight'],
+])('keeps focus on %s when %s runs off the board', (name, key) => {
+  // Given the board faces white
+  render(
+    <Board
+      position={EMPTY}
+      orientation="white"
+      animatePieces
+      onMove={vi.fn()}
+    />,
+  );
+
+  // When the key points off the edge
+  pressOn(name, key);
+
+  // Then focus stays put
+  expect(focusedSquare()).toBe(name);
+});
+
+it('moves the tab stop to the focused square', () => {
+  // Given a board with a move handler
+  render(
+    <Board
+      position={EMPTY}
+      orientation="white"
+      animatePieces
+      onMove={vi.fn()}
+    />,
+  );
+
+  // When focus moves from a8 to b8
+  pressOn('a8', 'ArrowRight');
+
+  // Then b8 is now the one tab stop
+  expect(tabStops()).toEqual(['b8']);
+});
+
+it('stops arrow keys scrolling the page', () => {
+  // Given a board with a move handler
+  render(
+    <Board
+      position={EMPTY}
+      orientation="white"
+      animatePieces
+      onMove={vi.fn()}
+    />,
+  );
+
+  // When an arrow key is pressed
+  const unhandled = pressOn('d5', 'ArrowDown');
+
+  // Then its default is prevented
+  expect(unhandled).toBe(false);
+});
+
+it('leaves other keys alone', () => {
+  // Given a board with a move handler
+  render(
+    <Board
+      position={EMPTY}
+      orientation="white"
+      animatePieces
+      onMove={vi.fn()}
+    />,
+  );
+
+  // When a key the board does not use is pressed
+  const unhandled = pressOn('d5', 'Tab');
+
+  // Then its default goes ahead
+  expect(unhandled).toBe(true);
+});
+
+it.each(['Enter', ' '])('plays a move with %j', (key) => {
+  // Given the starting position with a move handler
+  const onMove = vi.fn();
+  render(
+    <Board
+      position={START}
+      orientation="white"
+      animatePieces
+      onMove={onMove}
+    />,
+  );
+
+  // When the key is pressed on e2, then e4
+  pressOn('e2', key);
+  const unhandled = pressOn('e4', key);
+
+  // Then the move is handed over, without the key's own default
+  expect(onMove).toHaveBeenCalledExactlyOnceWith({ from: 'e2', to: 'e4' });
+  expect(unhandled).toBe(false);
+});
+
+it('marks the selected square selected and no other', () => {
+  // Given the starting position with a move handler
+  render(
+    <Board
+      position={START}
+      orientation="white"
+      animatePieces
+      onMove={vi.fn()}
+    />,
+  );
+
+  // When e2 is clicked
+  clickSquares('e2');
+
+  // Then e2 alone is selected
+  const selected = screen
+    .getAllByRole('gridcell')
+    .filter((cell) => cell.getAttribute('aria-selected') === 'true');
+  expect(selected).toEqual([square('e2, white pawn')]);
+  expect(square('e4')).toHaveAttribute('aria-selected', 'false');
 });
 
 it('slides pieces when animation is on', () => {
