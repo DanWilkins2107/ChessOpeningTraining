@@ -1,7 +1,6 @@
 import type { PostgrestMaybeSingleResponse } from '@supabase/supabase-js';
-import { useEffect, useEffectEvent, useState } from 'react';
 import { supabase } from '../../../../supabase';
-import { useUser } from '../../../../shared/useUser/useUser';
+import { useUserFetch } from '../../../../shared/useUserFetch/useUserFetch';
 import type { AnimatePiecesSetting } from '../AnimatePiecesSetting/AnimatePiecesSetting';
 
 type ProfileResponse = PostgrestMaybeSingleResponse<{
@@ -17,31 +16,9 @@ const settingFrom = ({ data, error }: ProfileResponse): AnimatePiecesSetting =>
     ? { status: 'failed' }
     : { status: 'loaded', animatePieces: data?.animate_pieces ?? true };
 
+const fetchSetting = () =>
+  supabase.from('profiles').select().maybeSingle().then(settingFrom);
+
 export function useAnimatePieces(): AnimatePiecesSetting {
-  const userId = useUser()?.id;
-  const [loaded, setLoaded] = useState<{
-    userId?: string;
-    setting?: AnimatePiecesSetting;
-  }>({});
-
-  // Called from the response, not from the effect, so it reads the user of that
-  // later moment and drops a response for a user who has since changed.
-  const onResponse = useEffectEvent(
-    (requestedFor: string, response: ProfileResponse) => {
-      if (requestedFor === userId)
-        setLoaded({ userId, setting: settingFrom(response) });
-    },
-  );
-
-  useEffect(() => {
-    if (userId === undefined) return;
-
-    supabase
-      .from('profiles')
-      .select()
-      .maybeSingle()
-      .then((response) => onResponse(userId, response));
-  }, [userId]);
-
-  return (loaded.userId === userId && loaded.setting) || LOADING;
+  return useUserFetch(fetchSetting).value ?? LOADING;
 }
