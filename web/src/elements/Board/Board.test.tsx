@@ -897,3 +897,46 @@ it('keeps pieces still when animation is off', () => {
   // Then it moves without sliding
   expect(pieceImages()[0]).toHaveClass('board-piece-still');
 });
+
+it('tints, dots and rings nothing when hints are off', () => {
+  // Given hints are off, with a white pawn on e4 facing a black pawn on d5
+  render(
+    <Board
+      position={PAWNS_FACE_OFF}
+      animatePieces
+      showMoveHints={false}
+      orientation="white"
+      onMove={vi.fn()}
+    />,
+  );
+
+  // When the e4 pawn is clicked
+  clickSquares('e4');
+
+  // Then no square is marked
+  expect(squaresMarked('board-square-selected')).toEqual([]);
+  expect(squaresMarked('board-square-target')).toEqual([]);
+  expect(squaresMarked('board-square-capture')).toEqual([]);
+});
+
+it('still selects and plays moves when hints are off', () => {
+  // Given hints are off
+  const onMove = vi.fn();
+  render(
+    <Board
+      position={START}
+      animatePieces
+      showMoveHints={false}
+      orientation="white"
+      onMove={onMove}
+    />,
+  );
+
+  // When the e2 pawn is clicked, then e4
+  clickSquares('e2');
+  expect(square('e2, white pawn')).toHaveAttribute('aria-selected', 'true');
+  clickSquares('e4');
+
+  // Then the move is handed over
+  expect(onMove).toHaveBeenCalledExactlyOnceWith({ from: 'e2', to: 'e4' });
+});

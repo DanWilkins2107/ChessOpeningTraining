@@ -10,6 +10,7 @@ type BoardSquaresProps = {
   pieces: PlacedPiece[];
   selected?: string;
   targets?: string[];
+  showHints: boolean;
   onSquareClick?: (square: string) => void;
 };
 
@@ -32,6 +33,7 @@ export function BoardSquares({
   pieces,
   selected,
   targets,
+  showHints,
   onSquareClick,
 }: BoardSquaresProps) {
   const placement = new Map(pieces.map(({ square, piece }) => [square, piece]));
@@ -56,7 +58,8 @@ export function BoardSquares({
                   (FILES.indexOf(file) + rank) % 2 === 1
                     ? 'board-square-dark'
                     : 'board-square-light',
-                  hintClass(square, piece !== undefined, selected, targets),
+                  showHints &&
+                    hintClass(square, piece !== undefined, selected, targets),
                 ]
                   .filter(Boolean)
                   .join(' ')}
