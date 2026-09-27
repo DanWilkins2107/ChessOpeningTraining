@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { act, fireEvent, render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeAll, expect, it, vi } from 'vitest';
 import { authSettled } from '../../tests-shared/authSettled';
 import { holdFirstRequest } from '../../tests-shared/heldRequest';
@@ -35,8 +36,8 @@ const isStudiesRequest = (input: RequestInfo | URL) =>
   String(input).includes('/rest/v1/studies');
 
 const listedStudies = async () =>
-  (await screen.findAllByRole('listitem')).map((item) =>
-    [...item.children].map((part) => part.textContent),
+  (await screen.findAllByRole('link')).map((link) =>
+    [...link.children].map((part) => part.textContent),
   );
 
 it('shows the heading and a loading indicator while the user loads', async () => {
@@ -44,7 +45,7 @@ it('shows the heading and a loading indicator while the user loads', async () =>
   await withStudies.signIn();
 
   // When the page renders
-  render(<Studies />);
+  render(<Studies />, { wrapper: MemoryRouter });
 
   // Then the heading shows straight away, with a loading indicator
   expect(screen.getByRole('heading', { name: 'Studies' })).toBeInTheDocument();
@@ -56,7 +57,7 @@ it("lists the user's studies with their side, newest first", async () => {
   await withStudies.signIn();
 
   // When the page renders
-  render(<Studies />);
+  render(<Studies />, { wrapper: MemoryRouter });
 
   // Then it lists them, newest first, and stops loading
   expect(await listedStudies()).toEqual([
@@ -71,7 +72,7 @@ it('says so when the user has no studies', async () => {
   await withoutStudies.signIn();
 
   // When the page renders
-  render(<Studies />);
+  render(<Studies />, { wrapper: MemoryRouter });
 
   // Then it shows the empty state
   expect(await screen.findByText('No studies yet')).toBeInTheDocument();
@@ -80,7 +81,7 @@ it('says so when the user has no studies', async () => {
 it('adds a created study to the list', async () => {
   // Given a signed-in user with no studies, on the page
   await creatingStudies.signIn();
-  render(<Studies />);
+  render(<Studies />, { wrapper: MemoryRouter });
   await screen.findByText('No studies yet');
 
   // When they create a study
@@ -101,7 +102,7 @@ it('requests studies only once the user has loaded', async () => {
   const fetch = vi.spyOn(window, 'fetch');
 
   // When the page renders and loads
-  render(<Studies />);
+  render(<Studies />, { wrapper: MemoryRouter });
   await screen.findByText('No studies yet');
 
   // Then it requested studies once
@@ -118,7 +119,7 @@ it('asks for the columns the list renders and no others', async () => {
   const fetch = vi.spyOn(window, 'fetch');
 
   // When the page renders and loads
-  render(<Studies />);
+  render(<Studies />, { wrapper: MemoryRouter });
   await screen.findByText('No studies yet');
 
   // Then the studies request selects those three columns alone
@@ -146,7 +147,7 @@ it('shows a generic message when studies fail to load', async () => {
   );
 
   // When the page renders
-  render(<Studies />);
+  render(<Studies />, { wrapper: MemoryRouter });
 
   // Then it shows a generic message, not the server's error
   expect(await screen.findByRole('alert')).toHaveTextContent(
@@ -158,7 +159,7 @@ it('shows a generic message when studies fail to load', async () => {
 it("shows loading, not the previous user's studies, when the user changes", async () => {
   // Given one user's studies on screen, and a server slow to answer the next
   await withStudies.signIn();
-  render(<Studies />);
+  render(<Studies />, { wrapper: MemoryRouter });
   await listedStudies();
   const realFetch = window.fetch;
   let release = () => {};
@@ -184,7 +185,7 @@ it('ignores a response for a user who has since changed', async () => {
   // Given a user whose studies request is held
   await withStudies.signIn();
   const request = holdFirstRequest(isStudiesRequest);
-  render(<Studies />);
+  render(<Studies />, { wrapper: MemoryRouter });
   await authSettled();
   await request.sent();
 
