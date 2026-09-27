@@ -4,6 +4,10 @@ const SNAP = String.raw`snapshot\.test\.tsx\.snap`;
 
 const IS_NAME = new RegExp(`^${NAME}$`);
 const MODULE_FOLDERS = ['elements', 'shared'];
+const RESERVED = [...MODULE_FOLDERS, 'tests-shared', '__snapshots__'];
+const ROUTE_FOLDER = new RegExp(
+  String.raw`^(?:${NAME}|\[${NAME}\]|\(${NAME}\))$`,
+);
 const TEST_HELPER = new RegExp(String.raw`^tests-shared/${NAME}\.ts$`);
 const ASSET = new RegExp(String.raw`^(?:${NAME}\.svg|LICENSE\.txt)$`);
 const companionOf = (base: string) =>
@@ -19,9 +23,16 @@ const inModuleFolder = ([folder, name, ...rest]: string[]) => {
 const placedInLevel = (parts: string[]) =>
   TEST_HELPER.test(parts.join('/')) || inModuleFolder(parts);
 
-const placedInPage = ([page, ...rest]: string[]) =>
-  IS_NAME.test(page) &&
-  (companionOf('page').test(rest.join('/')) || placedInLevel(rest));
+const isRouteFolder = (folder: string) =>
+  ROUTE_FOLDER.test(folder) && !RESERVED.includes(folder);
+const isGroup = (folder: string) => folder.startsWith('(');
+
+const placedInRoute = ([folder, ...rest]: string[]): boolean =>
+  rest.length > 0 &&
+  isRouteFolder(folder) &&
+  (companionOf('page').test(rest.join('/')) ||
+    placedInLevel(rest) ||
+    placedInRoute(rest));
 
 export const isPlaced = (path: string, rootExceptions: string[]) => {
   if (!path.includes('/')) {
@@ -31,6 +42,24 @@ export const isPlaced = (path: string, rootExceptions: string[]) => {
   }
   const parts = path.split('/');
   return parts[0] === 'pages'
-    ? placedInPage(parts.slice(1))
+    ? placedInRoute(parts.slice(1))
     : placedInLevel(parts);
+};
+
+const routeFoldersOf = (path: string) => {
+  const [root, ...folders] = path.split('/').slice(0, -1);
+  if (root !== 'pages') return [];
+  const end = folders.findIndex((folder) => !isRouteFolder(folder));
+  const route = end === -1 ? folders : folders.slice(0, end);
+  return route.map((_, i) => ['pages', ...route.slice(0, i + 1)]);
+};
+
+export const routesWithoutPage = (paths: string[]) => {
+  const routes = new Set(
+    paths
+      .flatMap(routeFoldersOf)
+      .filter((route) => !isGroup(route[route.length - 1]))
+      .map((route) => route.join('/')),
+  );
+  return [...routes].filter((route) => !paths.includes(`${route}/page.tsx`));
 };
