@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { ChapterList } from '../ChapterList/ChapterList';
+import { MoveTreeList } from '../MoveTreeList/MoveTreeList';
 import { FolderLoading } from '../FolderLoading/FolderLoading';
 import { FolderName } from '../FolderName/FolderName';
 import { useFolder } from '../useFolder/useFolder';
@@ -12,7 +12,7 @@ export function FolderDetails({ folderId }: { folderId: string }) {
   return (
     <Suspense key={folderId} fallback={<FolderLoading />}>
       <FolderName folder={folder} />
-      <ChapterList folder={folder} />
+      <MoveTreeList folder={folder} />
     </Suspense>
   );
 }

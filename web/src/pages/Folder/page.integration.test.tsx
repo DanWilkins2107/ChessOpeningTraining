@@ -28,7 +28,7 @@ beforeAll(async () => {
   folderIds.caroKann = data.find(({ name }) => name === 'Caro-Kann')!.id;
   for (const name of ['Main line', 'Alternatives']) {
     const inserted = await client
-      .from('chapters')
+      .from('move_trees')
       .insert({ folder_id: folderIds.london, name });
     if (inserted.error) throw inserted.error;
   }
@@ -44,7 +44,7 @@ const isFolderRequest = (input: RequestInfo | URL) =>
 const folderHeading = (name: string) =>
   screen.findByRole('heading', { level: 1, name });
 
-const chapterList = () => screen.queryByRole('list', { name: 'Chapters' });
+const moveTreeList = () => screen.queryByRole('list', { name: 'Move trees' });
 
 const loadingFolder = () =>
   screen.queryByRole('status', { name: 'Loading folder' });
@@ -81,33 +81,33 @@ it("shows the folder's name as the page heading", async () => {
   expect(loadingFolder()).not.toBeInTheDocument();
 });
 
-it("lists the folder's chapters, oldest first", async () => {
-  // Given a signed-in owner of a folder with chapters
+it("lists the folder's move trees, oldest first", async () => {
+  // Given a signed-in owner of a folder with move trees
   await owner.signIn();
 
   // When their folder page renders
   renderAt(`/folders/${folderIds.london}`);
 
-  // Then it lists the chapter names in the order they were created
+  // Then it lists the move tree names in the order they were created
   await folderHeading('London');
   expect(
-    within(chapterList()!)
+    within(moveTreeList()!)
       .getAllByRole('listitem')
       .map(({ textContent }) => textContent),
   ).toEqual(['Main line', 'Alternatives']);
 });
 
-it('says so when the folder has no chapters', async () => {
-  // Given a signed-in owner of a folder without chapters
+it('says so when the folder has no move trees', async () => {
+  // Given a signed-in owner of a folder without move trees
   await owner.signIn();
 
   // When their folder page renders
   renderAt(`/folders/${folderIds.caroKann}`);
 
-  // Then it says there are no chapters yet
+  // Then it says there are no move trees yet
   await folderHeading('Caro-Kann');
-  expect(screen.getByText('No chapters yet')).toBeInTheDocument();
-  expect(chapterList()).not.toBeInTheDocument();
+  expect(screen.getByText('No move trees yet')).toBeInTheDocument();
+  expect(moveTreeList()).not.toBeInTheDocument();
 });
 
 it('requests the folder once, only once the user has loaded', async () => {
@@ -121,13 +121,13 @@ it('requests the folder once, only once the user has loaded', async () => {
   renderAt(`/folders/${folderIds.london}`);
   await folderHeading('London');
 
-  // Then it requested the folder once, with chapter names oldest first but
-  // never their move trees
+  // Then it requested the folder once, with move tree names oldest first but
+  // never their moves
   const requests = fetch.mock.calls.filter(([input]) => isFolderRequest(input));
   expect(requests).toHaveLength(1);
   const { searchParams } = new URL(String(requests[0][0]));
-  expect(searchParams.get('select')).toBe('name,chapters(id,name)');
-  expect(searchParams.get('chapters.order')).toBe('created_at.asc,id.asc');
+  expect(searchParams.get('select')).toBe('name,move_trees(id,name)');
+  expect(searchParams.get('move_trees.order')).toBe('created_at.asc,id.asc');
 });
 
 it.each([
@@ -142,11 +142,11 @@ it.each([
   // When they open it
   renderAt(`/folders/${folderId()}`);
 
-  // Then it shows not found, and no chapters, after a single folder request
+  // Then it shows not found, and no move trees, after a single folder request
   expect(await screen.findByRole('alert')).toHaveTextContent(
     'Folder not found',
   );
-  expect(chapterList()).not.toBeInTheDocument();
+  expect(moveTreeList()).not.toBeInTheDocument();
   expect(
     fetch.mock.calls.filter(([input]) => isFolderRequest(input)),
   ).toHaveLength(1);
