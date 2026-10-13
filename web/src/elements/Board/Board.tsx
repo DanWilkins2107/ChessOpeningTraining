@@ -1,4 +1,4 @@
-// fallow-ignore-file unused-file -- ef93ff81 2026-10-15 landed ahead of the study page, its first consumer.
+// fallow-ignore-file unused-file -- ef93ff81 2026-10-15 landed ahead of the folder page, its first consumer.
 import './Board.css';
 import { useState } from 'react';
 import { Chess } from 'chess.ts';
@@ -21,6 +21,7 @@ type BoardProps = {
   position: string;
   orientation: 'white' | 'black';
   animatePieces: boolean;
+  showMoveHints: boolean;
   onMove?: (move: PartialMove) => void;
 };
 
@@ -28,6 +29,7 @@ export function Board({
   position,
   orientation,
   animatePieces,
+  showMoveHints,
   onMove,
 }: BoardProps) {
   const files = orientation === 'white' ? FILES : [...FILES].reverse();
@@ -72,6 +74,7 @@ export function Board({
         ranks={ranks}
         pieces={pieces}
         {...hintsFor(selected)}
+        showHints={showMoveHints}
         onSquareClick={clickSquare}
       />
       <BoardPieces

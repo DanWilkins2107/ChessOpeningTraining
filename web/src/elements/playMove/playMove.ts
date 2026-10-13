@@ -1,16 +1,15 @@
-// fallow-ignore-file unused-file -- 5f46d3ff 2026-10-15 landed ahead of the study page, its first consumer.
+// fallow-ignore-file unused-file -- 5f46d3ff 2026-10-15 landed ahead of the folder page, its first consumer.
 import { Chess } from 'chess.ts';
 import type { PartialMove } from 'chess.ts';
 import type { MoveNode } from '../MoveNode/MoveNode';
-import type { MoveTree } from '../MoveTree/MoveTree';
 
 type PlayedMove = {
-  tree: MoveTree;
+  tree: MoveNode[];
   line: string[];
 };
 
 export function playMove(
-  tree: MoveTree,
+  tree: MoveNode[],
   line: string[],
   move: string | PartialMove,
 ): PlayedMove | null {

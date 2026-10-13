@@ -1,5 +1,7 @@
+import { QueryClientProvider } from '@tanstack/react-query';
 import { act, render, screen } from '@testing-library/react';
 import { afterEach, beforeAll, expect, it, vi } from 'vitest';
+import { createQueryClient } from '../../../../elements/createQueryClient/createQueryClient';
 import { authSettled } from '../../../../tests-shared/authSettled';
 import { holdFirstRequest } from '../../../../tests-shared/heldRequest';
 import {
@@ -24,7 +26,12 @@ function Setting() {
   return setting.animatePieces ? 'animate' : 'still';
 }
 
-const renderSettingTestingHarness = () => render(<Setting />);
+const renderSettingTestingHarness = () =>
+  render(
+    <QueryClientProvider client={createQueryClient()}>
+      <Setting />
+    </QueryClientProvider>,
+  );
 
 // mock-reason: spying only, to see which requests go out. Every request is
 // sent for real.

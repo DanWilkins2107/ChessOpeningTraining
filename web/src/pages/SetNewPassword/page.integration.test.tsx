@@ -36,10 +36,15 @@ const tickedRules = async () =>
     .map((item) => item.textContent)
     .filter((text) => text?.endsWith('(done)'));
 
-async function enterNewPassword(password: string) {
-  fireEvent.change(await screen.findByLabelText('New password', {}, SERVER), {
-    target: { value: password },
+async function fillIn(label: string, value: string) {
+  fireEvent.change(await screen.findByLabelText(label, {}, SERVER), {
+    target: { value },
   });
+}
+
+async function enterNewPassword(password: string) {
+  await fillIn('New password', password);
+  await fillIn('Confirm new password', password);
 }
 
 async function savePassword(password: string) {

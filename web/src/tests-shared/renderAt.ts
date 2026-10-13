@@ -1,6 +1,8 @@
 import { createElement } from 'react';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider, createMemoryRouter } from 'react-router-dom';
 import { render } from '@testing-library/react';
+import { createQueryClient } from '../elements/createQueryClient/createQueryClient';
 import { router } from '../elements/router/router';
 import { authSettled } from './authSettled';
 
@@ -8,7 +10,13 @@ export function renderAt(...entries: string[]) {
   const memoryRouter = createMemoryRouter(router.routes, {
     initialEntries: entries,
   });
-  render(createElement(RouterProvider, { router: memoryRouter }));
+  render(
+    createElement(
+      QueryClientProvider,
+      { client: createQueryClient() },
+      createElement(RouterProvider, { router: memoryRouter }),
+    ),
+  );
   return memoryRouter;
 }
 

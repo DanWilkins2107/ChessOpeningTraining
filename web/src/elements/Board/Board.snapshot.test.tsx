@@ -9,6 +9,7 @@ describe('Board', () => {
         position="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
         orientation="white"
         animatePieces
+        showMoveHints
       />,
     );
     expect(container).toMatchSnapshot();
