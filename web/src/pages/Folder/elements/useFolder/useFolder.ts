@@ -15,9 +15,9 @@ export function useFolder(folderId: string) {
 async function fetchFolder(folderId: string): Promise<FolderResponse> {
   return supabase
     .from('folders')
-    .select('name, chapters(id, name)')
+    .select('name, move_trees(id, name)')
     .eq('id', folderId)
-    .order('created_at', { referencedTable: 'chapters' })
-    .order('id', { referencedTable: 'chapters' })
+    .order('created_at', { referencedTable: 'move_trees' })
+    .order('id', { referencedTable: 'move_trees' })
     .maybeSingle();
 }

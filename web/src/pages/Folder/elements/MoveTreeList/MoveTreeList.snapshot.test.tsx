@@ -1,31 +1,31 @@
 import { act, render } from '@testing-library/react';
 import { Suspense } from 'react';
 import { describe, expect, it } from 'vitest';
-import type { Chapter } from '../Chapter/Chapter';
+import type { MoveTree } from '../MoveTree/MoveTree';
 import type { FolderResponse } from '../FolderResponse/FolderResponse';
-import { ChapterList } from './ChapterList';
+import { MoveTreeList } from './MoveTreeList';
 
-const respond = (chapters: Chapter[]): FolderResponse => ({
+const respond = (moveTrees: MoveTree[]): FolderResponse => ({
   success: true,
-  data: { name: 'London', chapters },
+  data: { name: 'London', move_trees: moveTrees },
   error: null,
   count: null,
   status: 200,
   statusText: 'OK',
 });
 
-describe('ChapterList', () => {
+describe('MoveTreeList', () => {
   it.each([
     [
-      'chapters',
+      'move trees',
       [{ id: '7c3e1d2a-5b4f-4e6a-9c8d-1f2e3a4b5c6d', name: 'Main line' }],
     ],
-    ['no chapters', []],
-  ])('matches snapshot with %s', async (_, chapters) => {
+    ['no move trees', []],
+  ])('matches snapshot with %s', async (_, moveTrees) => {
     const { container } = await act(() =>
       render(
         <Suspense>
-          <ChapterList folder={Promise.resolve(respond(chapters))} />
+          <MoveTreeList folder={Promise.resolve(respond(moveTrees))} />
         </Suspense>,
       ),
     );

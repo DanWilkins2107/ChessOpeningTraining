@@ -11,7 +11,7 @@ describe('migrationNumberProblems', () => {
         folder(
           '0002_folders.sql',
           '0001_secure_defaults.sql',
-          '0003_chapters.sql',
+          '0003_move_trees.sql',
         ),
       ),
     ).toEqual([]);

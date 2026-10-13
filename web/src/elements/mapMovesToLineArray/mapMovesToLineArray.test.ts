@@ -1,12 +1,12 @@
 import { expect, it } from 'vitest';
-import { mapMoveTreeToLineArray } from './mapMoveTreeToLineArray';
+import { mapMovesToLineArray } from './mapMovesToLineArray';
 import { move } from '../../tests-shared/moveNode';
 
 it('has no lines when no moves are played', () => {
   // Given an empty tree
 
   // When its lines are listed
-  const found = mapMoveTreeToLineArray([]);
+  const found = mapMovesToLineArray([]);
 
   // Then there are none
   expect(found).toEqual([]);
@@ -17,7 +17,7 @@ it('has one line for a tree with no sidelines', () => {
   const tree = [move('e4', move('e5', move('Nf3')))];
 
   // When its lines are listed
-  const found = mapMoveTreeToLineArray(tree);
+  const found = mapMovesToLineArray(tree);
 
   // Then it is the only line
   expect(found).toEqual([['e4', 'e5', 'Nf3']]);
@@ -31,7 +31,7 @@ it('lists the main line first, then each sideline in child order', () => {
   ];
 
   // When its lines are listed
-  const found = mapMoveTreeToLineArray(tree);
+  const found = mapMovesToLineArray(tree);
 
   // Then every start-to-leaf path appears, main line first
   expect(found).toEqual([

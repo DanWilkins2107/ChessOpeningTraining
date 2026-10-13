@@ -2,15 +2,14 @@
 import { Chess } from 'chess.ts';
 import type { PartialMove } from 'chess.ts';
 import type { MoveNode } from '../MoveNode/MoveNode';
-import type { MoveTree } from '../MoveTree/MoveTree';
 
 type PlayedMove = {
-  tree: MoveTree;
+  tree: MoveNode[];
   line: string[];
 };
 
 export function playMove(
-  tree: MoveTree,
+  tree: MoveNode[],
   line: string[],
   move: string | PartialMove,
 ): PlayedMove | null {

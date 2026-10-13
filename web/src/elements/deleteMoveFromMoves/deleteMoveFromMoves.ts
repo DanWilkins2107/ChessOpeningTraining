@@ -1,10 +1,10 @@
 // fallow-ignore-file unused-file -- ef93ff81 2026-10-15 landed ahead of the folder page, its first consumer.
-import type { MoveTree } from '../MoveTree/MoveTree';
+import type { MoveNode } from '../MoveNode/MoveNode';
 
-export function deleteMoveFromMoveTree(
-  tree: MoveTree,
+export function deleteMoveFromMoves(
+  tree: MoveNode[],
   path: string[],
-): MoveTree {
+): MoveNode[] {
   const [san, ...rest] = path;
   if (!tree.some((node) => node.san === san)) {
     throw new Error(`No move ${san} in the tree`);
@@ -13,7 +13,7 @@ export function deleteMoveFromMoveTree(
 
   return tree.map((node) =>
     node.san === san
-      ? { ...node, children: deleteMoveFromMoveTree(node.children, rest) }
+      ? { ...node, children: deleteMoveFromMoves(node.children, rest) }
       : node,
   );
 }

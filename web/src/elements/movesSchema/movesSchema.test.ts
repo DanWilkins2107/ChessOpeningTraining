@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest';
 import { z } from '../../z';
-import { moveTreeSchema } from './moveTreeSchema';
+import { movesSchema } from './movesSchema';
 import type { MoveNode } from '../MoveNode/MoveNode';
 import { leaves, move } from '../../tests-shared/moveNode';
 
@@ -21,11 +21,11 @@ it.each([
     [...leaves(600), move('d4', ...leaves(400))],
   ],
   ['an empty tree', []],
-])('loads a stored move tree with %s', (_, stored) => {
+])('loads stored moves with %s', (_, stored) => {
   // Given a stored tree the database accepts
 
   // When it is loaded
-  const loaded = moveTreeSchema.parse(stored);
+  const loaded = movesSchema.parse(stored);
 
   // Then it comes back unchanged
   expect(loaded).toEqual(stored);
@@ -46,28 +46,24 @@ it.each([
     // to prove a malformed move deep in the tree is refused.
     [move('e4', move('c6', { san: 'd4' } as MoveNode))],
   ],
-])('refuses to load a stored move tree with %s', (_, stored) => {
+])('refuses to load stored moves with %s', (_, stored) => {
   // Given a stored tree with the wrong shape
 
   // When it is loaded, then the load fails
-  expect(() => moveTreeSchema.parse(stored)).toThrow(z.ZodError);
+  expect(() => movesSchema.parse(stored)).toThrow(z.ZodError);
 });
 
 it.each([
-  ['a 601-ply line', line(601), 'A move tree line can be at most 600 plies'],
-  [
-    '1001 lines at one ply',
-    leaves(1001),
-    'A move tree can have at most 1000 lines',
-  ],
+  ['a 601-ply line', line(601), 'A line can be at most 600 plies'],
+  ['1001 lines at one ply', leaves(1001), 'Moves can have at most 1000 lines'],
   [
     '1001 lines ending at different plies',
     [...leaves(600), move('d4', ...leaves(401))],
-    'A move tree can have at most 1000 lines',
+    'Moves can have at most 1000 lines',
   ],
-])('refuses to load a stored move tree with %s', (_, stored, message) => {
+])('refuses to load stored moves with %s', (_, stored, message) => {
   // Given a stored tree over a cap
 
   // When it is loaded, then the load fails naming the cap
-  expect(() => moveTreeSchema.parse(stored)).toThrow(message);
+  expect(() => movesSchema.parse(stored)).toThrow(message);
 });

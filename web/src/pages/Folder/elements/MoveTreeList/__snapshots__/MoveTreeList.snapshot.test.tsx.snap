@@ -1,0 +1,26 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`MoveTreeList > matches snapshot with move trees 1`] = `
+<div>
+  <ul
+    aria-label="Move trees"
+    class="move-tree-list"
+  >
+    <li
+      class="move-tree-list-item"
+    >
+      Main line
+    </li>
+  </ul>
+</div>
+`;
+
+exports[`MoveTreeList > matches snapshot with no move trees 1`] = `
+<div>
+  <p
+    class="move-tree-list-empty"
+  >
+    No move trees yet
+  </p>
+</div>
+`;
