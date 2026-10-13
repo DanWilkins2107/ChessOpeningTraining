@@ -1,5 +1,5 @@
 // fallow-ignore-file unused-file -- ef93ff81 2026-10-15 landed ahead of the study page, its first consumer.
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import type { PointerEvent } from 'react';
 
 // Far enough that a click which wobbles is still a click.
@@ -7,7 +7,7 @@ const DRAG_THRESHOLD_PX = 4;
 
 type Point = { x: number; y: number };
 
-type Grip = { square: string; start: Point; at?: Point };
+type Grip = { square: string; start: Point; lifted: boolean };
 
 type PieceDragOptions = {
   files: string[];
@@ -17,7 +17,10 @@ type PieceDragOptions = {
 };
 
 export function usePieceDrag({ files, ranks, pickUp, drop }: PieceDragOptions) {
-  const [grip, setGrip] = useState<Grip | null>(null);
+  const grip = useRef<Grip | null>(null);
+  // Only lifting and landing re-render; the pointer's position goes straight
+  // to the board's --drag-x/--drag-y, which BoardPieces places the piece by.
+  const [dragged, setDragged] = useState<string>();
 
   const onBoard = (event: PointerEvent<HTMLElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -36,32 +39,45 @@ export function usePieceDrag({ files, ranks, pickUp, drop }: PieceDragOptions) {
     return `${files[column]}${ranks[row]}`;
   };
 
+  const letGo = () => {
+    grip.current = null;
+    setDragged(undefined);
+  };
+
   const pointerProps = {
     onPointerDown: (event: PointerEvent<HTMLElement>) => {
       const square = squareAt(event);
       if (pickUp(square)) {
-        setGrip({ square, start: onBoard(event).point });
+        grip.current = { square, start: onBoard(event).point, lifted: false };
       }
     },
     onPointerMove: (event: PointerEvent<HTMLElement>) => {
-      if (grip === null) return;
+      const held = grip.current;
+      if (held === null) return;
       const { point } = onBoard(event);
-      const moved = Math.hypot(point.x - grip.start.x, point.y - grip.start.y);
-      if (!grip.at && moved < DRAG_THRESHOLD_PX) return;
-      // Once dragging, the release belongs to the board wherever it lands,
-      // and no click follows on the square underneath.
-      event.currentTarget.setPointerCapture(event.pointerId);
-      setGrip({ ...grip, at: point });
+      if (!held.lifted) {
+        const moved = Math.hypot(
+          point.x - held.start.x,
+          point.y - held.start.y,
+        );
+        if (moved < DRAG_THRESHOLD_PX) return;
+        // Once dragging, the release belongs to the board wherever it lands,
+        // and no click follows on the square underneath.
+        event.currentTarget.setPointerCapture(event.pointerId);
+        held.lifted = true;
+        setDragged(held.square);
+      }
+      event.currentTarget.style.setProperty('--drag-x', `${point.x}px`);
+      event.currentTarget.style.setProperty('--drag-y', `${point.y}px`);
     },
     onPointerUp: (event: PointerEvent<HTMLElement>) => {
-      setGrip(null);
-      if (grip?.at) drop(squareAt(event));
+      const lifted = grip.current?.lifted;
+      letGo();
+      if (lifted) drop(squareAt(event));
     },
     // The piece goes home still selected, since the user never let go.
-    onPointerCancel: () => setGrip(null),
+    onPointerCancel: letGo,
   };
-
-  const dragged = grip?.at && { square: grip.square, ...grip.at };
 
   return { dragged, pointerProps };
 }

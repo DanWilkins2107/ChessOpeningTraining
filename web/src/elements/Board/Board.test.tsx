@@ -1026,8 +1026,24 @@ it('centres a dragged piece on the pointer', () => {
 
   // Then only that pawn is lifted, with its middle under the pointer
   expect(draggedPieces()).toEqual([
-    imageAt('translate(calc(333px - 50%), calc(222px - 50%))'),
+    imageAt('translate(calc(var(--drag-x) - 50%), calc(var(--drag-y) - 50%))'),
   ]);
+  expect(boardElement().style.getPropertyValue('--drag-x')).toBe('333px');
+  expect(boardElement().style.getPropertyValue('--drag-y')).toBe('222px');
+});
+
+it('keeps a lifted piece under the pointer as it moves on', () => {
+  // Given the e2 pawn is being dragged
+  renderPlayable();
+  pressAt(centreOf('e2'));
+  moveTo(centreOf('e4'));
+
+  // When the pointer moves on to 555px across and 111px down the board
+  moveTo({ clientX: BOARD_LEFT + 555, clientY: BOARD_TOP + 111 });
+
+  // Then the board carries the new position
+  expect(boardElement().style.getPropertyValue('--drag-x')).toBe('555px');
+  expect(boardElement().style.getPropertyValue('--drag-y')).toBe('111px');
 });
 
 it('leaves a piece in place while the pointer has barely moved', () => {
