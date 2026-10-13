@@ -1,0 +1,16 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Folder > matches snapshot 1`] = `
+<div>
+  <section
+    aria-label="Folder"
+    class="folder"
+  >
+    <div
+      aria-label="Loading folder"
+      class="spinner"
+      role="status"
+    />
+  </section>
+</div>
+`;
