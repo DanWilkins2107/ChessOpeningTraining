@@ -9,6 +9,8 @@ import { PASSWORD_CHANGED_MESSAGE } from './ChangePasswordForm.constants';
 
 const changing = registerTestUser();
 const clearing = registerTestUser();
+const unchangedPassword = `Aa1!${crypto.randomUUID()}`;
+const retrying = registerTestUser({ password: unchangedPassword });
 
 const newPassword = () => `Aa1!${crypto.randomUUID()}`;
 
@@ -50,4 +52,19 @@ it('confirms the change and clears the fields', async () => {
   expect(field('Confirm new password')).toHaveValue('');
   expect(screen.queryAllByText('(done)')).toHaveLength(0);
   expect(screen.queryByText(PASSWORDS_DIFFER_MESSAGE)).not.toBeInTheDocument();
+});
+
+it('drops an earlier error once the change goes through', async () => {
+  // Given a user whose first attempt was refused
+  await retrying.signIn();
+  render(<ChangePasswordForm />);
+  await savePassword(unchangedPassword);
+  await screen.findByRole('alert', {}, SERVER);
+
+  // When they save a password meeting every rule
+  await savePassword(newPassword());
+  await changedNotice();
+
+  // Then the refusal is gone
+  expect(screen.queryByRole('alert')).not.toBeInTheDocument();
 });
