@@ -11,8 +11,9 @@ import {
   NOT_NULL_VIOLATION,
   PERMISSION_DENIED,
 } from './tests-shared/pgErrorCodes';
+import { SERVER_FILLED_COLUMNS } from './tests-shared/serverFilledColumns';
 
-const FOLDER = { name: 'Caro-Kann', side: 'black' };
+const FOLDER = { name: 'Caro-Kann' };
 
 const createFolder = (client: SupabaseClient, folder: object = FOLDER) =>
   client.from('folders').insert(folder).select().single();
@@ -37,14 +38,13 @@ const folderCount = async (ownerId: string) =>
 const folders = (count: number) =>
   Array.from({ length: count }, (_, index) => ({
     name: `Folder ${index}`,
-    side: 'white',
   }));
 
 it('creates a folder owned by the signed-in user', async () => {
   // Given a signed-in user
   const { id, client } = await signedInUser();
 
-  // When they create a folder with a name and side
+  // When they create a folder with a name
   const { data, error } = await createFolder(client);
 
   // Then it is theirs, with the id and timestamp filled in
@@ -74,16 +74,16 @@ it('lets the owner rename their folder', async () => {
   const { client } = await signedInUser();
   const folder = await existingFolder(client);
 
-  // When they change its name and side
+  // When they change its name
   const { data } = await client
     .from('folders')
-    .update({ name: 'Slav', side: 'white' })
+    .update({ name: 'Slav' })
     .eq('id', folder.id)
     .select()
     .single();
 
   // Then the folder is updated
-  expect(data).toEqual({ ...folder, name: 'Slav', side: 'white' });
+  expect(data).toEqual({ ...folder, name: 'Slav' });
 });
 
 it.each([
@@ -183,28 +183,28 @@ it.each([
   expect(await storedFolder(folder.id)).toEqual(folder);
 });
 
-it.each([
-  ['id', crypto.randomUUID()],
-  ['created_at', '2000-01-01T00:00:00+00:00'],
-  ['owner_id', crypto.randomUUID()],
-])('refuses a client-supplied %s on create', async (column, value) => {
-  // Given a signed-in user
-  const { client } = await signedInUser();
+it.each(SERVER_FILLED_COLUMNS)(
+  'refuses a client-supplied %s on create',
+  async (column, value) => {
+    // Given a signed-in user
+    const { client } = await signedInUser();
 
-  // When they create a folder supplying the column
-  const { error } = await createFolder(client, { ...FOLDER, [column]: value });
+    // When they create a folder supplying the column
+    const { error } = await createFolder(client, {
+      ...FOLDER,
+      [column]: value,
+    });
 
-  // Then it is refused
-  expect(error?.code).toBe(PERMISSION_DENIED);
-});
+    // Then it is refused
+    expect(error?.code).toBe(PERMISSION_DENIED);
+  },
+);
 
 it.each([
   ['an empty name', { name: '' }, CHECK_VIOLATION],
   ['a name with surrounding spaces', { name: ' Caro-Kann ' }, CHECK_VIOLATION],
   ['a 101-character name', { name: 'a'.repeat(101) }, CHECK_VIOLATION],
   ['a missing name', { name: undefined }, NOT_NULL_VIOLATION],
-  ['a side other than white or black', { side: 'red' }, CHECK_VIOLATION],
-  ['a missing side', { side: undefined }, NOT_NULL_VIOLATION],
 ])('refuses a folder with %s', async (_, change, code) => {
   // Given a signed-in user
   const { client } = await signedInUser();

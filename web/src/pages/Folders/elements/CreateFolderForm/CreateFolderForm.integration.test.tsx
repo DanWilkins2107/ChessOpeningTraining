@@ -12,7 +12,6 @@ beforeAll(async () => {
   const { error } = await supabase.from('folders').insert(
     Array.from({ length: 100 }, (_, index) => ({
       name: `Filler ${index}`,
-      side: 'white',
     })),
   );
   if (error) throw error;
@@ -49,33 +48,21 @@ const newestFolder = async () =>
   (
     await supabase
       .from('folders')
-      .select('name, side')
+      .select('name')
       .order('created_at', { ascending: false })
       .limit(1)
       .single()
   ).data;
 
-it('creates a white folder by default', async () => {
+it('creates a folder with the typed name', async () => {
   // Given a signed-in user on the form
   const creations = await signedInForm();
 
-  // When they create a folder without choosing a side
+  // When they create a folder
   await createFolderNamed(creations, 'London');
 
-  // Then it is stored as a white folder
-  expect(await newestFolder()).toEqual({ name: 'London', side: 'white' });
-});
-
-it('creates a folder on the chosen side', async () => {
-  // Given a signed-in user on the form
-  const creations = await signedInForm();
-
-  // When they choose black and create a folder
-  fireEvent.click(screen.getByLabelText('black'));
-  await createFolderNamed(creations, 'Caro-Kann');
-
-  // Then it is stored as a black folder
-  expect(await newestFolder()).toEqual({ name: 'Caro-Kann', side: 'black' });
+  // Then it is stored
+  expect(await newestFolder()).toEqual({ name: 'London' });
 });
 
 it('trims the name it stores', async () => {

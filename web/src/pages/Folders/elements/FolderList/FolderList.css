@@ -12,9 +12,7 @@
 }
 
 .folder-list-item {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--gap-md);
+  display: block;
   padding: var(--gap-md);
   background: var(--surface-raised);
   border: 1px solid var(--border);
@@ -31,9 +29,4 @@
 
 .folder-list-name {
   font-weight: 600;
-}
-
-.folder-list-side {
-  color: var(--ink-muted);
-  text-transform: capitalize;
 }
