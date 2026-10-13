@@ -18,11 +18,11 @@ it('shows the form while the user is still loading', async () => {
   await confirmed.signIn();
 
   // When sign in renders
-  const memoryRouter = renderAt('/sign-in?next=%2Fstudies');
+  const memoryRouter = renderAt('/sign-in?next=%2Ffolders');
 
   // Then it shows the form without navigating
   expect(signInButton()).toBeInTheDocument();
-  expect(pathOf(memoryRouter)).toBe('/sign-in?next=%2Fstudies');
+  expect(pathOf(memoryRouter)).toBe('/sign-in?next=%2Ffolders');
 });
 
 it('sends a signed-in user to their return path', async () => {
@@ -30,17 +30,17 @@ it('sends a signed-in user to their return path', async () => {
   await confirmed.signIn();
 
   // When they open sign in with a return path and the user loads
-  const memoryRouter = renderAt('/sign-in?next=%2Fstudies%3Fline%3Dab12');
+  const memoryRouter = renderAt('/sign-in?next=%2Ffolders%3Fline%3Dab12');
   await authSettled();
 
   // Then they are at the return path
-  expect(pathOf(memoryRouter)).toBe('/studies?line=ab12');
+  expect(pathOf(memoryRouter)).toBe('/folders?line=ab12');
 });
 
 it('leaves sign in out of history when sending a signed-in user on', async () => {
   // Given a signed-in user sent on from sign in
   await confirmed.signIn();
-  const memoryRouter = renderAt('/elsewhere', '/sign-in?next=%2Fstudies');
+  const memoryRouter = renderAt('/elsewhere', '/sign-in?next=%2Ffolders');
   await authSettled();
 
   // When they go back
@@ -52,7 +52,7 @@ it('leaves sign in out of history when sending a signed-in user on', async () =>
 
 it('signs in and returns to the return path', async () => {
   // Given a signed-out visitor on sign in with a return path
-  const memoryRouter = renderAt('/sign-in?next=%2F%3Fstudy%3Dab12');
+  const memoryRouter = renderAt('/sign-in?next=%2F%3Ffolder%3Dab12');
   await authSettled();
 
   // When they submit correct credentials
@@ -62,7 +62,7 @@ it('signs in and returns to the return path', async () => {
   expect(
     await screen.findByRole('heading', { name: 'Chess Opening Training' }),
   ).toBeInTheDocument();
-  expect(pathOf(memoryRouter)).toBe('/?study=ab12');
+  expect(pathOf(memoryRouter)).toBe('/?folder=ab12');
 });
 
 it('signs in without the browser submitting the form', async () => {
