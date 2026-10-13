@@ -17,7 +17,13 @@ const ROOT_EXCEPTIONS = [
 
 // Modules knowingly left above or below their lowest common folder, each only
 // until its expiry.
-const TEMPORARY_EXCLUDES: TemporaryExclude[] = [];
+const TEMPORARY_EXCLUDES: TemporaryExclude[] = [
+  {
+    path: 'src/shared/NewPasswordForm',
+    expiry: '2026-11-10',
+    reason: 'Change password page, its second consumer, lands next',
+  },
+];
 
 const sources = moduleSources();
 
