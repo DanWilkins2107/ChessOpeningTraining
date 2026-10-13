@@ -1086,6 +1086,7 @@ it('keeps a lifted piece following the pointer back near its square', () => {
 
   // Then the pawn is still under the pointer
   expect(draggedPieces()).toHaveLength(1);
+  expect(boardElement().style.getPropertyValue('--drag-x')).toBe('451px');
 });
 
 it.each([
