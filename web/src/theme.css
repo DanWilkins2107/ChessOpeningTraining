@@ -1,5 +1,5 @@
 /* The only file allowed to hold colour literals:
-   web/meta/elements/paletteGate/paletteGate.ts exempts this path by name, so
+   web/meta/paletteGate/paletteGate.ts exempts this path by name, so
    move or rename it and that gate must change too. */
 
 :root {
