@@ -8,7 +8,7 @@ describe('FolderName', () => {
   it('matches snapshot', async () => {
     const response: FolderResponse = {
       success: true,
-      data: { name: 'London', chapters: [] },
+      data: { name: 'London', move_trees: [] },
       error: null,
       count: null,
       status: 200,

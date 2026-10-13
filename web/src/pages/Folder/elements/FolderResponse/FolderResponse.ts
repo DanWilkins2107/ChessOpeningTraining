@@ -1,7 +1,7 @@
 import type { PostgrestSingleResponse } from '@supabase/supabase-js';
-import type { Chapter } from '../Chapter/Chapter';
+import type { MoveTree } from '../MoveTree/MoveTree';
 
 export type FolderResponse = PostgrestSingleResponse<{
   name: string;
-  chapters: Chapter[];
+  move_trees: MoveTree[];
 } | null>;
