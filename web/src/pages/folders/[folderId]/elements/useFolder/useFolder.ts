@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { useUser } from '../../../../shared/useUser/useUser';
-import { supabase } from '../../../../supabase';
+import { useUser } from '../../../../../shared/useUser/useUser';
+import { supabase } from '../../../../../supabase';
 import type { FolderResponse } from '../FolderResponse/FolderResponse';
 
 export function useFolder(folderId: string) {

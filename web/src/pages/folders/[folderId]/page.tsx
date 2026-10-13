@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { z } from '../../z';
+import { z } from '../../../z';
 import { FolderDetails } from './elements/FolderDetails/FolderDetails';
 import { FolderNotFound } from './elements/FolderNotFound/FolderNotFound';
 import './page.css';
