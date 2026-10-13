@@ -18,6 +18,7 @@ const undoing = registerTestUser();
 const turningBackOn = registerTestUser();
 const clickingDuringSave = registerTestUser();
 const failing = registerTestUser();
+const comingBack = registerTestUser();
 
 beforeAll(() => turnOffAnimationFor(savedOff));
 
@@ -36,7 +37,7 @@ const pause = (ms: number) =>
 
 async function renderFor(user: ReturnType<typeof registerTestUser>) {
   await user.signIn();
-  await renderSettledAt('/account');
+  return renderSettledAt('/account');
 }
 
 function failProfilesRequests(method: 'GET' | 'POST') {
@@ -221,6 +222,23 @@ it('sends a later choice only after the save in flight', async () => {
   // Then their last choice is sent once the first save returns
   await vi.waitFor(async () => expect(await savedAnimatePieces()).toBe(true));
   expect(saves).toEqual([false, true]);
+});
+
+it('shows a saved choice straight away on coming back', async () => {
+  // Given a user who turned animation off and saw it saved
+  const memoryRouter = await renderFor(comingBack);
+  fireEvent.click(await loadedToggle());
+  await screen.findByRole('status');
+
+  // When they leave and come back, with the setting request held
+  await act(() => memoryRouter.navigate('/'));
+  const request = holdFirstRequest(isProfilesRequest);
+  await act(() => memoryRouter.navigate('/account'));
+
+  // Then it shows off before the setting reloads
+  await request.sent();
+  expect(toggle()).not.toBeChecked();
+  await request.answer();
 });
 
 it('says so when the setting fails to load', async () => {

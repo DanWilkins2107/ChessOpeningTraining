@@ -2,7 +2,7 @@ import { Link, useMatches } from 'react-router-dom';
 import {
   ACCOUNT_ROUTE_PATH,
   PROTECTED_ROUTE_HANDLE,
-  STUDIES_ROUTE_PATH,
+  FOLDERS_ROUTE_PATH,
 } from '../../shared/routes/routes.constants';
 import './HeaderNav.css';
 
@@ -22,8 +22,8 @@ export function HeaderNav() {
   return (
     <nav className="header-nav">
       {onProtectedPage && (
-        <Link to={STUDIES_ROUTE_PATH} className="header-nav-link">
-          Studies
+        <Link to={FOLDERS_ROUTE_PATH} className="header-nav-link">
+          Folders
         </Link>
       )}
       <Link to={ACCOUNT_ROUTE_PATH} className="header-nav-link">

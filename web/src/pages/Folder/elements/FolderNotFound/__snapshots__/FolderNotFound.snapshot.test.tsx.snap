@@ -1,0 +1,12 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`FolderNotFound > matches snapshot 1`] = `
+<div>
+  <p
+    class="error-message"
+    role="alert"
+  >
+    Folder not found
+  </p>
+</div>
+`;
