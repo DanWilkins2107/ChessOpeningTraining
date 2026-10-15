@@ -15,6 +15,7 @@ import {
   NOT_NULL_VIOLATION,
   PERMISSION_DENIED,
 } from './tests-shared/pgErrorCodes';
+import { randomTimestamp } from './tests-shared/randomTimestamp';
 import { SERVER_FILLED_COLUMNS } from './tests-shared/serverFilledColumns';
 
 const MAX_MOVES_BYTES = 512 * 1024;
@@ -175,7 +176,7 @@ it('lets the owner change a move tree’s name, side and moves', async () => {
 
 it.each([
   ['id', async () => crypto.randomUUID()],
-  ['created_at', async () => '2000-01-01T00:00:00+00:00'],
+  ['created_at', async () => randomTimestamp()],
   ['folder_id', existingFolderId],
   ['owner_id', async () => (await signedInUser()).id],
 ])('refuses changing a move tree’s %s', async (column, newValue) => {

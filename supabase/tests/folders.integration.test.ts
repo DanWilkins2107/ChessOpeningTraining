@@ -11,6 +11,7 @@ import {
   NOT_NULL_VIOLATION,
   PERMISSION_DENIED,
 } from './tests-shared/pgErrorCodes';
+import { randomTimestamp } from './tests-shared/randomTimestamp';
 import { SERVER_FILLED_COLUMNS } from './tests-shared/serverFilledColumns';
 
 const FOLDER = { name: 'Caro-Kann' };
@@ -88,7 +89,7 @@ it('lets the owner rename their folder', async () => {
 
 it.each([
   ['id', async () => crypto.randomUUID()],
-  ['created_at', async () => '2000-01-01T00:00:00+00:00'],
+  ['created_at', async () => randomTimestamp()],
   ['owner_id', async () => (await signedInUser()).id],
 ])('refuses changing a folder’s %s', async (column, newValue) => {
   // Given a user with a folder

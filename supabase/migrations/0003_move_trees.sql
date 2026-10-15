@@ -12,8 +12,7 @@ create table public.move_trees (
   foreign key (folder_id, owner_id) references public.folders (id, owner_id) on delete cascade
 );
 
-create index move_trees_owner_id_idx on public.move_trees (owner_id);
-create index move_trees_folder_id_idx on public.move_trees (folder_id);
+create index move_trees_owner_id_folder_id_idx on public.move_trees (owner_id, folder_id);
 
 grant select on table public.move_trees to authenticated;
 create policy "Owners read their move trees" on public.move_trees
