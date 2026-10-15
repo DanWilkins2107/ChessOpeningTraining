@@ -1,20 +1,18 @@
-import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
+import { repoRoot } from '../shared/repoPaths/repoPaths';
+import { trackedTypeScript } from '../shared/trackedTypeScript/trackedTypeScript';
 
 type Sources = Record<string, string>;
 
-const SCANNED_FOLDERS = ['web/src', 'web/meta', 'meta', 'supabase'];
 const TYPESCRIPT_EXTENSION = /\.tsx?$/;
 const TEST = /\.test(\.tsx?)?$/;
 const META = /^((web|supabase)\/)?meta\//;
 const RELATIVE_IMPORT = /\b(?:from|import)\s*\(?\s*['"](\.[^'"]*)['"]/g;
 
-const repoRoot = path.join(import.meta.dirname, '..', '..');
-
 export function repoSources(): Sources {
   return Object.fromEntries(
-    trackedModules().map((file) => [
+    trackedTypeScript().map((file) => [
       file,
       readFileSync(path.join(repoRoot, file), 'utf8'),
     ]),
@@ -71,12 +69,3 @@ const isTestSide = (filePath: string) =>
 const isAppCode = (filePath: string) => filePath.startsWith('web/src/');
 
 const isMeta = (filePath: string) => META.test(filePath);
-
-function trackedModules(): string[] {
-  return execFileSync('git', ['ls-files', '-z', ...SCANNED_FOLDERS], {
-    cwd: repoRoot,
-  })
-    .toString('utf8')
-    .split('\0')
-    .filter((file) => TYPESCRIPT_EXTENSION.test(file));
-}
