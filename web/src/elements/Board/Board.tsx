@@ -16,6 +16,11 @@ const hintsFor = (selection?: { square: string; moves: Move[] }) => ({
   targets: selection?.moves.map((move) => move.to),
 });
 
+const axesFor = (orientation: 'white' | 'black') =>
+  orientation === 'white'
+    ? { files: FILES, ranks: RANKS }
+    : { files: [...FILES].reverse(), ranks: [...RANKS].reverse() };
+
 type BoardProps = {
   position: string;
   orientation: 'white' | 'black';
@@ -31,8 +36,7 @@ export function Board({
   showMoveHints,
   onMove,
 }: BoardProps) {
-  const files = orientation === 'white' ? FILES : [...FILES].reverse();
-  const ranks = orientation === 'white' ? RANKS : [...RANKS].reverse();
+  const { files, ranks } = axesFor(orientation);
   const pieces = useTrackedPieces(position);
   const { selected, choose, pickUp, promoting, promote, cancelPromotion } =
     useMoveSelection(position, onMove);
