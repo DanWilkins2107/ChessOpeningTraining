@@ -21,6 +21,7 @@ type BoardProps = {
   position: string;
   orientation: 'white' | 'black';
   animatePieces: boolean;
+  showMoveHints: boolean;
   onMove?: (move: PartialMove) => void;
 };
 
@@ -28,6 +29,7 @@ export function Board({
   position,
   orientation,
   animatePieces,
+  showMoveHints,
   onMove,
 }: BoardProps) {
   const files = orientation === 'white' ? FILES : [...FILES].reverse();
@@ -72,6 +74,7 @@ export function Board({
         ranks={ranks}
         pieces={pieces}
         {...hintsFor(selected)}
+        showHints={showMoveHints}
         onSquareClick={clickSquare}
       />
       <BoardPieces
