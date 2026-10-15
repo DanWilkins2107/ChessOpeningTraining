@@ -6,9 +6,11 @@ import {
   DELETE_ACCOUNT_ROUTE_PATH,
   PROTECTED_ROUTE_HANDLE,
   ROOT_ROUTE_PATH,
+} from '../routes/routes.constants';
+import {
   FOLDERS_ROUTE_PATH,
   FOLDER_ROUTE_PATH,
-} from '../../shared/routes/routes.constants';
+} from '../../pages/folders/router.constants';
 import { RootLayout } from '../RootLayout/RootLayout';
 import { Account } from '../../pages/Account/page';
 import { ChangePassword } from '../../pages/ChangePassword/page';
@@ -19,8 +21,8 @@ import { NotFound } from '../../pages/NotFound/page';
 import { SetNewPassword } from '../../pages/SetNewPassword/page';
 import { SignIn } from '../../pages/SignIn/page';
 import { SignUp } from '../../pages/SignUp/page';
-import { Folders } from '../../pages/Folders/page';
-import { Folder } from '../../pages/Folder/page';
+import { Folders } from '../../pages/folders/page';
+import { Folder } from '../../pages/folders/[folderId]/page';
 
 export const router = createBrowserRouter([
   {

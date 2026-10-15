@@ -1,9 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 import { act, screen, within } from '@testing-library/react';
 import { afterEach, beforeAll, expect, it, vi } from 'vitest';
-import { renderAt } from '../../tests-shared/renderAt';
-import { registerTestUser } from '../../tests-shared/testUser';
-import { env } from '../../env';
+import { renderAt } from '../../../tests-shared/renderAt';
+import { registerTestUser } from '../../../tests-shared/testUser';
+import { env } from '../../../env';
 
 const owner = registerTestUser();
 const stranger = registerTestUser();

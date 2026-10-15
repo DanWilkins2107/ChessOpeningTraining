@@ -2,8 +2,8 @@ import { Link, useMatches } from 'react-router-dom';
 import {
   ACCOUNT_ROUTE_PATH,
   PROTECTED_ROUTE_HANDLE,
-  FOLDERS_ROUTE_PATH,
-} from '../../shared/routes/routes.constants';
+} from '../routes/routes.constants';
+import { FOLDERS_ROUTE_PATH } from '../../pages/folders/router.constants';
 import './HeaderNav.css';
 
 export function HeaderNav() {
