@@ -28,6 +28,9 @@ export function Account() {
     <section className="account-card">
       <h1 className="account-heading">Account</h1>
       <AnimatePiecesToggle setting={animatePieces} />
+      <Link to="/account/password" className="account-action">
+        Change password
+      </Link>
       <button type="button" className="account-action" onClick={signOut}>
         Sign out
       </button>
