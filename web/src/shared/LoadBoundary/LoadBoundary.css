@@ -1,7 +1,0 @@
-/* fallow-ignore-file unused-file -- 94afaf5e 2026-11-12 landed ahead of the folders list, its first consumer. */
-.load-boundary-error {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--gap-md);
-}

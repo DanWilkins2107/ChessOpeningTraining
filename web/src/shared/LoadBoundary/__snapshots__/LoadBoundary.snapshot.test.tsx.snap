@@ -10,22 +10,8 @@ exports[`LoadBoundary > matches snapshot 1`] = `
 
 exports[`LoadBoundary > matches snapshot when its content fails to load 1`] = `
 <div>
-  <form
-    action="javascript:throw new Error('A React form was unexpectedly submitted. If you called form.submit() manually, consider using form.requestSubmit() instead. If you\\'re trying to use event.stopPropagation() in a submit event handler, consider also calling event.preventDefault().')"
-    class="load-boundary-error"
-  >
-    <p
-      class="error-message"
-      role="alert"
-    >
-      Couldn't load things
-    </p>
-    <button
-      class="button"
-      type="submit"
-    >
-      Try again
-    </button>
-  </form>
+  <p>
+    Couldn't load things
+  </p>
 </div>
 `;

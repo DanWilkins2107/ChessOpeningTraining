@@ -7,10 +7,18 @@ function Broken(): ReactNode {
   throw new Error('Server down');
 }
 
+function Loading() {
+  return <p>Loading things</p>;
+}
+
+function LoadError() {
+  return <p>Couldn't load things</p>;
+}
+
 describe('LoadBoundary', () => {
   it('matches snapshot', () => {
     const { container } = render(
-      <LoadBoundary label="Loading things" error="Couldn't load things">
+      <LoadBoundary Loading={Loading} LoadError={LoadError}>
         <p>Things</p>
       </LoadBoundary>,
     );
@@ -19,7 +27,7 @@ describe('LoadBoundary', () => {
 
   it('matches snapshot when its content fails to load', () => {
     const { container } = render(
-      <LoadBoundary label="Loading things" error="Couldn't load things">
+      <LoadBoundary Loading={Loading} LoadError={LoadError}>
         <Broken />
       </LoadBoundary>,
     );

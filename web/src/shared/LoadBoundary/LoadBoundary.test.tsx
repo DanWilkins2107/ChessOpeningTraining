@@ -7,6 +7,18 @@ import { LoadBoundary } from './LoadBoundary';
 const LOADING = 'Loading things';
 const ERROR = "Couldn't load things";
 
+function Loading() {
+  return <p>{LOADING}</p>;
+}
+
+function LoadError({ retry }: { retry: () => void }) {
+  return (
+    <button type="button" onClick={retry}>
+      {ERROR}
+    </button>
+  );
+}
+
 function Things({ load }: { load: () => Promise<string> }) {
   const { data } = useSuspenseQuery({ queryKey: ['things'], queryFn: load });
   return <p>{data}</p>;
@@ -15,7 +27,7 @@ function Things({ load }: { load: () => Promise<string> }) {
 const renderBoundary = (load: () => Promise<string>) =>
   render(
     <QueryClientProvider client={createQueryClient()}>
-      <LoadBoundary label={LOADING} error={ERROR}>
+      <LoadBoundary Loading={Loading} LoadError={LoadError}>
         <Things load={load} />
       </LoadBoundary>
     </QueryClientProvider>,
@@ -30,14 +42,14 @@ const failingOnce = (things: string) => {
   };
 };
 
-it('shows the spinner while its content loads', () => {
+it('shows the loading component while its content loads', () => {
   // Given content that never arrives
 
   // When the boundary renders it
   renderBoundary(() => new Promise(() => {}));
 
-  // Then the spinner names what is loading
-  expect(screen.getByRole('status', { name: LOADING })).toBeInTheDocument();
+  // Then the loading component shows
+  expect(screen.getByText(LOADING)).toBeInTheDocument();
 });
 
 it('shows its content once loaded', async () => {
@@ -51,23 +63,25 @@ it('shows its content once loaded', async () => {
   expect(await screen.findByText(things)).toBeInTheDocument();
 });
 
-it('shows the error when its content fails to load', async () => {
+it('shows the error component when its content fails to load', async () => {
   // Given content that fails to load
 
   // When the boundary renders it
   renderBoundary(failingOnce(crypto.randomUUID()));
 
-  // Then it shows the error
-  expect(await screen.findByRole('alert')).toHaveTextContent(ERROR);
+  // Then the error component shows
+  expect(
+    await screen.findByRole('button', { name: ERROR }),
+  ).toBeInTheDocument();
 });
 
-it('loads its content again on Try again', async () => {
+it('loads its content again when the error component retries', async () => {
   // Given content that failed to load once
   const things = crypto.randomUUID();
   renderBoundary(failingOnce(things));
 
-  // When the user tries again
-  fireEvent.click(await screen.findByRole('button', { name: 'Try again' }));
+  // When the error component retries
+  fireEvent.click(await screen.findByRole('button', { name: ERROR }));
 
   // Then the content shows
   expect(await screen.findByText(things)).toBeInTheDocument();
