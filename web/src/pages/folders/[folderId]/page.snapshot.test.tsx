@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
-import { FOLDER_ROUTE_PATH } from '../../shared/routes/routes.constants';
+import { FOLDER_ROUTE_PATH } from '../router.constants';
 import { Folder } from './page';
 
 describe('Folder', () => {
