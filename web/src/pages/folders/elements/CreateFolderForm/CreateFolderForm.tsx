@@ -5,7 +5,6 @@ import { ErrorMessage } from '../../../../shared/ErrorMessage/ErrorMessage';
 import { TextInput } from '../../../../shared/TextInput/TextInput';
 import { supabase } from '../../../../supabase';
 import { createFolderErrorMessage } from '../createFolderErrorMessage/createFolderErrorMessage';
-import { SidePicker } from '../SidePicker/SidePicker';
 import './CreateFolderForm.css';
 
 const NAME_MAX_LENGTH = 100;
@@ -22,11 +21,10 @@ export function CreateFolderForm({ onCreated }: CreateFolderFormProps) {
   async function createFolder(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
-    const side = String(new FormData(form).get('side'));
     setPending(true);
     const { error } = await supabase
       .from('folders')
-      .insert({ name: name.trim(), side });
+      .insert({ name: name.trim() });
     setPending(false);
     if (error) {
       setError(createFolderErrorMessage(error));
@@ -49,7 +47,6 @@ export function CreateFolderForm({ onCreated }: CreateFolderFormProps) {
           maxLength={NAME_MAX_LENGTH}
           onChange={setName}
         />
-        <SidePicker />
         <Button disabled={pending || name.trim() === ''}>Create folder</Button>
       </div>
       {error && <ErrorMessage>{error}</ErrorMessage>}
