@@ -1,6 +1,6 @@
 import ts from 'typescript';
-import { isScannedModule } from './componentPerFileGate';
-import type { ModuleSources } from './lowestCommonFolderGate';
+import { isScannedModule } from '../componentPerFileGate/componentPerFileGate';
+import type { ModuleSources } from '../lowestCommonFolderGate/lowestCommonFolderGate';
 
 type Export = { name: string; isType: boolean };
 
