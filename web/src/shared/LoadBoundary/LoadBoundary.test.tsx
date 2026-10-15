@@ -3,21 +3,12 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { expect, it } from 'vitest';
 import { createQueryClient } from '../../elements/createQueryClient/createQueryClient';
 import { LoadBoundary } from './LoadBoundary';
-
-const LOADING = 'Loading things';
-const ERROR = "Couldn't load things";
-
-function Loading() {
-  return <p>{LOADING}</p>;
-}
-
-function LoadError({ retry }: { retry: () => void }) {
-  return (
-    <button type="button" onClick={retry}>
-      {ERROR}
-    </button>
-  );
-}
+import {
+  ERROR,
+  LOADING,
+  LoadError,
+  Loading,
+} from '../../tests-shared/loadStates';
 
 function Things({ load }: { load: () => Promise<string> }) {
   const { data } = useSuspenseQuery({ queryKey: ['things'], queryFn: load });

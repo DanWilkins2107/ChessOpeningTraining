@@ -2,17 +2,10 @@ import { render } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { describe, expect, it } from 'vitest';
 import { LoadBoundary } from './LoadBoundary';
+import { LoadError, Loading } from '../../tests-shared/loadStates';
 
 function Broken(): ReactNode {
   throw new Error('Server down');
-}
-
-function Loading() {
-  return <p>Loading things</p>;
-}
-
-function LoadError() {
-  return <p>Couldn't load things</p>;
 }
 
 describe('LoadBoundary', () => {

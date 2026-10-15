@@ -10,8 +10,10 @@ exports[`LoadBoundary > matches snapshot 1`] = `
 
 exports[`LoadBoundary > matches snapshot when its content fails to load 1`] = `
 <div>
-  <p>
+  <button
+    type="button"
+  >
     Couldn't load things
-  </p>
+  </button>
 </div>
 `;
