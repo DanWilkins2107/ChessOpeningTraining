@@ -1,0 +1,19 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`LoadBoundary > matches snapshot 1`] = `
+<div>
+  <p>
+    Things
+  </p>
+</div>
+`;
+
+exports[`LoadBoundary > matches snapshot when its content fails to load 1`] = `
+<div>
+  <button
+    type="button"
+  >
+    Couldn't load things
+  </button>
+</div>
+`;

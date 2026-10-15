@@ -18,10 +18,7 @@ beforeAll(async () => {
   await owner.signIn(client);
   const { data, error } = await client
     .from('folders')
-    .insert([
-      { name: 'London', side: 'white' },
-      { name: 'Caro-Kann', side: 'black' },
-    ])
+    .insert([{ name: 'London' }, { name: 'Caro-Kann' }])
     .select('id, name');
   if (error) throw error;
   folderIds.london = data.find(({ name }) => name === 'London')!.id;
@@ -29,7 +26,7 @@ beforeAll(async () => {
   for (const name of ['Main line', 'Alternatives']) {
     const inserted = await client
       .from('move_trees')
-      .insert({ folder_id: folderIds.london, name });
+      .insert({ folder_id: folderIds.london, name, side: 'white' });
     if (inserted.error) throw inserted.error;
   }
 });

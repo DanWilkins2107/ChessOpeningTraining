@@ -9,7 +9,7 @@ describe('FolderList', () => {
       <FolderList
         response={{
           success: true,
-          data: [{ id: 'a4f1', name: 'London', side: 'white' }],
+          data: [{ id: 'a4f1', name: 'London' }],
           error: null,
           count: null,
           status: 200,

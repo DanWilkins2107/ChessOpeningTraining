@@ -19,10 +19,7 @@ beforeAll(async () => {
     { auth: { persistSession: false, autoRefreshToken: false } },
   );
   await withFolders.signIn(client);
-  for (const folder of [
-    { name: 'Caro-Kann', side: 'black' },
-    { name: 'London', side: 'white' },
-  ]) {
+  for (const folder of [{ name: 'Caro-Kann' }, { name: 'London' }]) {
     const { error } = await client.from('folders').insert(folder);
     if (error) throw error;
   }
@@ -52,7 +49,7 @@ it('shows the heading and a loading indicator while the user loads', async () =>
   expect(screen.getByRole('status')).toHaveAccessibleName('Loading folders');
 });
 
-it("lists the user's folders with their side, newest first", async () => {
+it("lists the user's folders, newest first", async () => {
   // Given a user with two folders
   await withFolders.signIn();
 
@@ -60,10 +57,7 @@ it("lists the user's folders with their side, newest first", async () => {
   render(<Folders />, { wrapper: MemoryRouter });
 
   // Then it lists them, newest first, and stops loading
-  expect(await listedFolders()).toEqual([
-    ['London', 'white'],
-    ['Caro-Kann', 'black'],
-  ]);
+  expect(await listedFolders()).toEqual([['London'], ['Caro-Kann']]);
   expect(screen.queryByRole('status')).not.toBeInTheDocument();
 });
 
@@ -122,11 +116,9 @@ it('asks for the columns the list renders and no others', async () => {
   render(<Folders />, { wrapper: MemoryRouter });
   await screen.findByText('No folders yet');
 
-  // Then the folders request selects those three columns alone
+  // Then the folders request selects those two columns alone
   const [input] = fetch.mock.calls.find(([input]) => isFoldersRequest(input))!;
-  expect(new URL(String(input)).searchParams.get('select')).toBe(
-    'id,name,side',
-  );
+  expect(new URL(String(input)).searchParams.get('select')).toBe('id,name');
 });
 
 it('shows a generic message when folders fail to load', async () => {

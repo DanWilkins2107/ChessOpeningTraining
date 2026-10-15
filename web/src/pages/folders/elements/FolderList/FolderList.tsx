@@ -24,15 +24,13 @@ export function FolderList({
 
   return (
     <ul className="folder-list">
-      {response.data.map(({ id, name, side }) => (
+      {response.data.map(({ id, name }) => (
         <li key={id}>
           <Link
             to={generatePath(FOLDER_ROUTE_PATH, { folderId: id })}
-            aria-label={name}
             className="folder-list-item"
           >
             <span className="folder-list-name">{name}</span>
-            <span className="folder-list-side">{side}</span>
           </Link>
         </li>
       ))}

@@ -152,3 +152,14 @@ it('leads to the delete account page', async () => {
   // Then they are on the delete account page
   expect(pathOf(memoryRouter)).toBe('/account/delete');
 });
+
+it('leads to the change password page', async () => {
+  // Given a signed-in user on their account page
+  const memoryRouter = await accountPage();
+
+  // When they choose to change their password
+  fireEvent.click(screen.getByRole('link', { name: 'Change password' }));
+
+  // Then they are on the change password page
+  expect(pathOf(memoryRouter)).toBe('/account/password');
+});

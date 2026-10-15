@@ -5,7 +5,7 @@ import type { FoldersResponse } from '../FoldersResponse/FoldersResponse';
 const fetchFolders = (): PromiseLike<FoldersResponse> =>
   supabase
     .from('folders')
-    .select('id, name, side')
+    .select('id, name')
     .order('created_at', { ascending: false });
 
 export function useFolders() {

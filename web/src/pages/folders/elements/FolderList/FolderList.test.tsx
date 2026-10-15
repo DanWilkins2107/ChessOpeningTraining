@@ -6,8 +6,8 @@ import { FolderList } from './FolderList';
 it("links each folder, named by the folder, to that folder's page", () => {
   // Given two folders
   const data = [
-    { id: 'a4f1', name: 'London', side: 'white' as const },
-    { id: 'b7c2', name: 'Caro-Kann', side: 'black' as const },
+    { id: 'a4f1', name: 'London' },
+    { id: 'b7c2', name: 'Caro-Kann' },
   ];
 
   // When the list renders

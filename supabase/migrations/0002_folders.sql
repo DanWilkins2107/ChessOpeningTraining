@@ -2,8 +2,9 @@ create table public.folders (
   id uuid primary key default gen_random_uuid(),
   owner_id uuid not null default auth.uid() references auth.users on delete cascade,
   name text not null check (name = trim(name) and char_length(name) between 1 and 100),
-  side text not null check (side in ('white', 'black')),
-  created_at timestamptz not null default now()
+  created_at timestamptz not null default now(),
+  -- Target of move_trees' (folder_id, owner_id) foreign key.
+  unique (id, owner_id)
 );
 
 create index folders_owner_id_idx on public.folders (owner_id);
@@ -13,12 +14,12 @@ create policy "Owners read their folders" on public.folders
   for select to authenticated
   using (owner_id = (select auth.uid()));
 
-grant insert (name, side) on table public.folders to authenticated;
+grant insert (name) on table public.folders to authenticated;
 create policy "Owners create their folders" on public.folders
   for insert to authenticated
   with check (owner_id = (select auth.uid()));
 
-grant update (name, side) on table public.folders to authenticated;
+grant update (name) on table public.folders to authenticated;
 create policy "Owners update their folders" on public.folders
   for update to authenticated
   using (owner_id = (select auth.uid()))

@@ -79,7 +79,7 @@ it('deletes their folders with it', async () => {
   const { id, client } = await signedInUser();
   const folder = await client
     .from('folders')
-    .insert({ name: 'Caro-Kann', side: 'black' })
+    .insert({ name: 'Caro-Kann' })
     .select()
     .single();
   expect(folder.error).toBeNull();

@@ -1,10 +1,10 @@
 import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { SidePicker } from './SidePicker';
+import { ChangePasswordForm } from './ChangePasswordForm';
 
-describe('SidePicker', () => {
+describe('ChangePasswordForm', () => {
   it('matches snapshot', () => {
-    const { container } = render(<SidePicker />);
+    const { container } = render(<ChangePasswordForm />);
     expect(container).toMatchSnapshot();
   });
 });
