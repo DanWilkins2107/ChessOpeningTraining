@@ -1,7 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeAll, expect, it, vi } from 'vitest';
+import { createQueryClient } from '../../elements/createQueryClient/createQueryClient';
 import { authSettled } from '../../tests-shared/authSettled';
 import { holdFirstRequest } from '../../tests-shared/heldRequest';
 import { registerTestUser } from '../../tests-shared/testUser';
@@ -32,6 +34,15 @@ afterEach(() => {
 const isFoldersRequest = (input: RequestInfo | URL) =>
   String(input).includes('/rest/v1/folders');
 
+const renderFoldersPage = () =>
+  render(
+    <QueryClientProvider client={createQueryClient()}>
+      <MemoryRouter>
+        <Folders />
+      </MemoryRouter>
+    </QueryClientProvider>,
+  );
+
 const listedFolders = async () =>
   (await screen.findAllByRole('link')).map((link) =>
     [...link.children].map((part) => part.textContent),
@@ -42,7 +53,7 @@ it('shows the heading and a loading indicator while the user loads', async () =>
   await withFolders.signIn();
 
   // When the page renders
-  render(<Folders />, { wrapper: MemoryRouter });
+  renderFoldersPage();
 
   // Then the heading shows straight away, with a loading indicator
   expect(screen.getByRole('heading', { name: 'Folders' })).toBeInTheDocument();
@@ -54,7 +65,7 @@ it("lists the user's folders, newest first", async () => {
   await withFolders.signIn();
 
   // When the page renders
-  render(<Folders />, { wrapper: MemoryRouter });
+  renderFoldersPage();
 
   // Then it lists them, newest first, and stops loading
   expect(await listedFolders()).toEqual([['London'], ['Caro-Kann']]);
@@ -66,7 +77,7 @@ it('says so when the user has no folders', async () => {
   await withoutFolders.signIn();
 
   // When the page renders
-  render(<Folders />, { wrapper: MemoryRouter });
+  renderFoldersPage();
 
   // Then it shows the empty state
   expect(await screen.findByText('No folders yet')).toBeInTheDocument();
@@ -75,7 +86,7 @@ it('says so when the user has no folders', async () => {
 it('adds a created folder to the list', async () => {
   // Given a signed-in user with no folders, on the page
   await creatingFolders.signIn();
-  render(<Folders />, { wrapper: MemoryRouter });
+  renderFoldersPage();
   await screen.findByText('No folders yet');
 
   // When they create a folder
@@ -96,7 +107,7 @@ it('requests folders only once the user has loaded', async () => {
   const fetch = vi.spyOn(window, 'fetch');
 
   // When the page renders and loads
-  render(<Folders />, { wrapper: MemoryRouter });
+  renderFoldersPage();
   await screen.findByText('No folders yet');
 
   // Then it requested folders once
@@ -113,7 +124,7 @@ it('asks for the columns the list renders and no others', async () => {
   const fetch = vi.spyOn(window, 'fetch');
 
   // When the page renders and loads
-  render(<Folders />, { wrapper: MemoryRouter });
+  renderFoldersPage();
   await screen.findByText('No folders yet');
 
   // Then the folders request selects those two columns alone
@@ -139,19 +150,40 @@ it('shows a generic message when folders fail to load', async () => {
   );
 
   // When the page renders
-  render(<Folders />, { wrapper: MemoryRouter });
+  renderFoldersPage();
 
   // Then it shows a generic message, not the server's error
   expect(await screen.findByRole('alert')).toHaveTextContent(
-    "Couldn't load your folders, try again",
+    "Couldn't load your folders",
   );
   expect(screen.queryByText(/permission denied/)).not.toBeInTheDocument();
+});
+
+it('loads the folders again when the user tries again', async () => {
+  // Given a signed-in user whose first folders request failed
+  await withFolders.signIn();
+  const realFetch = window.fetch;
+  let failed = false;
+  // mock-reason: RLS lets a user read their own folders, so the local server
+  // cannot be made to fail the request on demand. Only the first one is failed.
+  vi.spyOn(window, 'fetch').mockImplementation((input, init) => {
+    if (failed || !isFoldersRequest(input)) return realFetch(input, init);
+    failed = true;
+    return Promise.resolve(Response.json({}, { status: 500 }));
+  });
+  renderFoldersPage();
+
+  // When they try again
+  fireEvent.click(await screen.findByRole('button', { name: 'Try again' }));
+
+  // Then their folders show
+  expect(await listedFolders()).toEqual([['London'], ['Caro-Kann']]);
 });
 
 it("shows loading, not the previous user's folders, when the user changes", async () => {
   // Given one user's folders on screen, and a server slow to answer the next
   await withFolders.signIn();
-  render(<Folders />, { wrapper: MemoryRouter });
+  renderFoldersPage();
   await listedFolders();
   const realFetch = window.fetch;
   let release = () => {};
@@ -177,7 +209,7 @@ it('ignores a response for a user who has since changed', async () => {
   // Given a user whose folders request is held
   await withFolders.signIn();
   const request = holdFirstRequest(isFoldersRequest);
-  render(<Folders />, { wrapper: MemoryRouter });
+  renderFoldersPage();
   await authSettled();
   await request.sent();
 

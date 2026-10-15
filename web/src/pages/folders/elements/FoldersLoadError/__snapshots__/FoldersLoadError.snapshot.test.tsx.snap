@@ -1,0 +1,22 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`FoldersLoadError > matches snapshot 1`] = `
+<div>
+  <div
+    class="folders-load-error"
+  >
+    <p
+      class="error-message"
+      role="alert"
+    >
+      Couldn't load your folders
+    </p>
+    <button
+      class="button"
+      type="button"
+    >
+      Try again
+    </button>
+  </div>
+</div>
+`;

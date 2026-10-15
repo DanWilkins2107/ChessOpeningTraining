@@ -1,0 +1,11 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`FoldersLoading > matches snapshot 1`] = `
+<div>
+  <div
+    aria-label="Loading folders"
+    class="spinner"
+    role="status"
+  />
+</div>
+`;

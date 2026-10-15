@@ -1,14 +1,20 @@
-import { useUserFetch } from '../useUserFetch/useUserFetch';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { supabase } from '../../../../supabase';
-import type { FoldersResponse } from '../FoldersResponse/FoldersResponse';
+import type { Folder } from '../Folder/Folder';
+import { FOLDERS_QUERY_KEY } from './useFolders.constants';
 
-const fetchFolders = (): PromiseLike<FoldersResponse> =>
-  supabase
+async function fetchFolders(): Promise<Folder[]> {
+  const { data, error } = await supabase
     .from('folders')
     .select('id, name')
     .order('created_at', { ascending: false });
+  if (error) throw error;
+  return data;
+}
 
-export function useFolders() {
-  const { value, refresh } = useUserFetch(fetchFolders);
-  return { response: value, refresh };
+export function useFolders(userId: string) {
+  return useSuspenseQuery({
+    queryKey: [FOLDERS_QUERY_KEY, userId],
+    queryFn: fetchFolders,
+  }).data;
 }
