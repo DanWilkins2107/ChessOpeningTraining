@@ -1,5 +1,5 @@
 import { Link, generatePath } from 'react-router-dom';
-import { FOLDER_ROUTE_PATH } from '../../../../shared/routes/routes.constants';
+import { FOLDER_ROUTE_PATH } from '../../router.constants';
 import { ErrorMessage } from '../../../../shared/ErrorMessage/ErrorMessage';
 import { Spinner } from '../../../../shared/Spinner/Spinner';
 import type { FoldersResponse } from '../FoldersResponse/FoldersResponse';

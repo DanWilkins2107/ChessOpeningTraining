@@ -4,7 +4,7 @@ import {
   SIGNED_OUT_PARAM,
   SIGNED_OUT_PENDING,
 } from '../../shared/signOut/signOut.constants';
-import { ACCOUNT_EMAIL_ROUTE_PATH } from '../../shared/routes/routes.constants';
+import { ACCOUNT_EMAIL_ROUTE_PATH } from '../../elements/routes/routes.constants';
 import { useAnimatePieces } from './elements/useAnimatePieces/useAnimatePieces';
 import { supabase } from '../../supabase';
 import { AnimatePiecesToggle } from './elements/AnimatePiecesToggle/AnimatePiecesToggle';
