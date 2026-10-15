@@ -2,22 +2,25 @@ import { describe, expect, it, vi } from 'vitest';
 import { colourLiteralsIn, strayColourLiterals } from './paletteGate';
 
 // mock-reason: a vi.mock factory runs before this module body, so `repo` only
-// exists in time if vi.hoisted builds it; the helper import is dynamic because
-// static imports have not been evaluated that early either.
-const repo = await vi.hoisted(async () => {
-  const { fakeRepo } = await import('../../meta/tests-shared/fakeRepo');
-  return fakeRepo(
-    [
-      'src/pages/Home/page.css',
-      'src/pages/Home/page.tsx',
-      'src/logo.svg',
-      'src/theme.css',
-    ],
-    (file) =>
-      file.endsWith('.css')
-        ? '  color: #fff;\n  border: 1px solid red;'
-        : "const label = 'red';",
-  );
+// exists in time if vi.hoisted builds it.
+const repo = vi.hoisted(() => {
+  const tracked = [
+    'src/pages/Home/page.css',
+    'src/pages/Home/page.tsx',
+    'src/logo.svg',
+    'src/theme.css',
+  ];
+  const execFileSync = () =>
+    Buffer.from(tracked.map((file) => `${file}\0`).join(''));
+  const readFileSync = (file: string) =>
+    file.endsWith('.css')
+      ? '  color: #fff;\n  border: 1px solid red;'
+      : "const label = 'red';";
+
+  return {
+    childProcess: { execFileSync, default: { execFileSync } },
+    fs: { readFileSync, default: { readFileSync } },
+  };
 });
 
 // mock-reason: strayColourLiterals scans the real repo, which is green, so the

@@ -1,7 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { repoRoot } from '../repoPaths';
+import { repoRoot } from '../repoPaths/repoPaths';
 
 const TYPESCRIPT = /\.tsx?$/;
 
