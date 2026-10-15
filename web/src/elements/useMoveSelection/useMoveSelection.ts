@@ -1,9 +1,11 @@
 // fallow-ignore-file unused-file -- ef93ff81 2026-10-15 landed ahead of the study page, its first consumer.
 import { useState } from 'react';
 import { Chess } from 'chess.ts';
-import type { Move, PartialMove } from 'chess.ts';
+import type { Color, Move, PartialMove, PieceSymbol } from 'chess.ts';
 
 type Selection = { position: string; square: string; moves: Move[] };
+
+type Promotion = { position: string; from: string; to: string; color: Color };
 
 const selectionAt = (position: string, square: string) => {
   const chess = new Chess(position);
@@ -12,19 +14,14 @@ const selectionAt = (position: string, square: string) => {
     : null;
 };
 
-const toPartialMove = (move: Move): PartialMove => ({
-  from: move.from,
-  to: move.to,
-  // TODO b2a48478 2026-10-25: ask the Promotion picker rather than always queening.
-  promotion: move.promotion && 'q',
-});
-
 export function useMoveSelection(
   position: string,
   onMove?: (move: PartialMove) => void,
 ) {
   const [selection, setSelection] = useState<Selection | null>(null);
+  const [promotion, setPromotion] = useState<Promotion | null>(null);
   const selected = selection?.position === position ? selection : undefined;
+  const promoting = promotion?.position === position ? promotion : undefined;
 
   const choose = (square: string) => {
     const move = selected?.moves.find((legal) => legal.to === square);
@@ -33,8 +30,13 @@ export function useMoveSelection(
       return;
     }
     setSelection(null);
+    const { from, to, color } = move;
+    if (move.promotion !== undefined) {
+      setPromotion({ position, from, to, color });
+      return;
+    }
     // The board only hands out choose alongside onMove.
-    onMove!(toPartialMove(move));
+    onMove!({ from, to });
   };
 
   const pickUp = (square: string) => {
@@ -43,5 +45,13 @@ export function useMoveSelection(
     return picked !== null;
   };
 
-  return { selected, choose, pickUp };
+  // The board only shows the picker while a promotion is pending.
+  const promote = (piece: PieceSymbol) => {
+    setPromotion(null);
+    onMove!({ from: promoting!.from, to: promoting!.to, promotion: piece });
+  };
+
+  const cancelPromotion = () => setPromotion(null);
+
+  return { selected, choose, pickUp, promoting, promote, cancelPromotion };
 }

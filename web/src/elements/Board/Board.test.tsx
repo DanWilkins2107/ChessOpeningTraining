@@ -2,6 +2,7 @@ import { fireEvent, render, screen, within } from '@testing-library/react';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { ROOK_ON_H5, ROOKS_HOME } from '../../tests-shared/rookPositions';
 import { Board } from './Board';
+import { PIECES } from '../pieces/pieces.constants';
 
 const EMPTY = '8/8/8/8/8/8/8/8';
 const START = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
@@ -34,6 +35,7 @@ const AFTER_E4 = 'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1';
 const AFTER_KNIGHTS_OUT =
   'rnbqkb1r/pppppppp/5n2/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq - 2 2';
 const PAWN_ABOUT_TO_PROMOTE = '4k3/P7/8/8/8/8/8/4K3 w - - 0 1';
+const BLACK_PAWN_ABOUT_TO_PROMOTE = '4k3/8/8/8/8/8/p7/4K3 b - - 0 1';
 const PAWNS_FACE_OFF =
   'rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2';
 const EN_PASSANT_ON_F6 =
@@ -563,30 +565,6 @@ it('clears the selection when the position changes', () => {
   expect(squaresMarked('board-square-target')).toEqual([]);
   clickSquares('e4');
   expect(onMove).not.toHaveBeenCalled();
-});
-
-it('promotes to a queen', () => {
-  // Given a white pawn on a7
-  const onMove = vi.fn();
-  render(
-    <Board
-      position={PAWN_ABOUT_TO_PROMOTE}
-      animatePieces
-      showMoveHints
-      orientation="white"
-      onMove={onMove}
-    />,
-  );
-
-  // When it is clicked, then a8
-  clickSquares('a7', 'a8');
-
-  // Then the move promotes to a queen
-  expect(onMove).toHaveBeenCalledExactlyOnceWith({
-    from: 'a7',
-    to: 'a8',
-    promotion: 'q',
-  });
 });
 
 it('ignores clicks without a move handler', () => {
@@ -1437,4 +1415,235 @@ it('still selects and plays moves when hints are off', () => {
 
   // Then the move is handed over
   expect(onMove).toHaveBeenCalledExactlyOnceWith({ from: 'e2', to: 'e4' });
+});
+
+const choice = (name: string) =>
+  screen.getByRole('button', { name: `Promote to ${name}` });
+
+const choiceButtons = () =>
+  within(screen.getByRole('dialog', { name: 'Promote pawn' })).getAllByRole(
+    'button',
+  );
+
+const renderPromotion = (
+  onMove = vi.fn(),
+  orientation: 'white' | 'black' = 'white',
+) =>
+  render(
+    <Board
+      position={PAWN_ABOUT_TO_PROMOTE}
+      orientation={orientation}
+      animatePieces
+      showMoveHints
+      onMove={onMove}
+    />,
+  );
+
+it('holds a promoting move back until a piece is picked', () => {
+  // Given a white pawn on a7
+  const onMove = vi.fn();
+  renderPromotion(onMove);
+
+  // When it is clicked, then a8
+  clickSquares('a7', 'a8');
+
+  // Then no move is made, the pawn stays on a7, and the picker opens
+  expect(onMove).not.toHaveBeenCalled();
+  expect(square('a7, white pawn')).toBeInTheDocument();
+  expect(imageAt('translate(0%, 100%)')).toBeDefined();
+  expect(
+    choiceButtons().map((button) => button.getAttribute('aria-label')),
+  ).toEqual([
+    'Promote to queen',
+    'Promote to rook',
+    'Promote to bishop',
+    'Promote to knight',
+  ]);
+});
+
+it('stacks the choices down the file from the promotion square', () => {
+  // Given a white pawn on a7, from white
+  renderPromotion();
+
+  // When it is played to a8
+  clickSquares('a7', 'a8');
+
+  // Then the choices run from a8 down to a5
+  expect(choiceButtons().map((button) => button.style.transform)).toEqual([
+    'translate(0%, 0%)',
+    'translate(0%, 100%)',
+    'translate(0%, 200%)',
+    'translate(0%, 300%)',
+  ]);
+});
+
+it('stacks the choices up the file when the promotion square is at the bottom', () => {
+  // Given a white pawn on a7, from black
+  renderPromotion(vi.fn(), 'black');
+
+  // When it is played to a8
+  clickSquares('a7', 'a8');
+
+  // Then the choices run from a8 up to a5, in the right-hand file
+  expect(choiceButtons().map((button) => button.style.transform)).toEqual([
+    'translate(700%, 700%)',
+    'translate(700%, 600%)',
+    'translate(700%, 500%)',
+    'translate(700%, 400%)',
+  ]);
+});
+
+it('shows white choices for a white pawn', () => {
+  // Given a white pawn on a7
+  renderPromotion();
+
+  // When it is played to a8
+  clickSquares('a7', 'a8');
+
+  // Then the knight choice is a white knight
+  expect(choice('knight').querySelector('img')).toHaveAttribute(
+    'src',
+    PIECES.N.image,
+  );
+});
+
+it('shows black choices for a black pawn', () => {
+  // Given a black pawn on a2
+  render(
+    <Board
+      position={BLACK_PAWN_ABOUT_TO_PROMOTE}
+      orientation="white"
+      animatePieces
+      showMoveHints
+      onMove={vi.fn()}
+    />,
+  );
+
+  // When it is played to a1
+  clickSquares('a2', 'a1');
+
+  // Then the knight choice is a black knight
+  expect(choice('knight').querySelector('img')).toHaveAttribute(
+    'src',
+    PIECES.n.image,
+  );
+});
+
+it('moves focus to the queen when the picker opens', () => {
+  // Given a white pawn on a7
+  renderPromotion();
+
+  // When it is played to a8
+  clickSquares('a7', 'a8');
+
+  // Then the queen choice has focus
+  expect(choice('queen')).toHaveFocus();
+});
+
+it('promotes to the picked piece', () => {
+  // Given the picker is open for a7 to a8
+  const onMove = vi.fn();
+  renderPromotion(onMove);
+  clickSquares('a7', 'a8');
+
+  // When the knight is picked
+  fireEvent.click(choice('knight'));
+
+  // Then the move promotes to a knight and the picker closes
+  expect(onMove).toHaveBeenCalledExactlyOnceWith({
+    from: 'a7',
+    to: 'a8',
+    promotion: 'n',
+  });
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+});
+
+it('cancels the promotion on Escape', () => {
+  // Given the picker is open
+  const onMove = vi.fn();
+  renderPromotion(onMove);
+  clickSquares('a7', 'a8');
+
+  // When Escape is pressed
+  fireEvent.keyDown(choice('queen'), { key: 'Escape' });
+
+  // Then the picker closes with no move, and the pawn is not selected
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  expect(onMove).not.toHaveBeenCalled();
+  expect(squaresMarked('board-square-selected')).toEqual([]);
+});
+
+it('keeps the picker open on other keys', () => {
+  // Given the picker is open
+  renderPromotion();
+  clickSquares('a7', 'a8');
+
+  // When Tab is pressed
+  fireEvent.keyDown(choice('queen'), { key: 'Tab' });
+
+  // Then the picker stays open
+  expect(screen.getByRole('dialog')).toBeInTheDocument();
+});
+
+it('cancels the promotion on a click outside the picker', () => {
+  // Given the picker is open
+  const onMove = vi.fn();
+  renderPromotion(onMove);
+  clickSquares('a7', 'a8');
+
+  // When the page around it is clicked
+  fireEvent.click(document.querySelector('.promotion-picker-backdrop')!);
+
+  // Then the picker closes with no move
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  expect(onMove).not.toHaveBeenCalled();
+});
+
+it('cancels the promotion when the position changes', () => {
+  // Given the picker is open
+  const onMove = vi.fn();
+  const { rerender } = renderPromotion(onMove);
+  clickSquares('a7', 'a8');
+
+  // When a new position arrives
+  rerender(
+    <Board
+      position={START}
+      orientation="white"
+      animatePieces
+      showMoveHints
+      onMove={onMove}
+    />,
+  );
+
+  // Then the picker closes with no move
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  expect(onMove).not.toHaveBeenCalled();
+});
+
+it('does not pick up the piece beneath a pressed choice', () => {
+  // Given the picker is open, its rook over the a7 pawn
+  renderPromotion();
+  clickSquares('a7', 'a8');
+
+  // When the rook choice is pressed
+  fireEvent.pointerDown(choice('rook'), { ...POINTER, ...centreOf('a7') });
+
+  // Then the pawn is not selected
+  expect(squaresMarked('board-square-selected')).toEqual([]);
+});
+
+it('opens the picker for a pawn dragged onto the last rank', () => {
+  // Given a white pawn on a7
+  const onMove = vi.fn();
+  renderPromotion(onMove);
+
+  // When it is dragged to a8
+  drag(centreOf('a7'), centreOf('a8'));
+
+  // Then no move is made, the pawn is back on a7, and the picker opens
+  expect(onMove).not.toHaveBeenCalled();
+  expect(draggedPieces()).toEqual([]);
+  expect(imageAt('translate(0%, 100%)')).toBeDefined();
+  expect(choice('queen')).toBeInTheDocument();
 });
