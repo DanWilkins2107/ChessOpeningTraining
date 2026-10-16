@@ -2,8 +2,15 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { act, render, screen } from '@testing-library/react';
 import { afterEach, beforeAll, expect, it, vi } from 'vitest';
 import { createQueryClient } from '../../../../elements/createQueryClient/createQueryClient';
+import { LoadBoundary } from '../../../../shared/LoadBoundary/LoadBoundary';
+import { useUser } from '../../../../shared/useUser/useUser';
 import { authSettled } from '../../../../tests-shared/authSettled';
 import { holdFirstRequest } from '../../../../tests-shared/heldRequest';
+import {
+  LOADING,
+  LoadError,
+  Loading,
+} from '../../../../tests-shared/loadStates';
 import {
   isProfilesRequest,
   turnOffAnimationFor,
@@ -20,22 +27,28 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-function Setting() {
-  const setting = useAnimatePieces();
-  if (setting.status !== 'loaded') return setting.status;
-  return setting.animatePieces ? 'animate' : 'still';
+function Setting({ userId }: { userId: string }) {
+  const { data } = useAnimatePieces(userId);
+  return data ? 'animate' : 'still';
+}
+
+function SignedInSetting() {
+  const userId = useUser()?.id;
+  return (
+    userId && (
+      <LoadBoundary Loading={Loading} LoadError={LoadError}>
+        <Setting userId={userId} />
+      </LoadBoundary>
+    )
+  );
 }
 
 const renderSettingTestingHarness = () =>
   render(
     <QueryClientProvider client={createQueryClient()}>
-      <Setting />
+      <SignedInSetting />
     </QueryClientProvider>,
   );
-
-// mock-reason: spying only, to see which requests go out. Every request is
-// sent for real.
-const spyOnFetch = () => vi.spyOn(window, 'fetch');
 
 it('animates for a user who never changed the setting', async () => {
   // Given a user with no saved setting
@@ -59,21 +72,6 @@ it('keeps pieces still for a user who turned animation off', async () => {
   expect(await screen.findByText('still')).toBeInTheDocument();
 });
 
-it('stays loading without asking for a setting while signed out', async () => {
-  // Given no signed-in user
-  const fetchSpy = spyOnFetch();
-
-  // When the setting renders
-  renderSettingTestingHarness();
-  await authSettled();
-
-  // Then it is loading and has asked for nothing
-  expect(screen.getByText('loading')).toBeInTheDocument();
-  expect(fetchSpy.mock.calls.some(([input]) => isProfilesRequest(input))).toBe(
-    false,
-  );
-});
-
 it('shows loading, not the previous setting, while the next user loads', async () => {
   // Given a user who turned animation off, with their setting shown
   await still.signIn();
@@ -86,7 +84,7 @@ it('shows loading, not the previous setting, while the next user loads', async (
   await request.sent();
 
   // Then it is loading until their own setting arrives
-  expect(screen.getByText('loading')).toBeInTheDocument();
+  expect(screen.getByText(LOADING)).toBeInTheDocument();
   await request.answer();
   expect(await screen.findByText('animate')).toBeInTheDocument();
 });

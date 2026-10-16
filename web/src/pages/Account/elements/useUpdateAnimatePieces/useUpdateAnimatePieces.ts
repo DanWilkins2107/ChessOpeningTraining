@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../../../supabase';
 import { useUser } from '../../../../shared/useUser/useUser';
-import type { AnimatePiecesSetting } from '../AnimatePiecesSetting/AnimatePiecesSetting';
 import { ANIMATE_PIECES_QUERY_KEY } from '../useAnimatePieces/useAnimatePieces.constants';
 
 async function saveSetting(animatePieces: boolean) {
@@ -17,9 +16,9 @@ export function useUpdateAnimatePieces() {
   const { mutateAsync } = useMutation({
     mutationFn: saveSetting,
     onSuccess: (_, animatePieces) =>
-      queryClient.setQueryData<AnimatePiecesSetting>(
+      queryClient.setQueryData<boolean>(
         [ANIMATE_PIECES_QUERY_KEY, userId],
-        { status: 'loaded', animatePieces },
+        animatePieces,
       ),
   });
 

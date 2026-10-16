@@ -1,5 +1,6 @@
-import { act, fireEvent, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeAll, expect, it, vi } from 'vitest';
+import { authSettled } from '../../../../tests-shared/authSettled';
 import { holdFirstRequest } from '../../../../tests-shared/heldRequest';
 import {
   isProfilesRequest,
@@ -8,6 +9,7 @@ import {
 import { renderSettledAt } from '../../../../tests-shared/renderAt';
 import { registerTestUser } from '../../../../tests-shared/testUser';
 import { supabase } from '../../../../supabase';
+import { AnimatePiecesSetting } from './AnimatePiecesSetting';
 
 const firstVisit = registerTestUser();
 const savedOff = registerTestUser();
@@ -39,6 +41,10 @@ async function renderFor(user: ReturnType<typeof registerTestUser>) {
   await user.signIn();
   return renderSettledAt('/account');
 }
+
+// mock-reason: spying only, to see which requests go out. Every request is
+// sent for real.
+const watchRequests = () => vi.spyOn(window, 'fetch');
 
 function failProfilesRequests(method: 'GET' | 'POST') {
   const realFetch = window.fetch;
@@ -101,6 +107,23 @@ it('shows a placeholder until the setting loads', async () => {
   await request.answer();
   await loadedToggle();
   expect(screen.queryByRole('status')).not.toBeInTheDocument();
+});
+
+it('stays loading without asking for a setting while signed out', async () => {
+  // Given no signed-in user, and a watch on requests
+  const fetchSpy = watchRequests();
+
+  // When the setting renders
+  render(<AnimatePiecesSetting />);
+  await authSettled();
+
+  // Then it is loading and has asked for nothing
+  expect(
+    screen.getByRole('status', { name: 'Loading your setting' }),
+  ).toBeInTheDocument();
+  expect(fetchSpy.mock.calls.some(([input]) => isProfilesRequest(input))).toBe(
+    false,
+  );
 });
 
 it('animates pieces for a user who never changed the setting', async () => {
