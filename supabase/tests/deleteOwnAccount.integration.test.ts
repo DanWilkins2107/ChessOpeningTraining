@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { createHmac } from 'node:crypto';
 import { env } from 'node:process';
 import { expect, it } from 'vitest';
+import { signedToken } from './tests-shared/signedToken';
 import {
   admin,
   anonClient,
@@ -39,27 +39,21 @@ async function signedInByMagicLink() {
   return { id, client };
 }
 
-const base64url = (value: object) =>
-  Buffer.from(JSON.stringify(value)).toString('base64url');
-
 // The auth server only stamps the time a password was entered, so a stale
-// entry has to be signed here, with the stack's own secret.
+// entry has to be signed here.
 function clientWithPasswordEnteredSecondsAgo(id: string, seconds: number) {
   const now = Math.floor(Date.now() / 1000);
-  const unsigned = `${base64url({ alg: 'HS256', typ: 'JWT' })}.${base64url({
+  const token = signedToken({
     sub: id,
     role: 'authenticated',
     aud: 'authenticated',
     iat: now,
     exp: now + 60,
     amr: [{ method: 'password', timestamp: now - seconds }],
-  })}`;
-  const signature = createHmac('sha256', env.SUPABASE_JWT_SECRET!)
-    .update(unsigned)
-    .digest('base64url');
+  });
   return createClient(env.SUPABASE_URL!, env.SUPABASE_ANON_KEY!, {
     auth: { persistSession: false, autoRefreshToken: false },
-    global: { headers: { Authorization: `Bearer ${unsigned}.${signature}` } },
+    global: { headers: { Authorization: `Bearer ${token}` } },
   });
 }
 
