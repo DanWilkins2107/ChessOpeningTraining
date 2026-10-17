@@ -1,4 +1,4 @@
-// fallow-ignore-file unused-file -- ef93ff81 2026-10-15 landed ahead of the study page, its first consumer.
+// fallow-ignore-file unused-file -- ef93ff81 2026-11-16 landed ahead of the study page, its first consumer.
 import { useState } from 'react';
 import { Chess } from 'chess.ts';
 import type { Move, PartialMove } from 'chess.ts';

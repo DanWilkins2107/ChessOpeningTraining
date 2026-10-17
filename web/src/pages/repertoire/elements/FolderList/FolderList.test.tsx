@@ -28,10 +28,10 @@ it("links each folder, named by the folder, to that folder's page", () => {
   // Then each row links to its own folder page, named by the folder alone
   expect(screen.getByRole('link', { name: 'London' })).toHaveAttribute(
     'href',
-    '/folders/a4f1',
+    '/repertoire/a4f1',
   );
   expect(screen.getByRole('link', { name: 'Caro-Kann' })).toHaveAttribute(
     'href',
-    '/folders/b7c2',
+    '/repertoire/b7c2',
   );
 });
