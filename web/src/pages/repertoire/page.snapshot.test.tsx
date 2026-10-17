@@ -1,10 +1,10 @@
 import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { Folders } from './page';
+import { Repertoire } from './page';
 
-describe('Folders', () => {
+describe('Repertoire', () => {
   it('matches snapshot', () => {
-    const { container } = render(<Folders />);
+    const { container } = render(<Repertoire />);
     expect(container).toMatchSnapshot();
   });
 });

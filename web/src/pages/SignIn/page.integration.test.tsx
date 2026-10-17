@@ -18,11 +18,11 @@ it('shows the form while the user is still loading', async () => {
   await confirmed.signIn();
 
   // When sign in renders
-  const memoryRouter = renderAt('/sign-in?next=%2Ffolders');
+  const memoryRouter = renderAt('/sign-in?next=%2Frepertoire');
 
   // Then it shows the form without navigating
   expect(signInButton()).toBeInTheDocument();
-  expect(pathOf(memoryRouter)).toBe('/sign-in?next=%2Ffolders');
+  expect(pathOf(memoryRouter)).toBe('/sign-in?next=%2Frepertoire');
 });
 
 it('sends a signed-in user to their return path', async () => {
@@ -30,17 +30,17 @@ it('sends a signed-in user to their return path', async () => {
   await confirmed.signIn();
 
   // When they open sign in with a return path and the user loads
-  const memoryRouter = renderAt('/sign-in?next=%2Ffolders%3Fline%3Dab12');
+  const memoryRouter = renderAt('/sign-in?next=%2Frepertoire%3Fline%3Dab12');
   await authSettled();
 
   // Then they are at the return path
-  expect(pathOf(memoryRouter)).toBe('/folders?line=ab12');
+  expect(pathOf(memoryRouter)).toBe('/repertoire?line=ab12');
 });
 
 it('leaves sign in out of history when sending a signed-in user on', async () => {
   // Given a signed-in user sent on from sign in
   await confirmed.signIn();
-  const memoryRouter = renderAt('/elsewhere', '/sign-in?next=%2Ffolders');
+  const memoryRouter = renderAt('/elsewhere', '/sign-in?next=%2Frepertoire');
   await authSettled();
 
   // When they go back
