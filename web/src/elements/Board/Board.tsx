@@ -3,6 +3,7 @@ import './Board.css';
 import type { Move, PartialMove } from 'chess.ts';
 import { BoardPieces } from '../BoardPieces/BoardPieces';
 import { BoardSquares } from '../BoardSquares/BoardSquares';
+import { PromotionPicker } from '../PromotionPicker/PromotionPicker';
 import { FILES } from '../files/files.constants';
 import { useMoveSelection } from '../useMoveSelection/useMoveSelection';
 import { usePieceDrag } from '../usePieceDrag/usePieceDrag';
@@ -14,6 +15,11 @@ const hintsFor = (selection?: { square: string; moves: Move[] }) => ({
   selected: selection?.square,
   targets: selection?.moves.map((move) => move.to),
 });
+
+const axesFor = (orientation: 'white' | 'black') =>
+  orientation === 'white'
+    ? { files: FILES, ranks: RANKS }
+    : { files: [...FILES].reverse(), ranks: [...RANKS].reverse() };
 
 type BoardProps = {
   position: string;
@@ -30,10 +36,10 @@ export function Board({
   showMoveHints,
   onMove,
 }: BoardProps) {
-  const files = orientation === 'white' ? FILES : [...FILES].reverse();
-  const ranks = orientation === 'white' ? RANKS : [...RANKS].reverse();
-  const pieces = useTrackedPieces(position);
-  const { selected, choose, pickUp } = useMoveSelection(position, onMove);
+  const { files, ranks } = axesFor(orientation);
+  const { selected, choose, pickUp, promoting, promote, cancelPromotion } =
+    useMoveSelection(position, onMove);
+  const pieces = useTrackedPieces(promoting?.shown ?? position);
   // A drop is a click on the square it lands on.
   const { dragged, pointerProps } = usePieceDrag({
     files,
@@ -65,6 +71,13 @@ export function Board({
         animate={animatePieces}
         dragged={dragged}
       />
+      {promoting && (
+        <PromotionPicker
+          color={promoting.color}
+          onPick={promote}
+          onCancel={cancelPromotion}
+        />
+      )}
     </div>
   );
 }
