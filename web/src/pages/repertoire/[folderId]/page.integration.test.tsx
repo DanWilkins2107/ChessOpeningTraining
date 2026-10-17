@@ -60,7 +60,7 @@ it('shows a loading indicator while the user loads', async () => {
   await owner.signIn();
 
   // When their folder page renders
-  renderAt(`/folders/${folderIds.london}`);
+  renderAt(`/repertoire/${folderIds.london}`);
 
   // Then it shows a loading indicator
   expect(loadingFolder()).toBeInTheDocument();
@@ -71,7 +71,7 @@ it("shows the folder's name as the page heading", async () => {
   await owner.signIn();
 
   // When their folder page renders
-  renderAt(`/folders/${folderIds.london}`);
+  renderAt(`/repertoire/${folderIds.london}`);
 
   // Then the folder name is the heading, and loading stops
   expect(await folderHeading('London')).toBeInTheDocument();
@@ -83,7 +83,7 @@ it("lists the folder's move trees, oldest first", async () => {
   await owner.signIn();
 
   // When their folder page renders
-  renderAt(`/folders/${folderIds.london}`);
+  renderAt(`/repertoire/${folderIds.london}`);
 
   // Then it lists the move tree names in the order they were created
   await folderHeading('London');
@@ -99,7 +99,7 @@ it('says so when the folder has no move trees', async () => {
   await owner.signIn();
 
   // When their folder page renders
-  renderAt(`/folders/${folderIds.caroKann}`);
+  renderAt(`/repertoire/${folderIds.caroKann}`);
 
   // Then it says there are no move trees yet
   await folderHeading('Caro-Kann');
@@ -115,7 +115,7 @@ it('requests the folder once, only once the user has loaded', async () => {
   const fetch = vi.spyOn(window, 'fetch');
 
   // When their folder page renders and loads
-  renderAt(`/folders/${folderIds.london}`);
+  renderAt(`/repertoire/${folderIds.london}`);
   await folderHeading('London');
 
   // Then it requested the folder once, with move tree names oldest first but
@@ -137,7 +137,7 @@ it.each([
   const fetch = vi.spyOn(window, 'fetch');
 
   // When they open it
-  renderAt(`/folders/${folderId()}`);
+  renderAt(`/repertoire/${folderId()}`);
 
   // Then it shows not found, and no move trees, after a single folder request
   expect(await screen.findByRole('alert')).toHaveTextContent(
@@ -168,7 +168,7 @@ it('shows a load error when the request fails', async () => {
   failFolderRequests();
 
   // When their folder page renders
-  renderAt(`/folders/${folderIds.london}`);
+  renderAt(`/repertoire/${folderIds.london}`);
 
   // Then it shows the load error
   expect(await screen.findByRole('alert')).toHaveTextContent(
@@ -180,7 +180,7 @@ it('loads the folder when the user tries again after a failure', async () => {
   // Given a signed-in owner shown a load error
   await owner.signIn();
   const failing = failFolderRequests();
-  renderAt(`/folders/${folderIds.london}`);
+  renderAt(`/repertoire/${folderIds.london}`);
   await screen.findByRole('alert');
 
   // When the server recovers and they try again
@@ -198,7 +198,7 @@ it("shows not found, without asking, for an id that isn't a folder id", async ()
   const fetch = vi.spyOn(window, 'fetch');
 
   // When they open a malformed folder id
-  renderAt('/folders/ab12');
+  renderAt('/repertoire/ab12');
 
   // Then it shows not found, without requesting the folder
   expect(await screen.findByRole('alert')).toHaveTextContent(
@@ -212,7 +212,7 @@ it("shows not found, without asking, for an id that isn't a folder id", async ()
 it("shows loading, not the previous user's folder, when the user changes", async () => {
   // Given the owner's folder on screen, and folder requests left unanswered
   await owner.signIn();
-  renderAt(`/folders/${folderIds.london}`);
+  renderAt(`/repertoire/${folderIds.london}`);
   await folderHeading('London');
   stallFolderRequests();
 
@@ -227,12 +227,12 @@ it("shows loading, not the previous user's folder, when the user changes", async
 it('shows loading, not the previous folder, when the folder changes', async () => {
   // Given one folder on screen, and folder requests left unanswered
   await owner.signIn();
-  const memoryRouter = renderAt(`/folders/${folderIds.london}`);
+  const memoryRouter = renderAt(`/repertoire/${folderIds.london}`);
   await folderHeading('London');
   stallFolderRequests();
 
   // When the user moves to another folder
-  await act(() => memoryRouter.navigate(`/folders/${folderIds.caroKann}`));
+  await act(() => memoryRouter.navigate(`/repertoire/${folderIds.caroKann}`));
 
   // Then it shows loading in place of the first folder
   expect(loadingFolder()).toBeInTheDocument();
