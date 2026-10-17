@@ -1,14 +1,10 @@
 import { QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { expect, it } from 'vitest';
 import { createQueryClient } from '../../elements/createQueryClient/createQueryClient';
 import { LoadBoundary } from '../LoadBoundary/LoadBoundary';
-import {
-  ERROR,
-  LOADING,
-  LoadError,
-  Loading,
-} from '../../tests-shared/loadStates';
+import { LOADING, LoadError, Loading } from '../../tests-shared/loadStates';
 import { registerTestUser } from '../../tests-shared/testUser';
 import { useSuspenseUser } from './useSuspenseUser';
 
@@ -51,11 +47,17 @@ it('shows the user of a stored session', async () => {
 it('throws when no one is signed in', async () => {
   // Given nothing stored
 
-  // When the harness renders
-  renderSuspenseUserTestingHarness();
+  // When the harness renders inside an error boundary
+  render(
+    <QueryClientProvider client={createQueryClient()}>
+      <ErrorBoundary fallbackRender={({ error }) => String(error)}>
+        <SuspenseUserId />
+      </ErrorBoundary>
+    </QueryClientProvider>,
+  );
 
-  // Then the error boundary catches it
+  // Then the boundary catches the missing user
   expect(
-    await screen.findByRole('button', { name: ERROR }),
+    await screen.findByText('Error: useSuspenseUser needs a signed-in user'),
   ).toBeInTheDocument();
 });

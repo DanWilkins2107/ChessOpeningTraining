@@ -1,12 +1,16 @@
 import { QueryClientProvider } from '@tanstack/react-query';
 import { act, render, screen } from '@testing-library/react';
-import { expect, it } from 'vitest';
+import { afterEach, expect, it, vi } from 'vitest';
 import { createQueryClient } from '../../elements/createQueryClient/createQueryClient';
 import { registerTestUser } from '../../tests-shared/testUser';
 import { supabase } from '../../supabase';
 import { useUser } from './useUser';
 
 const { user, signIn } = registerTestUser();
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 function UserId() {
   const current = useUser();
@@ -96,4 +100,37 @@ it('shows signed out once they sign out', async () => {
 
   // Then it shows signed out
   expect(await screen.findByText('signed out')).toBeInTheDocument();
+});
+
+it('asks for the session once, however many components read it', async () => {
+  // Given one component showing the user
+
+  // mock-reason: the number of session lookups is the assertion, and the
+  // screen looks the same either way. The spy still calls the real client.
+  const getSession = vi.spyOn(supabase.auth, 'getSession');
+  const client = createQueryClient();
+  const { rerender } = render(
+    <QueryClientProvider client={client}>
+      <p>
+        <UserId />
+      </p>
+    </QueryClientProvider>,
+  );
+  await screen.findByText('signed out');
+
+  // When a second one mounts
+  rerender(
+    <QueryClientProvider client={client}>
+      <p>
+        <UserId />
+      </p>
+      <p>
+        <UserId />
+      </p>
+    </QueryClientProvider>,
+  );
+  await screen.findAllByText('signed out');
+
+  // Then the session was looked up once
+  expect(getSession).toHaveBeenCalledOnce();
 });
