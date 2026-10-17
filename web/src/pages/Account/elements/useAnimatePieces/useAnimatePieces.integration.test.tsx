@@ -3,7 +3,7 @@ import { act, render, screen } from '@testing-library/react';
 import { afterEach, beforeAll, expect, it, vi } from 'vitest';
 import { createQueryClient } from '../../../../elements/createQueryClient/createQueryClient';
 import { authSettled } from '../../../../tests-shared/authSettled';
-import { holdFirstRequest } from '../../../../tests-shared/heldRequest';
+import { holdFirstRequest } from '../../tests-shared/heldRequest';
 import {
   isProfilesRequest,
   turnOffAnimationFor,
