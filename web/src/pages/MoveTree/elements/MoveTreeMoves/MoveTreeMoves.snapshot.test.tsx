@@ -4,7 +4,7 @@ import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { authUserQuery } from '../../../../elements/authUserQuery/authUserQuery';
 import { createQueryClient } from '../../../../elements/createQueryClient/createQueryClient';
-import { MOVES_QUERY_KEY } from '../../../../elements/useMoves/useMoves.constants';
+import { MOVES_QUERY_KEY } from '../useMoves/useMoves.constants';
 import { MoveTreeMoves } from './MoveTreeMoves';
 
 const MOVE_TREE_ID = '7c3e1d2a-5b4f-4e6a-9c8d-1f2e3a4b5c6d';
