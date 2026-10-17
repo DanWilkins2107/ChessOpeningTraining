@@ -1,0 +1,34 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`TrainCard > matches snapshot 1`] = `
+<div>
+  <section
+    aria-labelledby="train-card-heading"
+    class="train-card"
+  >
+    <h2
+      class="train-card-heading"
+      id="train-card-heading"
+    >
+      Train
+    </h2>
+    <p
+      class="train-card-stat"
+    >
+      Last trained 3 days ago
+    </p>
+    <p
+      class="train-card-stat"
+    >
+      12 moves trained today
+    </p>
+    <a
+      class="train-card-action"
+      data-discover="true"
+      href="/train"
+    >
+      Start training
+    </a>
+  </section>
+</div>
+`;
