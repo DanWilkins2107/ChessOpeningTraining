@@ -1,0 +1,33 @@
+/* fallow-ignore-file unused-file -- 57b95f1c 2026-11-15 landed ahead of the repertoire page, its first consumer. */
+.daily-test-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+  padding: var(--gap-md);
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
+}
+
+.daily-test-card-heading {
+  font-size: var(--text-lg);
+}
+
+.daily-test-card-status {
+  color: var(--ink-muted);
+}
+
+.daily-test-card-action {
+  align-self: flex-start;
+  padding: var(--gap-sm) var(--gap-md);
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: var(--surface-raised);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.daily-test-card-action:hover {
+  background: var(--accent-hover);
+}
