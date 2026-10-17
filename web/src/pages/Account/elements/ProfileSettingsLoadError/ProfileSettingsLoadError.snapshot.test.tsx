@@ -1,10 +1,10 @@
 import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { SettingSwitchLoadError } from './SettingSwitchLoadError';
+import { ProfileSettingsLoadError } from './ProfileSettingsLoadError';
 
-describe('SettingSwitchLoadError', () => {
+describe('ProfileSettingsLoadError', () => {
   it('matches snapshot', () => {
-    const { container } = render(<SettingSwitchLoadError />);
+    const { container } = render(<ProfileSettingsLoadError />);
     expect(container).toMatchSnapshot();
   });
 });

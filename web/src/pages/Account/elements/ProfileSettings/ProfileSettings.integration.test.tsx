@@ -325,11 +325,10 @@ it('says so when the setting fails to load', async () => {
   // When the toggle renders
   await renderFor(failing);
 
-  // Then each setting says so beside its label, with no switch
+  // Then one message says so under the labels, with no switch
   const alerts = await screen.findAllByRole('alert');
   expect(alerts.map((alert) => alert.textContent)).toEqual([
-    "Couldn't load",
-    "Couldn't load",
+    "Couldn't load your settings, try again",
   ]);
   expectBothLabels();
   expect(screen.queryByRole('switch')).not.toBeInTheDocument();
