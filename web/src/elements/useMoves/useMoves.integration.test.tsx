@@ -1,12 +1,17 @@
 import { createClient } from '@supabase/supabase-js';
-import { QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
 import { afterEach, beforeAll, expect, it, vi } from 'vitest';
-import { createQueryClient } from '../createQueryClient/createQueryClient';
 import { env } from '../../env';
-import { authSettled } from '../../tests-shared/authSettled';
+import { LoadBoundary } from '../../shared/LoadBoundary/LoadBoundary';
+import {
+  ERROR,
+  LOADING,
+  LoadError,
+  Loading,
+} from '../../tests-shared/loadStates';
 import { move } from '../../tests-shared/moveNode';
 import { registerTestUser } from '../../tests-shared/testUser';
+import { withQueryClient } from '../../tests-shared/withQueryClient';
 import { useMoves } from './useMoves';
 import { spyOnFetch } from '../../tests-shared/spyOnFetch';
 
@@ -39,16 +44,27 @@ const isMoveTreesRequest = (input: RequestInfo | URL) =>
   String(input).includes('/rest/v1/move_trees');
 
 function Moves() {
-  const { status, data } = useMoves(moveTreeId);
-  return status === 'success' ? JSON.stringify(data) : status;
+  return JSON.stringify(useMoves(moveTreeId));
 }
 
 const renderMovesTestingHarness = () =>
   render(
-    <QueryClientProvider client={createQueryClient()}>
-      <Moves />
-    </QueryClientProvider>,
+    withQueryClient(
+      <LoadBoundary Loading={Loading} LoadError={LoadError}>
+        <Moves />
+      </LoadBoundary>,
+    ),
   );
+
+it('suspends while the moves load', () => {
+  // Given nothing rendered yet
+
+  // When the harness renders
+  renderMovesTestingHarness();
+
+  // Then it shows the loading fallback
+  expect(screen.getByText(LOADING)).toBeInTheDocument();
+});
 
 it("loads the treeOwner's moves", async () => {
   // Given a signed-in treeOwner of a tree with moves
@@ -83,19 +99,18 @@ it("fails for someone else's tree", async () => {
   renderMovesTestingHarness();
 
   // Then loading fails
-  expect(await screen.findByText('error')).toBeInTheDocument();
+  expect(await screen.findByText(ERROR)).toBeInTheDocument();
 });
 
-it('stays pending without asking for moves while signed out', async () => {
+it('fails without asking for moves while signed out', async () => {
   // Given no signed-in user
   const fetchSpy = spyOnFetch();
 
   // When the moves render
   renderMovesTestingHarness();
-  await authSettled();
 
-  // Then it is pending and has asked for nothing
-  expect(screen.getByText('pending')).toBeInTheDocument();
+  // Then loading fails and nothing was asked for
+  expect(await screen.findByText(ERROR)).toBeInTheDocument();
   expect(fetchSpy.mock.calls.some(([input]) => isMoveTreesRequest(input))).toBe(
     false,
   );
