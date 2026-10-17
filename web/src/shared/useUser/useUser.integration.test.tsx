@@ -1,5 +1,7 @@
+import { QueryClientProvider } from '@tanstack/react-query';
 import { act, render, screen } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
+import { createQueryClient } from '../../elements/createQueryClient/createQueryClient';
 import { registerTestUser } from '../../tests-shared/testUser';
 import { supabase } from '../../supabase';
 import { useUser } from './useUser';
@@ -16,7 +18,12 @@ function UserId() {
   return current === null ? 'signed out' : current.id;
 }
 
-const renderUserTestingHarness = () => render(<UserId />);
+const renderUserTestingHarness = () =>
+  render(
+    <QueryClientProvider client={createQueryClient()}>
+      <UserId />
+    </QueryClientProvider>,
+  );
 
 function expireStoredSession() {
   const key = localStorage.key(0) ?? '';
@@ -95,38 +102,35 @@ it('shows signed out once they sign out', async () => {
   expect(await screen.findByText('signed out')).toBeInTheDocument();
 });
 
-it('does not subscribe to auth changes again when it rerenders', async () => {
-  // Given a signed-out user on screen
+it('asks for the session once, however many components read it', async () => {
+  // Given one component showing the user
 
-  // mock-reason: the subscription count is the assertion, and supabase-js has
-  // no public way to count listeners. The spy still calls the real client.
-  const subscribe = vi.spyOn(supabase.auth, 'onAuthStateChange');
-  renderUserTestingHarness();
+  // mock-reason: the number of session lookups is the assertion, and the
+  // screen looks the same either way. The spy still calls the real client.
+  const getSession = vi.spyOn(supabase.auth, 'getSession');
+  const client = createQueryClient();
+  const { rerender } = render(
+    <QueryClientProvider client={client}>
+      <p>
+        <UserId />
+      </p>
+    </QueryClientProvider>,
+  );
   await screen.findByText('signed out');
 
-  // When signing in rerenders it
-  await act(signIn);
-  await screen.findByText(user.id);
+  // When a second one mounts
+  rerender(
+    <QueryClientProvider client={client}>
+      <p>
+        <UserId />
+      </p>
+      <p>
+        <UserId />
+      </p>
+    </QueryClientProvider>,
+  );
+  await screen.findAllByText('signed out');
 
-  // Then it is still the one subscription
-  expect(subscribe).toHaveBeenCalledOnce();
-});
-
-it('unsubscribes from auth changes on unmount', async () => {
-  // Given the harness on screen, subscribed to auth changes
-
-  // mock-reason: the subscription is the thing under test, and supabase-js has
-  // no public way to see it. The spies still call the real client.
-  const subscribe = vi.spyOn(supabase.auth, 'onAuthStateChange');
-  const { unmount } = renderUserTestingHarness();
-  await screen.findByText('signed out');
-  const { subscription } = subscribe.mock.results[0].value.data;
-  // mock-reason: as above, for the subscription's unsubscribe.
-  const unsubscribe = vi.spyOn(subscription, 'unsubscribe');
-
-  // When it unmounts
-  unmount();
-
-  // Then it unsubscribes
-  expect(unsubscribe).toHaveBeenCalledOnce();
+  // Then the session was looked up once
+  expect(getSession).toHaveBeenCalledOnce();
 });
