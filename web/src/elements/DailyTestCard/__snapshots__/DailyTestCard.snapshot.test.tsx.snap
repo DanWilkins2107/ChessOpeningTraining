@@ -1,0 +1,28 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`DailyTestCard > matches snapshot 1`] = `
+<div>
+  <section
+    class="daily-test-card"
+  >
+    <h2
+      class="daily-test-card-heading"
+    >
+      Daily test
+    </h2>
+    <p
+      class="daily-test-card-status"
+    >
+      Done
+       · 80%
+    </p>
+    <a
+      class="daily-test-card-action"
+      data-discover="true"
+      href="/daily-test"
+    >
+      View result
+    </a>
+  </section>
+</div>
+`;

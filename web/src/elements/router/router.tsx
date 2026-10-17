@@ -9,9 +9,9 @@ import {
   ROOT_ROUTE_PATH,
 } from '../routes/routes.constants';
 import {
-  FOLDERS_ROUTE_PATH,
+  REPERTOIRE_ROUTE_PATH,
   FOLDER_ROUTE_PATH,
-} from '../../pages/folders/router.constants';
+} from '../../pages/repertoire/router.constants';
 import { RootLayout } from '../RootLayout/RootLayout';
 import { Account } from '../../pages/Account/page';
 import { ChangeEmail } from '../../pages/ChangeEmail/page';
@@ -23,8 +23,8 @@ import { NotFound } from '../../pages/NotFound/page';
 import { SetNewPassword } from '../../pages/SetNewPassword/page';
 import { SignIn } from '../../pages/SignIn/page';
 import { SignUp } from '../../pages/SignUp/page';
-import { Folders } from '../../pages/folders/page';
-import { Folder } from '../../pages/folders/[folderId]/page';
+import { Repertoire } from '../../pages/repertoire/page';
+import { Folder } from '../../pages/repertoire/[folderId]/page';
 
 export const router = createBrowserRouter([
   {
@@ -40,7 +40,7 @@ export const router = createBrowserRouter([
           { path: ACCOUNT_EMAIL_ROUTE_PATH, element: <ChangeEmail /> },
           { path: CHANGE_PASSWORD_ROUTE_PATH, element: <ChangePassword /> },
           { path: DELETE_ACCOUNT_ROUTE_PATH, element: <DeleteAccount /> },
-          { path: FOLDERS_ROUTE_PATH, element: <Folders /> },
+          { path: REPERTOIRE_ROUTE_PATH, element: <Repertoire /> },
           { path: FOLDER_ROUTE_PATH, element: <Folder /> },
         ],
       },
