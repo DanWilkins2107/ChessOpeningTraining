@@ -25,7 +25,11 @@ describe('MoveTreeList', () => {
     const { container } = await act(() =>
       render(
         <Suspense>
-          <MoveTreeList folder={Promise.resolve(respond(moveTrees))} />
+          <MoveTreeList
+            folderId="7c3e1d2a-5b4f-4e6a-9c8d-1f2e3a4b5c6d"
+            folder={Promise.resolve(respond(moveTrees))}
+            onCreated={() => {}}
+          />
         </Suspense>,
       ),
     );
