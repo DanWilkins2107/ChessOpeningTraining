@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { act, screen, within } from '@testing-library/react';
+import { act, fireEvent, screen, within } from '@testing-library/react';
 import { afterEach, beforeAll, expect, it, vi } from 'vitest';
 import { renderAt } from '../../../tests-shared/renderAt';
 import { registerTestUser } from '../../../tests-shared/testUser';
@@ -149,25 +149,46 @@ it.each([
   ).toHaveLength(1);
 });
 
-it('shows a load error when the request fails', async () => {
-  // Given a signed-in owner, and folder requests failing on the server
-  await owner.signIn();
+function failFolderRequests() {
   const realFetch = window.fetch;
   // mock-reason: the local server has no way to make this request fail. Other
   // requests are sent for real.
-  vi.spyOn(window, 'fetch').mockImplementation((input, init) =>
-    isFolderRequest(input)
-      ? Promise.resolve(new Response('{}', { status: 500 }))
-      : realFetch(input, init),
-  );
+  return vi
+    .spyOn(window, 'fetch')
+    .mockImplementation((input, init) =>
+      isFolderRequest(input)
+        ? Promise.resolve(new Response('{}', { status: 500 }))
+        : realFetch(input, init),
+    );
+}
+
+it('shows a load error when the request fails', async () => {
+  // Given a signed-in owner, and folder requests failing on the server
+  await owner.signIn();
+  failFolderRequests();
 
   // When their folder page renders
   renderAt(`/folders/${folderIds.london}`);
 
   // Then it shows the load error
   expect(await screen.findByRole('alert')).toHaveTextContent(
-    "Couldn't load this folder, try again",
+    "Couldn't load this folder",
   );
+});
+
+it('loads the folder when the user tries again after a failure', async () => {
+  // Given a signed-in owner shown a load error
+  await owner.signIn();
+  const failing = failFolderRequests();
+  renderAt(`/folders/${folderIds.london}`);
+  await screen.findByRole('alert');
+
+  // When the server recovers and they try again
+  failing.mockRestore();
+  fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+
+  // Then the folder shows
+  expect(await folderHeading('London')).toBeInTheDocument();
 });
 
 it("shows not found, without asking, for an id that isn't a folder id", async () => {

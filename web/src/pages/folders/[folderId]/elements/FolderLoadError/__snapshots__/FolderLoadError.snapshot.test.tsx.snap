@@ -2,11 +2,22 @@
 
 exports[`FolderLoadError > matches snapshot 1`] = `
 <div>
-  <p
-    class="error-message"
-    role="alert"
+  <form
+    action="javascript:throw new Error('A React form was unexpectedly submitted. If you called form.submit() manually, consider using form.requestSubmit() instead. If you\\'re trying to use event.stopPropagation() in a submit event handler, consider also calling event.preventDefault().')"
+    class="folder-load-error"
   >
-    Couldn't load this folder, try again
-  </p>
+    <p
+      class="error-message"
+      role="alert"
+    >
+      Couldn't load this folder
+    </p>
+    <button
+      class="button"
+      type="submit"
+    >
+      Try again
+    </button>
+  </form>
 </div>
 `;

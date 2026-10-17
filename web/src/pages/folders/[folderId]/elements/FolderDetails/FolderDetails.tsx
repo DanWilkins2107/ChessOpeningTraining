@@ -1,18 +1,21 @@
-import { Suspense } from 'react';
-import { MoveTreeList } from '../MoveTreeList/MoveTreeList';
+import { LoadBoundary } from '../../../../../shared/LoadBoundary/LoadBoundary';
+import { useUser } from '../../../../../shared/useUser/useUser';
+import { FolderContents } from '../FolderContents/FolderContents';
+import { FolderLoadError } from '../FolderLoadError/FolderLoadError';
 import { FolderLoading } from '../FolderLoading/FolderLoading';
-import { FolderName } from '../FolderName/FolderName';
-import { useFolder } from '../useFolder/useFolder';
 
 export function FolderDetails({ folderId }: { folderId: string }) {
-  const folder = useFolder(folderId);
+  const userId = useUser()?.id;
 
-  if (folder === undefined) return <FolderLoading />;
+  if (userId === undefined) return <FolderLoading />;
 
   return (
-    <Suspense key={folderId} fallback={<FolderLoading />}>
-      <FolderName folder={folder} />
-      <MoveTreeList folder={folder} />
-    </Suspense>
+    <LoadBoundary
+      key={folderId}
+      Loading={FolderLoading}
+      LoadError={FolderLoadError}
+    >
+      <FolderContents userId={userId} folderId={folderId} />
+    </LoadBoundary>
   );
 }

@@ -4,7 +4,7 @@ import { FolderLoadError } from './FolderLoadError';
 
 describe('FolderLoadError', () => {
   it('matches snapshot', () => {
-    const { container } = render(<FolderLoadError />);
+    const { container } = render(<FolderLoadError retry={() => {}} />);
     expect(container).toMatchSnapshot();
   });
 });

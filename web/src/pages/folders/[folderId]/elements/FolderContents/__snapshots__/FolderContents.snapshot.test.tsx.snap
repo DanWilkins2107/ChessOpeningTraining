@@ -1,0 +1,25 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`FolderContents > matches snapshot with a folder 1`] = `
+<div>
+  <h1>
+    London
+  </h1>
+  <p
+    class="move-tree-list-empty"
+  >
+    No move trees yet
+  </p>
+</div>
+`;
+
+exports[`FolderContents > matches snapshot with no folder 1`] = `
+<div>
+  <p
+    class="error-message"
+    role="alert"
+  >
+    Folder not found
+  </p>
+</div>
+`;
