@@ -11,18 +11,23 @@ async function inserted(table: string, rows: object[]) {
   return data;
 }
 
-it('returns top-level folders and move trees, newest first', async () => {
-  // Given a user with two top-level folders, a folder inside one, two
-  // top-level move trees and a move tree inside a folder
+it('returns every folder and move tree with its parent, newest first', async () => {
+  // Given a user with two top-level folders, a folder inside one, a top-level
+  // move tree and a move tree inside the nested folder
   const { id, client } = await signedInUser();
   const [london, caroKann] = await inserted('folders', [
     { owner_id: id, name: 'London', created_at: '2026-01-02T00:00:00Z' },
     { owner_id: id, name: 'Caro-Kann', created_at: '2026-01-01T00:00:00Z' },
   ]);
-  await inserted('folders', [
-    { owner_id: id, name: 'Jobava', parent_id: london.id },
+  const [jobava] = await inserted('folders', [
+    {
+      owner_id: id,
+      name: 'Jobava',
+      parent_id: london.id,
+      created_at: '2026-01-03T00:00:00Z',
+    },
   ]);
-  const [scotch, sicilian] = await inserted('move_trees', [
+  const [scotch, advance] = await inserted('move_trees', [
     {
       owner_id: id,
       name: 'Scotch',
@@ -31,28 +36,27 @@ it('returns top-level folders and move trees, newest first', async () => {
     },
     {
       owner_id: id,
-      name: 'Sicilian',
+      name: 'Advance',
       side: 'black',
+      folder_id: jobava.id,
       created_at: '2026-01-02T00:00:00Z',
     },
-  ]);
-  await inserted('move_trees', [
-    { owner_id: id, name: 'Advance', side: 'white', folder_id: caroKann.id },
   ]);
 
   // When they get their repertoire
   const { data, error } = await getRepertoire(client);
 
-  // Then it lists only the top level, newest first, with no other columns
+  // Then it lists every level, newest first, with no other columns
   expect(error).toBeNull();
   expect(data).toEqual({
     folders: [
-      { id: london.id, name: 'London' },
-      { id: caroKann.id, name: 'Caro-Kann' },
+      { id: jobava.id, name: 'Jobava', parent_id: london.id },
+      { id: london.id, name: 'London', parent_id: null },
+      { id: caroKann.id, name: 'Caro-Kann', parent_id: null },
     ],
     move_trees: [
-      { id: sicilian.id, name: 'Sicilian', side: 'black' },
-      { id: scotch.id, name: 'Scotch', side: 'white' },
+      { id: advance.id, name: 'Advance', side: 'black', folder_id: jobava.id },
+      { id: scotch.id, name: 'Scotch', side: 'white', folder_id: null },
     ],
   });
 });
