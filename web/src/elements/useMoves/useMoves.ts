@@ -1,8 +1,8 @@
 // fallow-ignore-file unused-file -- ed293461 2026-11-15 landed ahead of the move tree page, its first consumer.
 import { useQuery } from '@tanstack/react-query';
-import { movesSchema } from '../../../../../elements/movesSchema/movesSchema';
-import { useUser } from '../../../../../shared/useUser/useUser';
-import { supabase } from '../../../../../supabase';
+import { movesSchema } from '../movesSchema/movesSchema';
+import { useUser } from '../../shared/useUser/useUser';
+import { supabase } from '../../supabase';
 import { MOVES_QUERY_KEY } from './useMoves.constants';
 
 async function fetchMoves(moveTreeId: string) {
