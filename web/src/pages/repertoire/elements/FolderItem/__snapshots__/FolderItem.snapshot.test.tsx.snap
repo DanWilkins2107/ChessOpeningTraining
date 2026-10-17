@@ -1,0 +1,91 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`FolderItem > matches snapshot 1`] = `
+<div>
+  <ul>
+    <li
+      class="folder-item"
+    >
+      <button
+        aria-controls="_r_0_"
+        aria-expanded="false"
+        class="folder-item-toggle"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="folder-item-chevron"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="m9 6 6 6-6 6"
+          />
+        </svg>
+        <svg
+          aria-hidden="true"
+          class="folder-item-icon"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M3 6a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"
+          />
+        </svg>
+        <span
+          class="folder-item-name"
+        >
+          London
+        </span>
+      </button>
+      <div
+        class="folder-item-contents"
+        hidden=""
+        id="_r_0_"
+      >
+        <ul
+          class="folder-item-list"
+        >
+          <li
+            class="move-tree-item"
+          >
+            <svg
+              aria-hidden="true"
+              class="move-tree-item-icon"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                cx="6"
+                cy="5"
+                r="2.5"
+              />
+              <circle
+                cx="6"
+                cy="19"
+                r="2.5"
+              />
+              <circle
+                cx="18"
+                cy="8"
+                r="2.5"
+              />
+              <path
+                d="M6 7.5v9M18 10.5c0 4-4 5.5-10 6.5"
+              />
+            </svg>
+            <span
+              class="move-tree-item-name"
+            >
+              Jobava
+            </span>
+            <span
+              class="move-tree-item-side"
+              data-side="white"
+            >
+              white
+            </span>
+          </li>
+        </ul>
+      </div>
+    </li>
+  </ul>
+</div>
+`;

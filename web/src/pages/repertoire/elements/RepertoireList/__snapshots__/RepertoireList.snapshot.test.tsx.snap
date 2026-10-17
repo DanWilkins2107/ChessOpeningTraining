@@ -5,44 +5,162 @@ exports[`RepertoireList > matches snapshot 1`] = `
   <ul
     class="repertoire-list"
   >
-    <li>
-      <a
-        class="repertoire-list-item repertoire-list-folder"
-        data-discover="true"
-        href="/repertoire/a4f1"
+    <li
+      class="folder-item"
+    >
+      <button
+        aria-controls="_r_0_"
+        aria-expanded="false"
+        class="folder-item-toggle"
+        type="button"
       >
+        <svg
+          aria-hidden="true"
+          class="folder-item-chevron"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="m9 6 6 6-6 6"
+          />
+        </svg>
+        <svg
+          aria-hidden="true"
+          class="folder-item-icon"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M3 6a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"
+          />
+        </svg>
         <span
-          class="repertoire-list-name"
+          class="folder-item-name"
         >
           London
         </span>
-      </a>
+      </button>
+      <div
+        class="folder-item-contents"
+        hidden=""
+        id="_r_0_"
+      >
+        <ul
+          class="folder-item-list"
+        >
+          <li
+            class="move-tree-item"
+          >
+            <svg
+              aria-hidden="true"
+              class="move-tree-item-icon"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                cx="6"
+                cy="5"
+                r="2.5"
+              />
+              <circle
+                cx="6"
+                cy="19"
+                r="2.5"
+              />
+              <circle
+                cx="18"
+                cy="8"
+                r="2.5"
+              />
+              <path
+                d="M6 7.5v9M18 10.5c0 4-4 5.5-10 6.5"
+              />
+            </svg>
+            <span
+              class="move-tree-item-name"
+            >
+              Jobava
+            </span>
+            <span
+              class="move-tree-item-side"
+              data-side="white"
+            >
+              white
+            </span>
+          </li>
+        </ul>
+      </div>
     </li>
     <li
-      class="repertoire-list-item"
+      class="move-tree-item"
     >
+      <svg
+        aria-hidden="true"
+        class="move-tree-item-icon"
+        viewBox="0 0 24 24"
+      >
+        <circle
+          cx="6"
+          cy="5"
+          r="2.5"
+        />
+        <circle
+          cx="6"
+          cy="19"
+          r="2.5"
+        />
+        <circle
+          cx="18"
+          cy="8"
+          r="2.5"
+        />
+        <path
+          d="M6 7.5v9M18 10.5c0 4-4 5.5-10 6.5"
+        />
+      </svg>
       <span
-        class="repertoire-list-name"
+        class="move-tree-item-name"
       >
         Scotch
       </span>
       <span
-        class="repertoire-list-side"
+        class="move-tree-item-side"
         data-side="white"
       >
         white
       </span>
     </li>
     <li
-      class="repertoire-list-item"
+      class="move-tree-item"
     >
+      <svg
+        aria-hidden="true"
+        class="move-tree-item-icon"
+        viewBox="0 0 24 24"
+      >
+        <circle
+          cx="6"
+          cy="5"
+          r="2.5"
+        />
+        <circle
+          cx="6"
+          cy="19"
+          r="2.5"
+        />
+        <circle
+          cx="18"
+          cy="8"
+          r="2.5"
+        />
+        <path
+          d="M6 7.5v9M18 10.5c0 4-4 5.5-10 6.5"
+        />
+      </svg>
       <span
-        class="repertoire-list-name"
+        class="move-tree-item-name"
       >
         Sicilian
       </span>
       <span
-        class="repertoire-list-side"
+        class="move-tree-item-side"
         data-side="black"
       >
         black

@@ -19,24 +19,28 @@ beforeAll(async () => {
     { auth: { persistSession: false, autoRefreshToken: false } },
   );
   await withFolders.signIn(client);
-  for (const folder of [{ name: 'Caro-Kann' }, { name: 'London' }]) {
-    const { error } = await client.from('folders').insert(folder);
+  const seedRepertoireRow = async (
+    table: 'folders' | 'move_trees',
+    row: Record<string, string>,
+  ) => {
+    const { data, error } = await client
+      .from(table)
+      .insert(row)
+      .select('id')
+      .single();
     if (error) throw error;
-  }
-  const { data: folder, error } = await client
-    .from('folders')
-    .select('id')
-    .eq('name', 'London')
-    .single();
-  if (error) throw error;
-  for (const moveTree of [
-    { name: 'Scotch', side: 'white' },
-    { name: 'Sicilian', side: 'black' },
-    { name: 'London System', side: 'white', folder_id: folder.id },
-  ]) {
-    const { error } = await client.from('move_trees').insert(moveTree);
-    if (error) throw error;
-  }
+    return data.id as string;
+  };
+  await seedRepertoireRow('folders', { name: 'Caro-Kann' });
+  const london = await seedRepertoireRow('folders', { name: 'London' });
+  await seedRepertoireRow('folders', { name: 'Jobava', parent_id: london });
+  await seedRepertoireRow('move_trees', { name: 'Scotch', side: 'white' });
+  await seedRepertoireRow('move_trees', { name: 'Sicilian', side: 'black' });
+  await seedRepertoireRow('move_trees', {
+    name: 'London System',
+    side: 'white',
+    folder_id: london,
+  });
 });
 
 afterEach(() => {
@@ -66,22 +70,37 @@ it('shows the heading and a loading indicator while the user loads', async () =>
   expect(screen.getByRole('status')).toHaveAccessibleName('Loading repertoire');
 });
 
-it("lists the user's folders, then their top-level move trees, newest first", async () => {
-  // Given a user with two folders and three move trees, one of them in a folder
+it("lists the user's root folders, then their top-level move trees, newest first", async () => {
+  // Given a user with two root folders, a subfolder, and three move trees,
+  // one of them in a folder
   await withFolders.signIn();
 
   // When the page renders
   render(<Repertoire />, { wrapper: MemoryRouter });
 
-  // Then it lists the folders, then the top-level move trees with their side,
-  // each newest first, and stops loading
+  // Then it lists the root folders, then the top-level move trees with their
+  // side, each newest first, and stops loading
   expect(await listedRows()).toEqual([
-    'London',
-    'Caro-Kann',
+    'LondonLondon Systemwhite',
+    'Caro-KannEmpty folder',
     'Sicilianblack',
     'Scotchwhite',
   ]);
   expect(screen.queryByRole('status')).not.toBeInTheDocument();
+});
+
+it('expands a folder to show the move trees inside it', async () => {
+  // Given a user with a move tree inside a folder, on the page
+  await withFolders.signIn();
+  render(<Repertoire />, { wrapper: MemoryRouter });
+  const folder = await screen.findByRole('button', { name: 'London' });
+  expect(screen.getByText('London System')).not.toBeVisible();
+
+  // When they expand the folder
+  fireEvent.click(folder);
+
+  // Then the move tree shows
+  expect(screen.getByText('London System')).toBeVisible();
 });
 
 it('says so when the user has no folders or move trees', async () => {
@@ -144,15 +163,17 @@ it('asks for the columns the list renders and no others', async () => {
   render(<Repertoire />, { wrapper: MemoryRouter });
   await screen.findByText('No folders or move trees yet');
 
-  // Then folders are asked for id and name, and top-level move trees for
-  // id, name and side
+  // Then root folders are asked for id and name, and all move trees for
+  // id, name, side and folder
   const params = (isRequest: (input: RequestInfo | URL) => boolean) => {
     const [input] = fetch.mock.calls.find(([input]) => isRequest(input))!;
     return new URL(String(input)).searchParams;
   };
   expect(params(isFoldersRequest).get('select')).toBe('id,name');
-  expect(params(isMoveTreesRequest).get('select')).toBe('id,name,side');
-  expect(params(isMoveTreesRequest).get('folder_id')).toBe('is.null');
+  expect(params(isFoldersRequest).get('parent_id')).toBe('is.null');
+  expect(params(isMoveTreesRequest).get('select')).toBe(
+    'id,name,side,folder_id',
+  );
 });
 
 it('shows a generic message when folders fail to load', async () => {

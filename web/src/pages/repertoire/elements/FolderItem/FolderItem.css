@@ -1,0 +1,68 @@
+.folder-item-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-sm);
+  width: 100%;
+  padding: var(--gap-sm);
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.folder-item-toggle:hover,
+.folder-item-toggle:focus-visible {
+  background: var(--accent-surface);
+}
+
+.folder-item-chevron {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: var(--ink-muted);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 120ms ease;
+}
+
+.folder-item-toggle[aria-expanded='true'] .folder-item-chevron {
+  transform: rotate(90deg);
+}
+
+.folder-item-icon {
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  fill: var(--highlight);
+  stroke: var(--ink);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+
+.folder-item-name {
+  font-weight: 600;
+}
+
+.folder-item-contents {
+  margin-left: calc(var(--gap-sm) + 0.5rem);
+  padding-left: var(--gap-sm);
+  border-left: 1px solid var(--border);
+}
+
+.folder-item-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.folder-item-empty {
+  margin: 0;
+  padding: var(--gap-sm);
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+}

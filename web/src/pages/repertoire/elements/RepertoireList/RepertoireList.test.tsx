@@ -1,6 +1,5 @@
 import { PostgrestError } from '@supabase/supabase-js';
-import { render, screen, within } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { expect, it } from 'vitest';
 import type { RepertoireResponse } from '../RepertoireResponse/RepertoireResponse';
 import { RepertoireList } from './RepertoireList';
@@ -29,53 +28,63 @@ const failed = {
 };
 
 const renderList = (response: RepertoireResponse) =>
-  render(<RepertoireList response={response} />, { wrapper: MemoryRouter });
+  render(<RepertoireList response={response} />);
 
-it("links each folder, named by the folder, to that folder's page", () => {
-  // Given two folders
-  const folders = [
-    { id: 'a4f1', name: 'London' },
-    { id: 'b7c2', name: 'Caro-Kann' },
-  ];
+const visibleRows = () =>
+  screen.getAllByRole('listitem').map((row) => row.textContent);
 
-  // When the list renders
-  renderList({ folders: ok(folders), moveTrees: ok([]) });
-
-  // Then each row links to its own folder page, named by the folder alone
-  expect(screen.getByRole('link', { name: 'London' })).toHaveAttribute(
-    'href',
-    '/repertoire/a4f1',
-  );
-  expect(screen.getByRole('link', { name: 'Caro-Kann' })).toHaveAttribute(
-    'href',
-    '/repertoire/b7c2',
-  );
-});
-
-it('lists folders first, then move trees with their side', () => {
-  // Given a folder and two move trees, one per side
+it('lists folders first, collapsed, then top-level move trees with their side', () => {
+  // Given a folder, a move tree in it, and two top-level move trees
   const folders = [{ id: 'a4f1', name: 'London' }];
   const moveTrees = [
-    { id: 'c3d4', name: 'Scotch', side: 'white' as const },
-    { id: 'e5f6', name: 'Sicilian', side: 'black' as const },
+    { id: 'c3d4', name: 'Scotch', side: 'white' as const, folder_id: null },
+    { id: 'b1a2', name: 'Jobava', side: 'white' as const, folder_id: 'a4f1' },
+    { id: 'e5f6', name: 'Sicilian', side: 'black' as const, folder_id: null },
   ];
 
   // When the list renders
   renderList({ folders: ok(folders), moveTrees: ok(moveTrees) });
 
-  // Then the folder comes first, and each move tree shows its side
-  const rows = screen.getAllByRole('listitem');
-  expect(rows.map((row) => row.textContent)).toEqual([
-    'London',
+  // Then the folder comes first with its move tree hidden, then each
+  // top-level move tree
+  expect(visibleRows()).toEqual([
+    'LondonJobavawhite',
     'Scotchwhite',
     'Sicilianblack',
   ]);
-  expect(within(rows[1]).queryByRole('link')).not.toBeInTheDocument();
+  expect(screen.getByText('Jobava')).not.toBeVisible();
+});
+
+it('expands a folder to show only its own move trees', () => {
+  // Given two folders, each with a move tree
+  const folders = [
+    { id: 'a4f1', name: 'London' },
+    { id: 'b7c2', name: 'Caro-Kann' },
+  ];
+  const moveTrees = [
+    { id: 'b1a2', name: 'Jobava', side: 'white' as const, folder_id: 'a4f1' },
+    { id: 'd9e8', name: 'Advance', side: 'black' as const, folder_id: 'b7c2' },
+  ];
+  renderList({ folders: ok(folders), moveTrees: ok(moveTrees) });
+
+  // When the first folder is expanded
+  fireEvent.click(screen.getByRole('button', { name: 'London' }));
+
+  // Then its move tree shows beneath it, and the other folder stays shut
+  expect(visibleRows()).toEqual([
+    'LondonJobavawhite',
+    'Jobavawhite',
+    'Caro-KannAdvanceblack',
+  ]);
+  expect(screen.getByText('Jobava')).toBeVisible();
+  expect(screen.getByText('Advance')).not.toBeVisible();
 });
 
 it('shows the empty state only when there are neither folders nor move trees', () => {
   // Given a move tree and no folders
-  const moveTrees = [{ id: 'c3d4', name: 'Scotch', side: 'white' as const }];
+  const moveTrees = [
+    { id: 'c3d4', name: 'Scotch', side: 'white' as const, folder_id: null },
+  ];
 
   // When the list renders
   renderList({ folders: ok([]), moveTrees: ok(moveTrees) });

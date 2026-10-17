@@ -7,11 +7,11 @@ async function fetchRepertoire(): Promise<RepertoireResponse> {
     supabase
       .from('folders')
       .select('id, name')
+      .is('parent_id', null)
       .order('created_at', { ascending: false }),
     supabase
       .from('move_trees')
-      .select('id, name, side')
-      .is('folder_id', null)
+      .select('id, name, side, folder_id')
       .order('created_at', { ascending: false }),
   ]);
   return { folders, moveTrees };
