@@ -73,9 +73,6 @@ export function Board({
       />
       {promoting && (
         <PromotionPicker
-          files={files}
-          ranks={ranks}
-          square={promoting.to}
           color={promoting.color}
           onPick={promote}
           onCancel={cancelPromotion}

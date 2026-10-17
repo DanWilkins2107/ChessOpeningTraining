@@ -1461,36 +1461,19 @@ it('holds a promoting move back until a piece is picked', () => {
   ]);
 });
 
-it('stacks the choices down the file from the promotion square', () => {
-  // Given a white pawn on a7, from white
-  renderPromotion();
+it('washes out the board behind a bar of choices', () => {
+  // Given a white pawn on a7
+  const { container } = renderPromotion();
 
   // When it is played to a8
   clickSquares('a7', 'a8');
 
-  // Then the choices run from a8 down to a5
-  expect(choiceButtons().map((button) => button.style.transform)).toEqual([
-    'translate(0%, 0%)',
-    'translate(0%, 100%)',
-    'translate(0%, 200%)',
-    'translate(0%, 300%)',
-  ]);
-});
-
-it('stacks the choices up the file when the promotion square is at the bottom', () => {
-  // Given a white pawn on a7, from black
-  renderPromotion(vi.fn(), 'black');
-
-  // When it is played to a8
-  clickSquares('a7', 'a8');
-
-  // Then the choices run from a8 up to a5, in the right-hand file
-  expect(choiceButtons().map((button) => button.style.transform)).toEqual([
-    'translate(700%, 700%)',
-    'translate(700%, 600%)',
-    'translate(700%, 500%)',
-    'translate(700%, 400%)',
-  ]);
+  // Then the picker covers the board, its choices in one bar
+  const picker = screen.getByRole('dialog', { name: 'Promote pawn' });
+  expect(picker.parentElement).toBe(container.querySelector('.board'));
+  expect(picker).toHaveClass('promotion-picker');
+  expect(choice('queen').parentElement).toHaveClass('promotion-picker-bar');
+  expect(choice('knight').parentElement).toBe(choice('queen').parentElement);
 });
 
 it('shows white choices for a white pawn', () => {

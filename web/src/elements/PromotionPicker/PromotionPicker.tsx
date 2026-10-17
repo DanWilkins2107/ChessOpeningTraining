@@ -11,32 +11,21 @@ const CHOICES: { piece: PieceSymbol; name: string }[] = [
 ];
 
 type PromotionPickerProps = {
-  files: string[];
-  ranks: number[];
-  square: string;
   color: Color;
   onPick: (piece: PieceSymbol) => void;
   onCancel: () => void;
 };
 
 export function PromotionPicker({
-  files,
-  ranks,
-  square,
   color,
   onPick,
   onCancel,
 }: PromotionPickerProps) {
-  const column = files.indexOf(square[0]);
-  const row = ranks.indexOf(Number(square[1]));
-  // The promotion square is on the top or bottom edge; the choices stack in
-  // from it towards the middle of the board.
-  const step = row === 0 ? 1 : -1;
-
   return (
     <div
       role="dialog"
       aria-label="Promote pawn"
+      className="promotion-picker"
       // A press on the picker is not a press on the square beneath it.
       onPointerDown={(event) => event.stopPropagation()}
       onKeyDown={(event) => {
@@ -44,24 +33,23 @@ export function PromotionPicker({
       }}
     >
       <div className="promotion-picker-backdrop" onClick={onCancel} />
-      {CHOICES.map(({ piece, name }, index) => (
-        <button
-          key={piece}
-          type="button"
-          className="promotion-picker-choice"
-          aria-label={`Promote to ${name}`}
-          autoFocus={index === 0}
-          style={{
-            transform: `translate(${column * 100}%, ${(row + step * index) * 100}%)`,
-          }}
-          onClick={() => onPick(piece)}
-        >
-          <img
-            src={PIECES[color === 'w' ? piece.toUpperCase() : piece].image}
-            alt=""
-          />
-        </button>
-      ))}
+      <div className="promotion-picker-bar">
+        {CHOICES.map(({ piece, name }, index) => (
+          <button
+            key={piece}
+            type="button"
+            className="promotion-picker-choice"
+            aria-label={`Promote to ${name}`}
+            autoFocus={index === 0}
+            onClick={() => onPick(piece)}
+          >
+            <img
+              src={PIECES[color === 'w' ? piece.toUpperCase() : piece].image}
+              alt=""
+            />
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

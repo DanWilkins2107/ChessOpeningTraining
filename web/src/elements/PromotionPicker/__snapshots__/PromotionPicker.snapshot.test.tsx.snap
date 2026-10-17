@@ -4,55 +4,56 @@ exports[`PromotionPicker > matches snapshot 1`] = `
 <div>
   <div
     aria-label="Promote pawn"
+    class="promotion-picker"
     role="dialog"
   >
     <div
       class="promotion-picker-backdrop"
     />
-    <button
-      aria-label="Promote to queen"
-      class="promotion-picker-choice"
-      style="transform: translate(0%, 0%);"
-      type="button"
+    <div
+      class="promotion-picker-bar"
     >
-      <img
-        alt=""
-        src="/src/elements/pieces/wQ.svg"
-      />
-    </button>
-    <button
-      aria-label="Promote to rook"
-      class="promotion-picker-choice"
-      style="transform: translate(0%, 100%);"
-      type="button"
-    >
-      <img
-        alt=""
-        src="/src/elements/pieces/wR.svg"
-      />
-    </button>
-    <button
-      aria-label="Promote to bishop"
-      class="promotion-picker-choice"
-      style="transform: translate(0%, 200%);"
-      type="button"
-    >
-      <img
-        alt=""
-        src="/src/elements/pieces/wB.svg"
-      />
-    </button>
-    <button
-      aria-label="Promote to knight"
-      class="promotion-picker-choice"
-      style="transform: translate(0%, 300%);"
-      type="button"
-    >
-      <img
-        alt=""
-        src="/src/elements/pieces/wN.svg"
-      />
-    </button>
+      <button
+        aria-label="Promote to queen"
+        class="promotion-picker-choice"
+        type="button"
+      >
+        <img
+          alt=""
+          src="/src/elements/pieces/wQ.svg"
+        />
+      </button>
+      <button
+        aria-label="Promote to rook"
+        class="promotion-picker-choice"
+        type="button"
+      >
+        <img
+          alt=""
+          src="/src/elements/pieces/wR.svg"
+        />
+      </button>
+      <button
+        aria-label="Promote to bishop"
+        class="promotion-picker-choice"
+        type="button"
+      >
+        <img
+          alt=""
+          src="/src/elements/pieces/wB.svg"
+        />
+      </button>
+      <button
+        aria-label="Promote to knight"
+        class="promotion-picker-choice"
+        type="button"
+      >
+        <img
+          alt=""
+          src="/src/elements/pieces/wN.svg"
+        />
+      </button>
+    </div>
   </div>
 </div>
 `;
