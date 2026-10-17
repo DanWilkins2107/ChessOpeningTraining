@@ -17,6 +17,12 @@
   transition: none;
 }
 
+/* Follows the pointer directly, over the other pieces and the edge labels. */
+.board-piece-dragged {
+  z-index: 2;
+  transition: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .board-piece {
     transition: none;

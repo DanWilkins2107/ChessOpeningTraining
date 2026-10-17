@@ -22,11 +22,19 @@ export function NewPasswordForm({ onSaved }: NewPasswordFormProps) {
 
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const form = event.currentTarget;
     setPending(true);
     const { error } = await supabase.auth.updateUser({ password });
     setPending(false);
-    if (error) setError(newPasswordErrorMessage(error));
-    else await onSaved();
+    if (error) {
+      setError(newPasswordErrorMessage(error));
+      return;
+    }
+    form.reset();
+    setPassword('');
+    setConfirmation('');
+    setError(undefined);
+    await onSaved();
   }
 
   return (

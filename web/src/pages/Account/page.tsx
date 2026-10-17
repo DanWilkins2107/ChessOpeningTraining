@@ -4,7 +4,6 @@ import {
   SIGNED_OUT_PARAM,
   SIGNED_OUT_PENDING,
 } from '../../shared/signOut/signOut.constants';
-import { ACCOUNT_EMAIL_ROUTE_PATH } from '../../elements/routes/routes.constants';
 import { useAnimatePieces } from './elements/useAnimatePieces/useAnimatePieces';
 import { supabase } from '../../supabase';
 import { AnimatePiecesToggle } from './elements/AnimatePiecesToggle/AnimatePiecesToggle';
@@ -28,10 +27,13 @@ export function Account() {
   return (
     <section className="account-card">
       <h1 className="account-heading">Account</h1>
-      <Link to={ACCOUNT_EMAIL_ROUTE_PATH} className="account-action">
+      <Link to="/account/email" className="account-action">
         Change email
       </Link>
       <AnimatePiecesToggle setting={animatePieces} />
+      <Link to="/account/password" className="account-action">
+        Change password
+      </Link>
       <button type="button" className="account-action" onClick={signOut}>
         Sign out
       </button>
