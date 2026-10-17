@@ -9,16 +9,19 @@ import type { MoveNode } from '../MoveNode/MoveNode';
 import { MOVES_QUERY_KEY } from '../useMoves/useMoves.constants';
 import { isMovesCapError } from '../isMovesCapError/isMovesCapError';
 import { leaves, move } from '../../tests-shared/moveNode';
-import { spyOnFetch } from '../../tests-shared/spyOnFetch';
+import {
+  isMoveTreesRequest,
+  spyOnFetch,
+} from '../../tests-shared/moveTreesRequests';
 import { registerTestUser } from '../../tests-shared/testUser';
 import { useSaveMoves } from './useSaveMoves';
 
-const treeOwner = registerTestUser();
-const nonOwner = registerTestUser();
+const saver = registerTestUser();
+const bystander = registerTestUser();
 const moveTree = { id: '' };
 
 beforeAll(async () => {
-  const client = await treeOwner.signedInClient();
+  const client = await saver.signedInClient();
   const { data, error } = await client
     .from('move_trees')
     .insert({ name: 'Caro-Kann', side: 'black' })
@@ -57,10 +60,10 @@ async function failedSave(save: Save, moves: MoveNode[]) {
 }
 
 const savedMovesQuery = (client: ReturnType<typeof createQueryClient>) =>
-  client.getQueryData([MOVES_QUERY_KEY, treeOwner.user.id, moveTree.id]);
+  client.getQueryData([MOVES_QUERY_KEY, saver.user.id, moveTree.id]);
 
 async function storedTree() {
-  const client = await treeOwner.signedInClient();
+  const client = await saver.signedInClient();
   const { data, error } = await client
     .from('move_trees')
     .select('name, side, moves')
@@ -70,12 +73,9 @@ async function storedTree() {
   return data;
 }
 
-const isMoveTreesRequest = (input: RequestInfo | URL) =>
-  String(input).includes('/rest/v1/move_trees');
-
 it('stores the moves as given and leaves the rest of the tree alone', async () => {
   // Given a signed-in tree owner
-  await treeOwner.signIn();
+  await saver.signIn();
   const { save } = await renderSaveMovesTestingHarness();
   const moves = [move('e4', move('c6', move('d4'), move('Nc3')))];
 
@@ -90,25 +90,26 @@ it('stores the moves as given and leaves the rest of the tree alone', async () =
   });
 });
 
-it('sends only the moves', async () => {
+it('sends only the moves and asks back only the id', async () => {
   // Given a signed-in tree owner
-  await treeOwner.signIn();
+  await saver.signIn();
   const { save } = await renderSaveMovesTestingHarness();
   const fetchSpy = spyOnFetch();
 
   // When they save moves
   await act(() => save([move('d4')]));
 
-  // Then the update carries the moves and nothing else
-  const [, init] = fetchSpy.mock.calls.find(([input]) =>
-    isMoveTreesRequest(input),
+  // Then the update carries the moves and nothing else, and returns only the id
+  const [input, init] = fetchSpy.mock.calls.find(([url]) =>
+    isMoveTreesRequest(url),
   )!;
   expect(JSON.parse(String(init?.body))).toEqual({ moves: [move('d4')] });
+  expect(new URL(String(input)).searchParams.get('select')).toBe('id');
 });
 
 it('puts the saved moves in the moves query', async () => {
   // Given a signed-in tree owner
-  await treeOwner.signIn();
+  await saver.signIn();
   const { save, client } = await renderSaveMovesTestingHarness();
   const moves = [move('c4', move('e5'))];
 
@@ -121,7 +122,7 @@ it('puts the saved moves in the moves query', async () => {
 
 it('fails as a cap error with the database message over a cap', async () => {
   // Given a signed-in tree owner
-  await treeOwner.signIn();
+  await saver.signIn();
   const { save, client } = await renderSaveMovesTestingHarness();
 
   // When they save more than 1000 lines
@@ -135,7 +136,7 @@ it('fails as a cap error with the database message over a cap', async () => {
 
 it("fails, but not as a cap error, on someone else's tree", async () => {
   // Given a signed-in user who does not own the tree
-  await nonOwner.signIn();
+  await bystander.signIn();
   const { save } = await renderSaveMovesTestingHarness();
   const before = await storedTree();
 

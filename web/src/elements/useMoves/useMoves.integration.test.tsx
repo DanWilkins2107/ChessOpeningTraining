@@ -1,5 +1,7 @@
+import { QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
 import { afterEach, beforeAll, expect, it, vi } from 'vitest';
+import { createQueryClient } from '../createQueryClient/createQueryClient';
 import { LoadBoundary } from '../../shared/LoadBoundary/LoadBoundary';
 import {
   ERROR,
@@ -8,18 +10,18 @@ import {
   Loading,
 } from '../../tests-shared/loadStates';
 import { move } from '../../tests-shared/moveNode';
+import {
+  isMoveTreesRequest,
+  spyOnFetch,
+} from '../../tests-shared/moveTreesRequests';
 import { registerTestUser } from '../../tests-shared/testUser';
-import { withQueryClient } from '../../tests-shared/withQueryClient';
 import { useMoves } from './useMoves';
+import { MOVES_QUERY_KEY } from './useMoves.constants';
 
 const treeOwner = registerTestUser();
 const nonOwner = registerTestUser();
 const moves = [move('e4', move('c6', move('d4'), move('Nc3')))];
 let moveTreeId = '';
-
-// mock-reason: spying only, to see which requests go out. Every request is
-// sent for real.
-const spyOnFetch = () => vi.spyOn(window, 'fetch');
 
 beforeAll(async () => {
   const client = await treeOwner.signedInClient();
@@ -36,21 +38,26 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-const isMoveTreesRequest = (input: RequestInfo | URL) =>
-  String(input).includes('/rest/v1/move_trees');
-
 function Moves() {
   return JSON.stringify(useMoves(moveTreeId));
 }
 
-const renderMovesTestingHarness = () =>
+const movesQueryKey = (user: ReturnType<typeof registerTestUser>) => [
+  MOVES_QUERY_KEY,
+  user.user.id,
+  moveTreeId,
+];
+
+function renderMovesTestingHarness(client = createQueryClient()) {
   render(
-    withQueryClient(
+    <QueryClientProvider client={client}>
       <LoadBoundary Loading={Loading} LoadError={LoadError}>
         <Moves />
-      </LoadBoundary>,
-    ),
+      </LoadBoundary>
+    </QueryClientProvider>,
   );
+  return client;
+}
 
 it('suspends while the moves load', () => {
   // Given nothing rendered yet
@@ -73,6 +80,20 @@ it("loads the treeOwner's moves", async () => {
   expect(await screen.findByText(JSON.stringify(moves))).toBeInTheDocument();
 });
 
+it('shows moves already in the moves query', async () => {
+  // Given a signed-in treeOwner whose moves query already holds other moves
+  await treeOwner.signIn();
+  const client = createQueryClient();
+  const cached = [move('c4')];
+  client.setQueryData(movesQueryKey(treeOwner), cached);
+
+  // When the moves load
+  renderMovesTestingHarness(client);
+
+  // Then those moves are shown
+  expect(await screen.findByText(JSON.stringify(cached))).toBeInTheDocument();
+});
+
 it('asks for the moves column only', async () => {
   // Given a signed-in treeOwner
   await treeOwner.signIn();
@@ -92,10 +113,13 @@ it("fails for someone else's tree", async () => {
   await nonOwner.signIn();
 
   // When the moves load
-  renderMovesTestingHarness();
+  const client = renderMovesTestingHarness();
 
-  // Then loading fails
+  // Then loading fails with the database's no-row error
   expect(await screen.findByText(ERROR)).toBeInTheDocument();
+  expect(client.getQueryState(movesQueryKey(nonOwner))?.error).toMatchObject({
+    code: 'PGRST116',
+  });
 });
 
 it('fails without asking for moves while signed out', async () => {
