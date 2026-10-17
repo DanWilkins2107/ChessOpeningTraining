@@ -1,11 +1,10 @@
-// fallow-ignore-file unused-file -- 6b485352 2026-11-15 landed ahead of the repertoire page, its first consumer (a6c2d850).
 import { Link } from 'react-router-dom';
+import { TRAIN_ROUTE_PATH } from '../routes/routes.constants';
 import './TrainCard.css';
 
 type TrainCardProps = {
   daysSinceLastTrained: number | null;
   movesTrainedToday: number;
-  trainPath: string;
 };
 
 function lastTrainedText(days: number | null) {
@@ -18,7 +17,6 @@ function lastTrainedText(days: number | null) {
 export function TrainCard({
   daysSinceLastTrained,
   movesTrainedToday,
-  trainPath,
 }: TrainCardProps) {
   return (
     <section className="train-card" aria-labelledby="train-card-heading">
@@ -31,7 +29,7 @@ export function TrainCard({
           ? '1 move trained today'
           : `${movesTrainedToday} moves trained today`}
       </p>
-      <Link to={trainPath} className="train-card-action">
+      <Link to={TRAIN_ROUTE_PATH} className="train-card-action">
         Start training
       </Link>
     </section>

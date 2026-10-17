@@ -6,11 +6,7 @@ import { TrainCard } from './TrainCard';
 describe('TrainCard', () => {
   it('matches snapshot', () => {
     const { container } = render(
-      <TrainCard
-        daysSinceLastTrained={3}
-        movesTrainedToday={12}
-        trainPath="/train"
-      />,
+      <TrainCard daysSinceLastTrained={3} movesTrainedToday={12} />,
       { wrapper: MemoryRouter },
     );
     expect(container).toMatchSnapshot();
