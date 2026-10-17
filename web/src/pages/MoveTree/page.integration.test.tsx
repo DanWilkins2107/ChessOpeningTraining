@@ -5,8 +5,8 @@ import { renderAt } from '../../tests-shared/renderAt';
 import { registerTestUser } from '../../tests-shared/testUser';
 import { env } from '../../env';
 
-const owner = registerTestUser();
-const stranger = registerTestUser();
+const moveTreeOwner = registerTestUser();
+const otherUser = registerTestUser();
 const moveTreeIds = { mainLine: '', alternatives: '' };
 
 beforeAll(async () => {
@@ -15,7 +15,7 @@ beforeAll(async () => {
     env.VITE_SUPABASE_ANON_KEY,
     { auth: { persistSession: false, autoRefreshToken: false } },
   );
-  await owner.signIn(client);
+  await moveTreeOwner.signIn(client);
   const { data, error } = await client
     .from('move_trees')
     .insert([
@@ -54,7 +54,7 @@ function stallMoveTreeRequests() {
 
 it('shows the layout as busy while the user loads', async () => {
   // Given a signed-in owner, whose session the page reads only after it renders
-  await owner.signIn();
+  await moveTreeOwner.signIn();
 
   // When their move tree page renders
   renderAt(`/tree/${moveTreeIds.mainLine}`);
@@ -65,7 +65,7 @@ it('shows the layout as busy while the user loads', async () => {
 
 it('shows the layout, no longer busy, once the move tree loads', async () => {
   // Given a signed-in owner
-  await owner.signIn();
+  await moveTreeOwner.signIn();
 
   // When their move tree page renders
   renderAt(`/tree/${moveTreeIds.mainLine}`);
@@ -78,7 +78,7 @@ it('shows the layout, no longer busy, once the move tree loads', async () => {
 
 it('requests the name and side once, never the moves', async () => {
   // Given a signed-in owner not yet loaded
-  await owner.signIn();
+  await moveTreeOwner.signIn();
   // mock-reason: the requests sent are the assertion, and the page shows the
   // same result whether or not an early one went out. Every call is real.
   const fetch = vi.spyOn(window, 'fetch');
@@ -88,13 +88,14 @@ it('requests the name and side once, never the moves', async () => {
   await loadedLayout();
 
   // Then it requested the move tree once, for its name and side alone
-  const requests = fetch.mock.calls.filter(([input]) =>
+  const [[input], ...later] = fetch.mock.calls.filter(([input]) =>
     isMoveTreeRequest(input),
   );
-  expect(requests).toHaveLength(1);
-  const { searchParams } = new URL(String(requests[0][0]));
-  expect(searchParams.get('select')).toBe('name,side');
-  expect(searchParams.get('id')).toBe(`eq.${moveTreeIds.mainLine}`);
+  expect(later).toEqual([]);
+  expect(Object.fromEntries(new URL(String(input)).searchParams)).toEqual({
+    select: 'name,side',
+    id: `eq.${moveTreeIds.mainLine}`,
+  });
 });
 
 it.each([
@@ -102,7 +103,7 @@ it.each([
   ["another user's move tree", () => moveTreeIds.mainLine],
 ])('shows not found, asking once, for %s', async (_, moveTreeId) => {
   // Given a signed-in stranger to the move tree
-  await stranger.signIn();
+  await otherUser.signIn();
   // mock-reason: the requests sent are the assertion. Every call is real.
   const fetch = vi.spyOn(window, 'fetch');
 
@@ -121,7 +122,7 @@ it.each([
 
 it('shows a load error when the request fails', async () => {
   // Given a signed-in owner, and move tree requests failing on the server
-  await owner.signIn();
+  await moveTreeOwner.signIn();
   const realFetch = window.fetch;
   // mock-reason: the local server has no way to make this request fail. Other
   // requests are sent for real.
@@ -143,7 +144,7 @@ it('shows a load error when the request fails', async () => {
 
 it("shows not found, without asking, for an id that isn't a move tree id", async () => {
   // Given a signed-in owner
-  await owner.signIn();
+  await moveTreeOwner.signIn();
   // mock-reason: the requests sent are the assertion. Every call is real.
   const fetch = vi.spyOn(window, 'fetch');
 
@@ -161,13 +162,13 @@ it("shows not found, without asking, for an id that isn't a move tree id", async
 
 it('shows the layout as busy again when the user changes', async () => {
   // Given the owner's move tree loaded, and move tree requests left unanswered
-  await owner.signIn();
+  await moveTreeOwner.signIn();
   renderAt(`/tree/${moveTreeIds.mainLine}`);
   await loadedLayout();
   stallMoveTreeRequests();
 
   // When a different user signs in
-  await act(() => stranger.signIn());
+  await act(() => otherUser.signIn());
 
   // Then the layout is busy again
   expect(moveTreeLayout(true)).toBeInTheDocument();
@@ -175,7 +176,7 @@ it('shows the layout as busy again when the user changes', async () => {
 
 it('shows the layout as busy again when the move tree changes', async () => {
   // Given one move tree loaded, and move tree requests left unanswered
-  await owner.signIn();
+  await moveTreeOwner.signIn();
   const memoryRouter = renderAt(`/tree/${moveTreeIds.mainLine}`);
   await loadedLayout();
   stallMoveTreeRequests();

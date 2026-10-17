@@ -7,7 +7,7 @@ exports[`FolderList > matches snapshot 1`] = `
   >
     <li>
       <a
-        class="folder-list-item"
+        class="row-link"
         data-discover="true"
         href="/folders/a4f1"
       >

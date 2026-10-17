@@ -1,6 +1,7 @@
 import { use } from 'react';
-import { Link, generatePath } from 'react-router-dom';
+import { generatePath } from 'react-router-dom';
 import { MOVE_TREE_ROUTE_PATH } from '../../../../MoveTree/router.constants';
+import { RowLink } from '../../../shared/RowLink/RowLink';
 import type { FolderResponse } from '../FolderResponse/FolderResponse';
 import './MoveTreeList.css';
 
@@ -17,12 +18,9 @@ export function MoveTreeList({ folder }: { folder: Promise<FolderResponse> }) {
     <ul aria-label="Move trees" className="move-tree-list">
       {data.move_trees.map(({ id, name }) => (
         <li key={id}>
-          <Link
-            to={generatePath(MOVE_TREE_ROUTE_PATH, { moveTreeId: id })}
-            className="move-tree-list-item"
-          >
+          <RowLink to={generatePath(MOVE_TREE_ROUTE_PATH, { moveTreeId: id })}>
             {name}
-          </Link>
+          </RowLink>
         </li>
       ))}
     </ul>

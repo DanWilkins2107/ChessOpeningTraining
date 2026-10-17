@@ -1,0 +1,13 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`RowLink > matches snapshot 1`] = `
+<div>
+  <a
+    class="row-link"
+    data-discover="true"
+    href="/folders/a4f1"
+  >
+    London
+  </a>
+</div>
+`;

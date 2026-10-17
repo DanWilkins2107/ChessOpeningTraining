@@ -1,7 +1,8 @@
-import { Link, generatePath } from 'react-router-dom';
+import { generatePath } from 'react-router-dom';
 import { FOLDER_ROUTE_PATH } from '../../router.constants';
 import { ErrorMessage } from '../../../../shared/ErrorMessage/ErrorMessage';
 import { Spinner } from '../../../../shared/Spinner/Spinner';
+import { RowLink } from '../../shared/RowLink/RowLink';
 import type { FoldersResponse } from '../FoldersResponse/FoldersResponse';
 import './FolderList.css';
 
@@ -26,12 +27,9 @@ export function FolderList({
     <ul className="folder-list">
       {response.data.map(({ id, name }) => (
         <li key={id}>
-          <Link
-            to={generatePath(FOLDER_ROUTE_PATH, { folderId: id })}
-            className="folder-list-item"
-          >
+          <RowLink to={generatePath(FOLDER_ROUTE_PATH, { folderId: id })}>
             <span className="folder-list-name">{name}</span>
-          </Link>
+          </RowLink>
         </li>
       ))}
     </ul>
