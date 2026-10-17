@@ -8,7 +8,7 @@ describe('Folder', () => {
   it('matches snapshot', () => {
     const { container } = render(
       <MemoryRouter
-        initialEntries={['/folders/7c3e1d2a-5b4f-4e6a-9c8d-1f2e3a4b5c6d']}
+        initialEntries={['/repertoire/7c3e1d2a-5b4f-4e6a-9c8d-1f2e3a4b5c6d']}
       >
         <Routes>
           <Route path={FOLDER_ROUTE_PATH} element={<Folder />} />
