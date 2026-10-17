@@ -6,19 +6,19 @@ import { createQueryClient } from '../../elements/createQueryClient/createQueryC
 import { LoadBoundary } from '../LoadBoundary/LoadBoundary';
 import { LOADING, LoadError, Loading } from '../../tests-shared/loadStates';
 import { registerTestUser } from '../../tests-shared/testUser';
-import { useSuspenseUser } from './useSuspenseUser';
+import { useAuthenticatedUser } from './useAuthenticatedUser';
 
 const { user, signIn } = registerTestUser();
 
-function SuspenseUserId() {
-  return useSuspenseUser().id;
+function AuthenticatedUserId() {
+  return useAuthenticatedUser().id;
 }
 
-const renderSuspenseUserTestingHarness = () =>
+const renderAuthenticatedUserTestingHarness = () =>
   render(
     <QueryClientProvider client={createQueryClient()}>
       <LoadBoundary Loading={Loading} LoadError={LoadError}>
-        <SuspenseUserId />
+        <AuthenticatedUserId />
       </LoadBoundary>
     </QueryClientProvider>,
   );
@@ -27,7 +27,7 @@ it('suspends until auth is known', () => {
   // Given nothing rendered yet
 
   // When the harness renders
-  renderSuspenseUserTestingHarness();
+  renderAuthenticatedUserTestingHarness();
 
   // Then it shows the loading fallback
   expect(screen.getByText(LOADING)).toBeInTheDocument();
@@ -38,7 +38,7 @@ it('shows the user of a stored session', async () => {
   await signIn();
 
   // When the harness renders
-  renderSuspenseUserTestingHarness();
+  renderAuthenticatedUserTestingHarness();
 
   // Then it shows that user
   expect(await screen.findByText(user.id)).toBeInTheDocument();
@@ -51,13 +51,15 @@ it('throws when no one is signed in', async () => {
   render(
     <QueryClientProvider client={createQueryClient()}>
       <ErrorBoundary fallbackRender={({ error }) => String(error)}>
-        <SuspenseUserId />
+        <AuthenticatedUserId />
       </ErrorBoundary>
     </QueryClientProvider>,
   );
 
   // Then the boundary catches the missing user
   expect(
-    await screen.findByText('Error: useSuspenseUser needs a signed-in user'),
+    await screen.findByText(
+      'Error: useAuthenticatedUser needs a signed-in user',
+    ),
   ).toBeInTheDocument();
 });
