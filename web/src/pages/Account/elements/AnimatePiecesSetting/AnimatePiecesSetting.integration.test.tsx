@@ -32,6 +32,10 @@ const toggle = () =>
 const loadedToggle = () =>
   screen.findByRole<HTMLInputElement>('switch', { name: 'Animate pieces' });
 
+// Suspense queries count as fresh for at least this long, so coming back any
+// sooner would not reload the setting at all.
+const SUSPENSE_MIN_STALE_MS = 1000;
+
 const pause = (ms: number) =>
   act(() => new Promise((resolve) => setTimeout(resolve, ms)));
 
@@ -232,6 +236,7 @@ it('shows a saved choice straight away on coming back', async () => {
 
   // When they leave and come back, with the setting request held
   await act(() => memoryRouter.navigate('/'));
+  await pause(SUSPENSE_MIN_STALE_MS);
   const request = holdFirstRequest(isProfilesRequest);
   await act(() => memoryRouter.navigate('/account'));
 

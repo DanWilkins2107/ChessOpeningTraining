@@ -1,4 +1,3 @@
-// fallow-ignore-file unused-file -- ed293461 2026-11-16 reached only through useMoves, which landed ahead of the move tree page.
 import type { User } from '@supabase/supabase-js';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { authUserQuery } from '../../elements/authUserQuery/authUserQuery';

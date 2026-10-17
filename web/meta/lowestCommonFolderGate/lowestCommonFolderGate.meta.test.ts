@@ -19,10 +19,10 @@ const ROOT_EXCEPTIONS = [
 // until its expiry.
 const TEMPORARY_EXCLUDES: TemporaryExclude[] = [
   {
-    path: 'src/shared/useAuthenticatedUser',
-    expiry: '2026-11-16',
+    path: 'src/shared/LoadBoundary',
+    expiry: '2026-11-12',
     reason:
-      'useMoves is its only consumer until the other user-scoped hooks move over',
+      'Account is its only consumer until the studies list (94afaf5e) and study header (692f17d4) move onto it.',
   },
 ];
 

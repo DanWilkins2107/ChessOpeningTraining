@@ -1,0 +1,20 @@
+.animate-pieces-placeholder {
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 1.5rem;
+  border-radius: var(--radius-pill);
+  background: var(--border);
+  animation: animate-pieces-pulse 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes animate-pieces-pulse {
+  to {
+    opacity: 0.4;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pieces-placeholder {
+    animation: none;
+  }
+}
