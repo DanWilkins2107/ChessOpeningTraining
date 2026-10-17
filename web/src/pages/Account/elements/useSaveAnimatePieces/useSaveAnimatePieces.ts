@@ -5,7 +5,7 @@ const SAVE_DELAY_MS = 500;
 
 type SaveOutcome = 'saved' | 'failed';
 
-export function useSaveAnimatePieces(loaded: boolean | undefined) {
+export function useSaveAnimatePieces(loaded: boolean) {
   const update = useUpdateAnimatePieces();
   const [chosen, setChosen] = useState<boolean>();
   const [outcome, setOutcome] = useState<SaveOutcome>();

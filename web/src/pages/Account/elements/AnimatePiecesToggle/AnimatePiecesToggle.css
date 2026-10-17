@@ -1,18 +1,3 @@
-.animate-pieces {
-  display: flex;
-  flex-direction: column;
-  gap: var(--gap-sm);
-  margin-bottom: var(--gap-md);
-}
-
-.animate-pieces-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--gap-md);
-  min-height: 1.5rem;
-}
-
 .animate-pieces-switch {
   appearance: none;
   position: relative;
@@ -47,28 +32,9 @@
   transform: translateX(1.25rem);
 }
 
-.animate-pieces-placeholder {
-  flex-shrink: 0;
-  width: 2.75rem;
-  height: 1.5rem;
-  border-radius: var(--radius-pill);
-  background: var(--border);
-  animation: animate-pieces-pulse 1.2s ease-in-out infinite alternate;
-}
-
-@keyframes animate-pieces-pulse {
-  to {
-    opacity: 0.4;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .animate-pieces-switch,
   .animate-pieces-switch::before {
     transition: none;
-  }
-
-  .animate-pieces-placeholder {
-    animation: none;
   }
 }
