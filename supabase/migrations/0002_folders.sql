@@ -82,8 +82,8 @@ begin
     end if;
 
     depth := depth + 1;
-    if depth > 5 then
-      raise exception 'Folders can be nested at most 5 deep'
+    if depth > 10 then
+      raise exception 'Folders can be nested at most 10 deep'
         using errcode = 'check_violation';
     end if;
 

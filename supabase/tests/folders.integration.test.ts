@@ -385,40 +385,40 @@ it.each([
   expect(await storedFolder(chain[0].id)).toEqual(chain[0]);
 });
 
-it('accepts folders nested 5 deep', async () => {
-  // Given a user with folders nested 4 deep
+it('accepts folders nested 10 deep', async () => {
+  // Given a user with folders nested 9 deep
   const { client } = await signedInUser();
-  const chain = await nestedFolders(client, 4);
+  const chain = await nestedFolders(client, 9);
 
   // When they create a folder inside the innermost
   const { error } = await createFolder(client, {
     ...FOLDER,
-    parent_id: chain[3].id,
+    parent_id: chain[8].id,
   });
 
   // Then it is created
   expect(error).toBeNull();
 });
 
-it('refuses folders nested 6 deep', async () => {
-  // Given a user with folders nested 5 deep
+it('refuses folders nested 11 deep', async () => {
+  // Given a user with folders nested 10 deep
   const { id, client } = await signedInUser();
-  const chain = await nestedFolders(client, 5);
+  const chain = await nestedFolders(client, 10);
 
   // When they create a folder inside the innermost
   const { error } = await createFolder(client, {
     ...FOLDER,
-    parent_id: chain[4].id,
+    parent_id: chain[9].id,
   });
 
   // Then it is refused
   expect(error?.code).toBe(CHECK_VIOLATION);
-  expect(await folderCount(id)).toBe(5);
+  expect(await folderCount(id)).toBe(10);
 });
 
 it.each([
-  ['refuses', 4, CHECK_VIOLATION],
-  ['accepts', 3, undefined],
+  ['refuses', 9, CHECK_VIOLATION],
+  ['accepts', 8, undefined],
 ])(
   '%s a move that nests the moved folder’s subfolders too deep',
   async (_, targetDepth, code) => {
@@ -430,7 +430,7 @@ it.each([
     // When they move the folder into the innermost of the chain
     const { error } = await moveFolder(client, folder.id, chain.at(-1).id);
 
-    // Then the subfolder ends up past 5 deep only if refused
+    // Then the subfolder ends up past 10 deep only if refused
     expect(error?.code).toBe(code);
   },
 );
