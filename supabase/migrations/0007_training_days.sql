@@ -16,7 +16,6 @@ language plpgsql
 security definer
 set search_path = ''
 as $$
-#variable_conflict use_column
 begin
   if moves is null or moves not between 1 and 1000 then
     raise exception 'Moves per call must be between 1 and 1000'
@@ -33,7 +32,8 @@ begin
 
   insert into public.training_days (owner_id, day, moves_trained)
   values ((select auth.uid()), record_trained_moves.day, moves)
-  on conflict (owner_id, day) do update
+  -- Named constraint, not (owner_id, day): a bare day would clash with the parameter.
+  on conflict on constraint training_days_pkey do update
     set moves_trained = training_days.moves_trained + excluded.moves_trained;
 end;
 $$;
