@@ -15,6 +15,8 @@
   --danger: #b42318;
   --danger-hover: #912018;
   --danger-surface: #fef3f2;
+  /* Laid over the board to pause it, e.g. while picking a promotion. */
+  --scrim: rgb(247 249 252 / 55%);
 
   --gap-sm: 0.5rem;
   --gap-md: 1rem;

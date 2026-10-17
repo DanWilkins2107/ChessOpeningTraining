@@ -1,0 +1,59 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`PromotionPicker > matches snapshot 1`] = `
+<div>
+  <div
+    aria-label="Promote pawn"
+    class="promotion-picker"
+    role="dialog"
+  >
+    <div
+      class="promotion-picker-backdrop"
+    />
+    <div
+      class="promotion-picker-bar"
+    >
+      <button
+        aria-label="Promote to queen"
+        class="promotion-picker-choice"
+        type="button"
+      >
+        <img
+          alt=""
+          src="/src/elements/pieces/wQ.svg"
+        />
+      </button>
+      <button
+        aria-label="Promote to rook"
+        class="promotion-picker-choice"
+        type="button"
+      >
+        <img
+          alt=""
+          src="/src/elements/pieces/wR.svg"
+        />
+      </button>
+      <button
+        aria-label="Promote to bishop"
+        class="promotion-picker-choice"
+        type="button"
+      >
+        <img
+          alt=""
+          src="/src/elements/pieces/wB.svg"
+        />
+      </button>
+      <button
+        aria-label="Promote to knight"
+        class="promotion-picker-choice"
+        type="button"
+      >
+        <img
+          alt=""
+          src="/src/elements/pieces/wN.svg"
+        />
+      </button>
+    </div>
+  </div>
+</div>
+`;
