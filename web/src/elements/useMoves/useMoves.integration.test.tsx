@@ -10,10 +10,7 @@ import {
   Loading,
 } from '../../tests-shared/loadStates';
 import { move } from '../../tests-shared/moveNode';
-import {
-  isMoveTreesRequest,
-  spyOnFetch,
-} from '../../tests-shared/moveTreesRequests';
+import { isMoveTreesRequest } from '../../tests-shared/moveTreesRequests';
 import { registerTestUser } from '../../tests-shared/testUser';
 import { useMoves } from './useMoves';
 import { MOVES_QUERY_KEY } from './useMoves.constants';
@@ -97,7 +94,8 @@ it('shows moves already in the moves query', async () => {
 it('asks for the moves column only', async () => {
   // Given a signed-in treeOwner
   await treeOwner.signIn();
-  const fetchSpy = spyOnFetch();
+  // mock-reason: the requests sent are the assertion. Every call is real.
+  const fetchSpy = vi.spyOn(window, 'fetch');
 
   // When the moves load
   renderMovesTestingHarness();
@@ -124,7 +122,9 @@ it("fails for someone else's tree", async () => {
 
 it('fails without asking for moves while signed out', async () => {
   // Given no signed-in user
-  const fetchSpy = spyOnFetch();
+
+  // mock-reason: the requests sent are the assertion. Every call is real.
+  const fetchSpy = vi.spyOn(window, 'fetch');
 
   // When the moves render
   renderMovesTestingHarness();

@@ -9,10 +9,7 @@ import type { MoveNode } from '../MoveNode/MoveNode';
 import { MOVES_QUERY_KEY } from '../useMoves/useMoves.constants';
 import { isMovesCapError } from '../isMovesCapError/isMovesCapError';
 import { leaves, move } from '../../tests-shared/moveNode';
-import {
-  isMoveTreesRequest,
-  spyOnFetch,
-} from '../../tests-shared/moveTreesRequests';
+import { isMoveTreesRequest } from '../../tests-shared/moveTreesRequests';
 import { registerTestUser } from '../../tests-shared/testUser';
 import { useSaveMoves } from './useSaveMoves';
 
@@ -94,7 +91,8 @@ it('sends only the moves and asks back only the id', async () => {
   // Given a signed-in tree owner
   await saver.signIn();
   const { save } = await renderSaveMovesTestingHarness();
-  const fetchSpy = spyOnFetch();
+  // mock-reason: the requests sent are the assertion. Every call is real.
+  const fetchSpy = vi.spyOn(window, 'fetch');
 
   // When they save moves
   await act(() => save([move('d4')]));
