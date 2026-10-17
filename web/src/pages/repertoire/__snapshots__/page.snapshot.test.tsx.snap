@@ -1,12 +1,12 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Folders > matches snapshot 1`] = `
+exports[`Repertoire > matches snapshot 1`] = `
 <div>
   <section
-    class="folders"
+    class="repertoire"
   >
     <h1>
-      Folders
+      Repertoire
     </h1>
     <form
       class="create-folder-form"

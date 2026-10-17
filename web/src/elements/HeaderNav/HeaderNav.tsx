@@ -3,7 +3,7 @@ import {
   ACCOUNT_ROUTE_PATH,
   PROTECTED_ROUTE_HANDLE,
 } from '../routes/routes.constants';
-import { FOLDERS_ROUTE_PATH } from '../../pages/folders/router.constants';
+import { REPERTOIRE_ROUTE_PATH } from '../../pages/repertoire/router.constants';
 import './HeaderNav.css';
 
 export function HeaderNav() {
@@ -22,8 +22,8 @@ export function HeaderNav() {
   return (
     <nav className="header-nav">
       {onProtectedPage && (
-        <Link to={FOLDERS_ROUTE_PATH} className="header-nav-link">
-          Folders
+        <Link to={REPERTOIRE_ROUTE_PATH} className="header-nav-link">
+          Repertoire
         </Link>
       )}
       <Link to={ACCOUNT_ROUTE_PATH} className="header-nav-link">
