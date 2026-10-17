@@ -1,16 +1,13 @@
-import { Suspense } from 'react';
-import { LoadedMoveTree } from '../LoadedMoveTree/LoadedMoveTree';
 import { MoveTreeLayout } from '../MoveTreeLayout/MoveTreeLayout';
+import { MoveTreeLoadError } from '../MoveTreeLoadError/MoveTreeLoadError';
+import { MoveTreeNotFound } from '../MoveTreeNotFound/MoveTreeNotFound';
 import { useMoveTree } from '../useMoveTree/useMoveTree';
 
 export function MoveTreeDetails({ moveTreeId }: { moveTreeId: string }) {
-  const moveTree = useMoveTree(moveTreeId);
+  const { data, isError } = useMoveTree(moveTreeId);
 
-  if (moveTree === undefined) return <MoveTreeLayout busy />;
+  if (isError) return <MoveTreeLoadError />;
+  if (data === null) return <MoveTreeNotFound />;
 
-  return (
-    <Suspense key={moveTreeId} fallback={<MoveTreeLayout busy />}>
-      <LoadedMoveTree moveTree={moveTree} />
-    </Suspense>
-  );
+  return <MoveTreeLayout />;
 }

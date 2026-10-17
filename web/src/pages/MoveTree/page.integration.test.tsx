@@ -7,7 +7,7 @@ import { env } from '../../env';
 
 const moveTreeOwner = registerTestUser();
 const otherUser = registerTestUser();
-const moveTreeIds = { mainLine: '', alternatives: '' };
+let mainLineId = '';
 
 beforeAll(async () => {
   const client = createClient(
@@ -18,16 +18,11 @@ beforeAll(async () => {
   await moveTreeOwner.signIn(client);
   const { data, error } = await client
     .from('move_trees')
-    .insert([
-      { name: 'Main line', side: 'black' },
-      { name: 'Alternatives', side: 'white' },
-    ])
-    .select('id, name');
+    .insert({ name: 'Main line', side: 'black' })
+    .select('id')
+    .single();
   if (error) throw error;
-  moveTreeIds.mainLine = data.find(({ name }) => name === 'Main line')!.id;
-  moveTreeIds.alternatives = data.find(
-    ({ name }) => name === 'Alternatives',
-  )!.id;
+  mainLineId = data.id;
 });
 
 afterEach(() => {
@@ -37,11 +32,31 @@ afterEach(() => {
 const isMoveTreeRequest = (input: RequestInfo | URL) =>
   String(input).includes('/rest/v1/move_trees');
 
-const moveTreeLayout = (busy: boolean) =>
-  screen.queryByRole('region', { name: 'Move tree', busy });
+const moveTreeLayout = () =>
+  screen.queryByRole('region', { name: 'Move tree' });
 
-const loadedLayout = () =>
-  screen.findByRole('region', { name: 'Move tree', busy: false });
+const placeholderBoard = () =>
+  screen.queryByRole('status', { name: 'Loading board' });
+
+function spyOnMoveTreeRequests() {
+  // mock-reason: the requests sent are the assertion. Every call is real.
+  const fetch = vi.spyOn(window, 'fetch');
+  const requests = () =>
+    fetch.mock.calls.flatMap(([input], index) =>
+      isMoveTreeRequest(input) ? [{ input, index }] : [],
+    );
+  return {
+    requests,
+    async answered() {
+      await vi.waitFor(() => expect(requests()).not.toEqual([]));
+      await act(() =>
+        Promise.all(
+          requests().map(({ index }) => fetch.mock.results[index]!.value),
+        ),
+      );
+    },
+  };
+}
 
 function stallMoveTreeRequests() {
   const realFetch = window.fetch;
@@ -52,60 +67,58 @@ function stallMoveTreeRequests() {
   );
 }
 
-it('shows the layout as busy while the user loads', async () => {
-  // Given a signed-in owner, whose session the page reads only after it renders
+it('shows the layout with a placeholder board while the move tree loads', async () => {
+  // Given a signed-in owner, and move tree requests left unanswered
   await moveTreeOwner.signIn();
+  stallMoveTreeRequests();
 
   // When their move tree page renders
-  renderAt(`/tree/${moveTreeIds.mainLine}`);
+  renderAt(`/tree/${mainLineId}`);
 
-  // Then it shows the layout, marked busy
-  expect(moveTreeLayout(true)).toBeInTheDocument();
+  // Then it shows the layout straight away, with a placeholder board
+  expect(moveTreeLayout()).toBeInTheDocument();
+  expect(placeholderBoard()).toBeInTheDocument();
 });
 
-it('shows the layout, no longer busy, once the move tree loads', async () => {
+it('keeps the layout, with no error, once the move tree loads', async () => {
   // Given a signed-in owner
   await moveTreeOwner.signIn();
+  const moveTreeRequests = spyOnMoveTreeRequests();
 
-  // When their move tree page renders
-  renderAt(`/tree/${moveTreeIds.mainLine}`);
+  // When their move tree page renders and the move tree loads
+  renderAt(`/tree/${mainLineId}`);
+  await moveTreeRequests.answered();
 
-  // Then the layout stops being busy, with no error
-  expect(await loadedLayout()).toBeInTheDocument();
-  expect(moveTreeLayout(true)).not.toBeInTheDocument();
+  // Then the layout stays, with no error
+  expect(moveTreeLayout()).toBeInTheDocument();
   expect(screen.queryByRole('alert')).not.toBeInTheDocument();
 });
 
 it('requests the name and side once, never the moves', async () => {
-  // Given a signed-in owner not yet loaded
+  // Given a signed-in owner
   await moveTreeOwner.signIn();
-  // mock-reason: the requests sent are the assertion, and the page shows the
-  // same result whether or not an early one went out. Every call is real.
-  const fetch = vi.spyOn(window, 'fetch');
+  const moveTreeRequests = spyOnMoveTreeRequests();
 
   // When their move tree page renders and loads
-  renderAt(`/tree/${moveTreeIds.mainLine}`);
-  await loadedLayout();
+  renderAt(`/tree/${mainLineId}`);
+  await moveTreeRequests.answered();
 
   // Then it requested the move tree once, for its name and side alone
-  const [[input], ...later] = fetch.mock.calls.filter(([input]) =>
-    isMoveTreeRequest(input),
-  );
+  const [{ input }, ...later] = moveTreeRequests.requests();
   expect(later).toEqual([]);
   expect(Object.fromEntries(new URL(String(input)).searchParams)).toEqual({
     select: 'name,side',
-    id: `eq.${moveTreeIds.mainLine}`,
+    id: `eq.${mainLineId}`,
   });
 });
 
 it.each([
   ['a move tree that does not exist', () => crypto.randomUUID()],
-  ["another user's move tree", () => moveTreeIds.mainLine],
+  ["another user's move tree", () => mainLineId],
 ])('shows not found, asking once, for %s', async (_, moveTreeId) => {
   // Given a signed-in stranger to the move tree
   await otherUser.signIn();
-  // mock-reason: the requests sent are the assertion. Every call is real.
-  const fetch = vi.spyOn(window, 'fetch');
+  const moveTreeRequests = spyOnMoveTreeRequests();
 
   // When they open it
   renderAt(`/tree/${moveTreeId()}`);
@@ -114,10 +127,8 @@ it.each([
   expect(await screen.findByRole('alert')).toHaveTextContent(
     'Move tree not found',
   );
-  expect(moveTreeLayout(false)).not.toBeInTheDocument();
-  expect(
-    fetch.mock.calls.filter(([input]) => isMoveTreeRequest(input)),
-  ).toHaveLength(1);
+  expect(moveTreeLayout()).not.toBeInTheDocument();
+  expect(moveTreeRequests.requests()).toHaveLength(1);
 });
 
 it('shows a load error when the request fails', async () => {
@@ -133,20 +144,19 @@ it('shows a load error when the request fails', async () => {
   );
 
   // When their move tree page renders
-  renderAt(`/tree/${moveTreeIds.mainLine}`);
+  renderAt(`/tree/${mainLineId}`);
 
   // Then it shows the load error in place of the layout
   expect(await screen.findByRole('alert')).toHaveTextContent(
     "Couldn't load this move tree, try again",
   );
-  expect(moveTreeLayout(false)).not.toBeInTheDocument();
+  expect(moveTreeLayout()).not.toBeInTheDocument();
 });
 
 it("shows not found, without asking, for an id that isn't a move tree id", async () => {
   // Given a signed-in owner
   await moveTreeOwner.signIn();
-  // mock-reason: the requests sent are the assertion. Every call is real.
-  const fetch = vi.spyOn(window, 'fetch');
+  const moveTreeRequests = spyOnMoveTreeRequests();
 
   // When they open a malformed move tree id
   renderAt('/tree/ab12');
@@ -155,35 +165,37 @@ it("shows not found, without asking, for an id that isn't a move tree id", async
   expect(await screen.findByRole('alert')).toHaveTextContent(
     'Move tree not found',
   );
-  expect(
-    fetch.mock.calls.filter(([input]) => isMoveTreeRequest(input)),
-  ).toEqual([]);
+  expect(moveTreeRequests.requests()).toEqual([]);
 });
 
-it('shows the layout as busy again when the user changes', async () => {
-  // Given the owner's move tree loaded, and move tree requests left unanswered
+it('asks again, as the new user, when the user changes', async () => {
+  // Given the owner's move tree loaded
   await moveTreeOwner.signIn();
-  renderAt(`/tree/${moveTreeIds.mainLine}`);
-  await loadedLayout();
-  stallMoveTreeRequests();
+  const moveTreeRequests = spyOnMoveTreeRequests();
+  renderAt(`/tree/${mainLineId}`);
+  await moveTreeRequests.answered();
 
   // When a different user signs in
   await act(() => otherUser.signIn());
 
-  // Then the layout is busy again
-  expect(moveTreeLayout(true)).toBeInTheDocument();
+  // Then it shows not found, since the move tree isn't theirs
+  expect(await screen.findByRole('alert')).toHaveTextContent(
+    'Move tree not found',
+  );
 });
 
-it('shows the layout as busy again when the move tree changes', async () => {
-  // Given one move tree loaded, and move tree requests left unanswered
+it('asks again when the move tree changes', async () => {
+  // Given one move tree loaded
   await moveTreeOwner.signIn();
-  const memoryRouter = renderAt(`/tree/${moveTreeIds.mainLine}`);
-  await loadedLayout();
-  stallMoveTreeRequests();
+  const moveTreeRequests = spyOnMoveTreeRequests();
+  const memoryRouter = renderAt(`/tree/${mainLineId}`);
+  await moveTreeRequests.answered();
 
-  // When the user moves to another move tree
-  await act(() => memoryRouter.navigate(`/tree/${moveTreeIds.alternatives}`));
+  // When the user moves to a move tree that does not exist
+  await act(() => memoryRouter.navigate(`/tree/${crypto.randomUUID()}`));
 
-  // Then the layout is busy again
-  expect(moveTreeLayout(true)).toBeInTheDocument();
+  // Then it shows not found
+  expect(await screen.findByRole('alert')).toHaveTextContent(
+    'Move tree not found',
+  );
 });

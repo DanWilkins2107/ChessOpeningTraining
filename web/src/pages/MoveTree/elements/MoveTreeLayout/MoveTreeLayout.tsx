@@ -1,13 +1,12 @@
+import { BoardLoading } from '../../../../elements/BoardLoading/BoardLoading';
 import './MoveTreeLayout.css';
 
-export function MoveTreeLayout({ busy }: { busy: boolean }) {
+export function MoveTreeLayout() {
   return (
-    <section
-      aria-label="Move tree"
-      aria-busy={busy}
-      className="move-tree-layout"
-    >
-      <div className="move-tree-layout-board" />
+    <section aria-label="Move tree" className="move-tree-layout">
+      <div className="move-tree-layout-board">
+        <BoardLoading />
+      </div>
       <div className="move-tree-layout-panel" />
     </section>
   );

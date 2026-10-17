@@ -1,19 +1,23 @@
+import { QueryClientProvider } from '@tanstack/react-query';
 import { render } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
+import { createQueryClient } from '../../elements/createQueryClient/createQueryClient';
 import { MOVE_TREE_ROUTE_PATH } from './router.constants';
 import { MoveTree } from './page';
 
 describe('MoveTree', () => {
   it('matches snapshot', () => {
     const { container } = render(
-      <MemoryRouter
-        initialEntries={['/tree/7c3e1d2a-5b4f-4e6a-9c8d-1f2e3a4b5c6d']}
-      >
-        <Routes>
-          <Route path={MOVE_TREE_ROUTE_PATH} element={<MoveTree />} />
-        </Routes>
-      </MemoryRouter>,
+      <QueryClientProvider client={createQueryClient()}>
+        <MemoryRouter
+          initialEntries={['/tree/7c3e1d2a-5b4f-4e6a-9c8d-1f2e3a4b5c6d']}
+        >
+          <Routes>
+            <Route path={MOVE_TREE_ROUTE_PATH} element={<MoveTree />} />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>,
     );
     expect(container).toMatchSnapshot();
   });

@@ -1,21 +1,23 @@
-import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useUser } from '../../../../shared/useUser/useUser';
 import { supabase } from '../../../../supabase';
-import type { MoveTreeResponse } from '../MoveTreeResponse/MoveTreeResponse';
+import { MOVE_TREE_QUERY_KEY } from './useMoveTree.constants';
 
-export function useMoveTree(moveTreeId: string) {
-  const userId = useUser()?.id;
-
-  return useMemo(
-    () => (userId === undefined ? undefined : fetchMoveTree(moveTreeId)),
-    [userId, moveTreeId],
-  );
-}
-
-async function fetchMoveTree(moveTreeId: string): Promise<MoveTreeResponse> {
-  return supabase
+async function fetchMoveTree(moveTreeId: string) {
+  const { data, error } = await supabase
     .from('move_trees')
     .select('name, side')
     .eq('id', moveTreeId)
     .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+export function useMoveTree(moveTreeId: string) {
+  const userId = useUser()?.id;
+  return useQuery({
+    queryKey: [MOVE_TREE_QUERY_KEY, userId, moveTreeId],
+    queryFn: () => fetchMoveTree(moveTreeId),
+    enabled: userId !== undefined,
+  });
 }
