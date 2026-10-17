@@ -9,7 +9,7 @@ exports[`FolderList > matches snapshot 1`] = `
       <a
         class="folder-list-item"
         data-discover="true"
-        href="/folders/a4f1"
+        href="/repertoire/a4f1"
       >
         <span
           class="folder-list-name"
