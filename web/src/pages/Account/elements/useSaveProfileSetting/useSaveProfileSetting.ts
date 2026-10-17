@@ -6,10 +6,7 @@ const SAVE_DELAY_MS = 500;
 
 type SaveOutcome = 'saved' | 'failed';
 
-export function useSaveProfileSetting(
-  setting: ProfileSetting,
-  loaded: boolean,
-) {
+export function useSaveProfileSetting(setting: ProfileSetting) {
   const update = useUpdateProfileSetting(setting);
   const [chosen, setChosen] = useState<boolean>();
   const [outcome, setOutcome] = useState<SaveOutcome>();
@@ -18,7 +15,7 @@ export function useSaveProfileSetting(
   const sending = useRef(false);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
-  function choose(value: boolean) {
+  function choose(value: boolean, loaded: boolean) {
     saved.current ??= loaded;
     latest.current = value;
     setChosen(value);
@@ -49,5 +46,5 @@ export function useSaveProfileSetting(
     sending.current = false;
   }
 
-  return { value: chosen ?? loaded, choose, outcome };
+  return { chosen, choose, outcome };
 }

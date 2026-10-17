@@ -45,6 +45,11 @@ const loadedHintsToggle = () =>
 // sooner would not reload the setting at all.
 const SUSPENSE_MIN_STALE_MS = 1000;
 
+function expectBothLabels() {
+  expect(screen.getByText('Animate pieces')).toBeInTheDocument();
+  expect(screen.getByText('Show move hints')).toBeInTheDocument();
+}
+
 const pause = (ms: number) =>
   act(() => new Promise((resolve) => setTimeout(resolve, ms)));
 
@@ -108,7 +113,8 @@ it('shows a placeholder until the setting loads', async () => {
   await renderFor(firstVisit);
   await request.sent();
 
-  // Then there is no switch yet, only a sign that it is loading
+  // Then the labels show, but no switch yet, only a sign that it is loading
+  expectBothLabels();
   expect(screen.queryByRole('switch')).not.toBeInTheDocument();
   expect(
     screen.getAllByRole('status', { name: 'Loading your setting' }),
@@ -319,10 +325,13 @@ it('says so when the setting fails to load', async () => {
   // When the toggle renders
   await renderFor(failing);
 
-  // Then it shows a generic message, and no switch
-  expect(await screen.findByRole('alert')).toHaveTextContent(
-    "Couldn't load your settings, try again",
-  );
+  // Then each setting says so beside its label, with no switch
+  const alerts = await screen.findAllByRole('alert');
+  expect(alerts.map((alert) => alert.textContent)).toEqual([
+    "Couldn't load",
+    "Couldn't load",
+  ]);
+  expectBothLabels();
   expect(screen.queryByRole('switch')).not.toBeInTheDocument();
   expect(screen.queryByRole('status')).not.toBeInTheDocument();
 });
