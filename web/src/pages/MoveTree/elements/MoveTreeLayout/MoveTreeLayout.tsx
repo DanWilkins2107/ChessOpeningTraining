@@ -1,4 +1,4 @@
-import { BoardLoading } from '../../../../elements/BoardLoading/BoardLoading';
+import { BoardLoading } from '../BoardLoading/BoardLoading';
 import './MoveTreeLayout.css';
 
 export function MoveTreeLayout() {

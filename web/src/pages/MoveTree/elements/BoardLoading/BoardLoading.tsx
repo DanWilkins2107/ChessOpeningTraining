@@ -1,4 +1,4 @@
-import { Spinner } from '../../shared/Spinner/Spinner';
+import { Spinner } from '../../../../shared/Spinner/Spinner';
 import './BoardLoading.css';
 
 export function BoardLoading() {
