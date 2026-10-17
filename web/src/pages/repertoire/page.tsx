@@ -8,15 +8,15 @@ import { FoldersLoading } from './elements/FoldersLoading/FoldersLoading';
 import { FOLDERS_QUERY_KEY } from './elements/useFolders/useFolders.constants';
 import './page.css';
 
-export function Folders() {
+export function Repertoire() {
   const userId = useUser()?.id;
   const queryClient = useQueryClient();
   const refresh = () =>
     queryClient.invalidateQueries({ queryKey: [FOLDERS_QUERY_KEY] });
 
   return (
-    <section className="folders">
-      <h1>Folders</h1>
+    <section className="repertoire">
+      <h1>Repertoire</h1>
       <CreateFolderForm onCreated={refresh} />
       {userId === undefined ? (
         <FoldersLoading />

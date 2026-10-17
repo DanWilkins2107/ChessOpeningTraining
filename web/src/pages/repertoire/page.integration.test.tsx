@@ -8,7 +8,7 @@ import { authSettled } from '../../tests-shared/authSettled';
 import { holdFirstRequest } from '../../tests-shared/heldRequest';
 import { registerTestUser } from '../../tests-shared/testUser';
 import { env } from '../../env';
-import { Folders } from './page';
+import { Repertoire } from './page';
 
 const withFolders = registerTestUser();
 const withoutFolders = registerTestUser();
@@ -34,11 +34,11 @@ afterEach(() => {
 const isFoldersRequest = (input: RequestInfo | URL) =>
   String(input).includes('/rest/v1/folders');
 
-const renderFoldersPage = () =>
+const renderRepertoirePage = () =>
   render(
     <QueryClientProvider client={createQueryClient()}>
       <MemoryRouter>
-        <Folders />
+        <Repertoire />
       </MemoryRouter>
     </QueryClientProvider>,
   );
@@ -53,10 +53,12 @@ it('shows the heading and a loading indicator while the user loads', async () =>
   await withFolders.signIn();
 
   // When the page renders
-  renderFoldersPage();
+  renderRepertoirePage();
 
   // Then the heading shows straight away, with a loading indicator
-  expect(screen.getByRole('heading', { name: 'Folders' })).toBeInTheDocument();
+  expect(
+    screen.getByRole('heading', { name: 'Repertoire' }),
+  ).toBeInTheDocument();
   expect(screen.getByRole('status')).toHaveAccessibleName('Loading folders');
 });
 
@@ -65,7 +67,7 @@ it("lists the user's folders, newest first", async () => {
   await withFolders.signIn();
 
   // When the page renders
-  renderFoldersPage();
+  renderRepertoirePage();
 
   // Then it lists them, newest first, and stops loading
   expect(await listedFolders()).toEqual([['London'], ['Caro-Kann']]);
@@ -77,7 +79,7 @@ it('says so when the user has no folders', async () => {
   await withoutFolders.signIn();
 
   // When the page renders
-  renderFoldersPage();
+  renderRepertoirePage();
 
   // Then it shows the empty state
   expect(await screen.findByText('No folders yet')).toBeInTheDocument();
@@ -86,7 +88,7 @@ it('says so when the user has no folders', async () => {
 it('adds a created folder to the list', async () => {
   // Given a signed-in user with no folders, on the page
   await creatingFolders.signIn();
-  renderFoldersPage();
+  renderRepertoirePage();
   await screen.findByText('No folders yet');
 
   // When they create a folder
@@ -107,7 +109,7 @@ it('requests folders only once the user has loaded', async () => {
   const fetch = vi.spyOn(window, 'fetch');
 
   // When the page renders and loads
-  renderFoldersPage();
+  renderRepertoirePage();
   await screen.findByText('No folders yet');
 
   // Then it requested folders once
@@ -124,7 +126,7 @@ it('asks for the columns the list renders and no others', async () => {
   const fetch = vi.spyOn(window, 'fetch');
 
   // When the page renders and loads
-  renderFoldersPage();
+  renderRepertoirePage();
   await screen.findByText('No folders yet');
 
   // Then the folders request selects those two columns alone
@@ -150,7 +152,7 @@ it('shows a generic message when folders fail to load', async () => {
   );
 
   // When the page renders
-  renderFoldersPage();
+  renderRepertoirePage();
 
   // Then it shows a generic message, not the server's error
   expect(await screen.findByRole('alert')).toHaveTextContent(
@@ -171,7 +173,7 @@ it('loads the folders again when the user tries again', async () => {
     failed = true;
     return Promise.resolve(Response.json({}, { status: 500 }));
   });
-  renderFoldersPage();
+  renderRepertoirePage();
 
   // When they try again
   fireEvent.click(await screen.findByRole('button', { name: 'Try again' }));
@@ -183,7 +185,7 @@ it('loads the folders again when the user tries again', async () => {
 it("shows loading, not the previous user's folders, when the user changes", async () => {
   // Given one user's folders on screen, and a server slow to answer the next
   await withFolders.signIn();
-  renderFoldersPage();
+  renderRepertoirePage();
   await listedFolders();
   const realFetch = window.fetch;
   let release = () => {};
@@ -209,7 +211,7 @@ it('ignores a response for a user who has since changed', async () => {
   // Given a user whose folders request is held
   await withFolders.signIn();
   const request = holdFirstRequest(isFoldersRequest);
-  renderFoldersPage();
+  renderRepertoirePage();
   await authSettled();
   await request.sent();
 
