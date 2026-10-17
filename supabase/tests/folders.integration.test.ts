@@ -8,6 +8,7 @@ import {
 } from './tests-shared/testUsers';
 import {
   CHECK_VIOLATION,
+  FOREIGN_KEY_VIOLATION,
   NOT_NULL_VIOLATION,
   PERMISSION_DENIED,
 } from './tests-shared/pgErrorCodes';
@@ -19,11 +20,38 @@ const FOLDER = { name: 'Caro-Kann' };
 const createFolder = (client: SupabaseClient, folder: object = FOLDER) =>
   client.from('folders').insert(folder).select().single();
 
-async function existingFolder(client: SupabaseClient) {
-  const { data, error } = await createFolder(client);
+async function existingFolder(
+  client: SupabaseClient,
+  parentId: string | null = null,
+) {
+  const { data, error } = await createFolder(client, {
+    ...FOLDER,
+    parent_id: parentId,
+  });
   if (error) throw error;
   return data;
 }
+
+// Returns the folders from the root down, each inside the one before.
+async function nestedFolders(client: SupabaseClient, depth: number) {
+  const chain = [await existingFolder(client)];
+  while (chain.length < depth) {
+    chain.push(await existingFolder(client, chain.at(-1).id));
+  }
+  return chain;
+}
+
+const moveFolder = (
+  client: SupabaseClient,
+  id: string,
+  parentId: string | null,
+) =>
+  client
+    .from('folders')
+    .update({ parent_id: parentId })
+    .eq('id', id)
+    .select()
+    .single();
 
 const storedFolder = async (id: string) =>
   (await admin.from('folders').select().eq('id', id).maybeSingle()).data;
@@ -53,6 +81,7 @@ it('creates a folder owned by the signed-in user', async () => {
   expect(data).toEqual({
     id: expect.any(String),
     owner_id: id,
+    parent_id: null,
     created_at: expect.any(String),
     ...FOLDER,
   });
@@ -271,4 +300,178 @@ it("deletes a user's folders with their account", async () => {
 
   // Then the folder is gone
   expect(await storedFolder(folder.id)).toBeNull();
+});
+
+it('creates a folder inside the owner’s folder', async () => {
+  // Given a user with a folder
+  const { client } = await signedInUser();
+  const parent = await existingFolder(client);
+
+  // When they create a folder inside it
+  const { data, error } = await createFolder(client, {
+    ...FOLDER,
+    parent_id: parent.id,
+  });
+
+  // Then it is created inside that folder
+  expect(error).toBeNull();
+  expect(data).toMatchObject({ parent_id: parent.id });
+});
+
+it('refuses a folder inside another user’s folder', async () => {
+  // Given a folder, and a different signed-in user
+  const owner = await signedInUser();
+  const parent = await existingFolder(owner.client);
+  const { id, client } = await signedInUser();
+
+  // When the other user creates a folder inside it
+  const { error } = await createFolder(client, {
+    ...FOLDER,
+    parent_id: parent.id,
+  });
+
+  // Then it is refused
+  expect(error?.code).toBe(FOREIGN_KEY_VIOLATION);
+  expect(await folderCount(id)).toBe(0);
+});
+
+it.each([
+  ['into another folder', true],
+  ['out to the root', false],
+])('lets the owner move a folder %s', async (_, intoFolder) => {
+  // Given a user with a folder inside another, and a root folder
+  const { client } = await signedInUser();
+  const [, folder] = await nestedFolders(client, 2);
+  const root = await existingFolder(client);
+  const parentId = intoFolder ? root.id : null;
+
+  // When they move the folder
+  const { data, error } = await moveFolder(client, folder.id, parentId);
+
+  // Then it is moved
+  expect(error).toBeNull();
+  expect(data).toEqual({ ...folder, parent_id: parentId });
+});
+
+it('refuses moving a folder into another user’s folder', async () => {
+  // Given a user with a folder, and another user’s folder
+  const { client } = await signedInUser();
+  const folder = await existingFolder(client);
+  const other = await signedInUser();
+  const otherFolder = await existingFolder(other.client);
+
+  // When they move their folder into the other user’s
+  const { error } = await moveFolder(client, folder.id, otherFolder.id);
+
+  // Then it is refused, and the folder is untouched
+  expect(error?.code).toBe(FOREIGN_KEY_VIOLATION);
+  expect(await storedFolder(folder.id)).toEqual(folder);
+});
+
+it.each([
+  ['itself', 0],
+  ['a folder inside it', 1],
+  ['a folder two levels inside it', 2],
+])('refuses moving a folder into %s', async (_, levelsDown) => {
+  // Given a user with nested folders
+  const { client } = await signedInUser();
+  const chain = await nestedFolders(client, 3);
+
+  // When they move the outermost into one of its own descendants (or itself)
+  const { error } = await moveFolder(client, chain[0].id, chain[levelsDown].id);
+
+  // Then it is refused, and the folder is untouched
+  expect(error?.code).toBe(CHECK_VIOLATION);
+  expect(await storedFolder(chain[0].id)).toEqual(chain[0]);
+});
+
+it('accepts folders nested 10 deep', async () => {
+  // Given a user with folders nested 9 deep
+  const { client } = await signedInUser();
+  const chain = await nestedFolders(client, 9);
+
+  // When they create a folder inside the innermost
+  const { error } = await createFolder(client, {
+    ...FOLDER,
+    parent_id: chain[8].id,
+  });
+
+  // Then it is created
+  expect(error).toBeNull();
+});
+
+it('refuses folders nested 11 deep', async () => {
+  // Given a user with folders nested 10 deep
+  const { id, client } = await signedInUser();
+  const chain = await nestedFolders(client, 10);
+
+  // When they create a folder inside the innermost
+  const { error } = await createFolder(client, {
+    ...FOLDER,
+    parent_id: chain[9].id,
+  });
+
+  // Then it is refused
+  expect(error?.code).toBe(CHECK_VIOLATION);
+  expect(await folderCount(id)).toBe(10);
+});
+
+it.each([
+  ['refuses', 9, CHECK_VIOLATION],
+  ['accepts', 8, undefined],
+])(
+  '%s a move that nests the moved folder’s subfolders too deep',
+  async (_, targetDepth, code) => {
+    // Given a user with a folder that has a subfolder, and a separate chain of nested folders
+    const { client } = await signedInUser();
+    const [folder] = await nestedFolders(client, 2);
+    const chain = await nestedFolders(client, targetDepth);
+
+    // When they move the folder into the innermost of the chain
+    const { error } = await moveFolder(client, folder.id, chain.at(-1).id);
+
+    // Then the subfolder ends up past 10 deep only if refused
+    expect(error?.code).toBe(code);
+  },
+);
+
+it('holds against concurrent moves forming a cycle', async () => {
+  // Given a user with two root folders
+  const { client } = await signedInUser();
+  const first = await existingFolder(client);
+  const second = await existingFolder(client);
+
+  // When they move each into the other at once
+  const results = await Promise.all([
+    moveFolder(client, first.id, second.id),
+    moveFolder(client, second.id, first.id),
+  ]);
+
+  // Then only one move happens
+  expect(results.filter(({ error }) => error === null)).toHaveLength(1);
+});
+
+it('deletes a folder’s subfolders and their move trees with it', async () => {
+  // Given a user with a folder, a subfolder, and a move tree in the subfolder
+  const { client } = await signedInUser();
+  const [folder, subfolder] = await nestedFolders(client, 2);
+  const moveTree = await client
+    .from('move_trees')
+    .insert({ folder_id: subfolder.id, name: 'Main line', side: 'black' })
+    .select()
+    .single();
+  expect(moveTree.error).toBeNull();
+
+  // When they delete the folder
+  const { error } = await client.from('folders').delete().eq('id', folder.id);
+
+  // Then the subfolder and move tree are gone too
+  expect(error).toBeNull();
+  expect(await storedFolder(subfolder.id)).toBeNull();
+  const storedMoveTree = await admin
+    .from('move_trees')
+    .select()
+    .eq('id', moveTree.data.id)
+    .maybeSingle();
+  expect(storedMoveTree.data).toBeNull();
 });

@@ -56,18 +56,20 @@ it('shows the account page to a signed-in user', async () => {
   expect(screen.getByRole('heading', { name: 'Account' })).toBeInTheDocument();
 });
 
-it('opens folders from the header link for a signed-in user', async () => {
+it('opens the repertoire from the header link for a signed-in user', async () => {
   // Given a signed-in user on the home page
   await signIn();
   const memoryRouter = renderAt('/');
   await authSettled();
 
-  // When they follow the Folders link
-  fireEvent.click(screen.getByRole('link', { name: 'Folders' }));
+  // When they follow the Repertoire link
+  fireEvent.click(screen.getByRole('link', { name: 'Repertoire' }));
 
-  // Then they are on the folders page
-  expect(pathOf(memoryRouter)).toBe('/folders');
-  expect(screen.getByRole('heading', { name: 'Folders' })).toBeInTheDocument();
+  // Then they are on the repertoire page
+  expect(pathOf(memoryRouter)).toBe('/repertoire');
+  expect(
+    screen.getByRole('heading', { name: 'Repertoire' }),
+  ).toBeInTheDocument();
 });
 
 it('shows a folder page to a signed-in user', async () => {
@@ -75,7 +77,7 @@ it('shows a folder page to a signed-in user', async () => {
   await signIn();
 
   // When the router renders a folder path and the user loads
-  renderAt('/folders/ab12');
+  renderAt('/repertoire/ab12');
   await authSettled();
 
   // Then it shows the folder page
@@ -86,11 +88,11 @@ it('sends a signed-out visitor from a folder page to sign in', async () => {
   // Given a signed-out visitor
 
   // When they open a folder page
-  const memoryRouter = renderAt('/folders/ab12');
+  const memoryRouter = renderAt('/repertoire/ab12');
   await authSettled();
 
   // Then they are at sign in, carrying the folder path
-  expect(pathOf(memoryRouter)).toBe('/sign-in?next=%2Ffolders%2Fab12');
+  expect(pathOf(memoryRouter)).toBe('/sign-in?next=%2Frepertoire%2Fab12');
 });
 
 it('shows a move tree page to a signed-in user', async () => {
@@ -120,10 +122,10 @@ it('shows the header links on a protected page while the user is loading', () =>
   // Given the user not yet loaded
 
   // When the router renders a protected page
-  renderAt('/folders');
+  renderAt('/repertoire');
 
   // Then the header links show straight away
-  expect(screen.getByRole('link', { name: 'Folders' })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Repertoire' })).toBeInTheDocument();
   expect(accountLink()).toBeInTheDocument();
 });
 
@@ -137,7 +139,7 @@ it('leaves the signed-in links off a public page, signed in or not', async () =>
 
   // Then only the account link is on offer
   expect(
-    screen.queryByRole('link', { name: 'Folders' }),
+    screen.queryByRole('link', { name: 'Repertoire' }),
   ).not.toBeInTheDocument();
   expect(accountLink()).toBeInTheDocument();
 });
