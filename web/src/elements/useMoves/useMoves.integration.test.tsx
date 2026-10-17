@@ -1,7 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
 import { render, screen } from '@testing-library/react';
 import { afterEach, beforeAll, expect, it, vi } from 'vitest';
-import { env } from '../../env';
 import { LoadBoundary } from '../../shared/LoadBoundary/LoadBoundary';
 import {
   ERROR,
@@ -21,12 +19,7 @@ const moves = [move('e4', move('c6', move('d4'), move('Nc3')))];
 let moveTreeId = '';
 
 beforeAll(async () => {
-  const client = createClient(
-    env.VITE_SUPABASE_URL,
-    env.VITE_SUPABASE_ANON_KEY,
-    { auth: { persistSession: false, autoRefreshToken: false } },
-  );
-  await treeOwner.signIn(client);
+  const client = await treeOwner.signedInClient();
   const { data, error } = await client
     .from('move_trees')
     .insert({ name: 'Caro-Kann', side: 'black', moves })
