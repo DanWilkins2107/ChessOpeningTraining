@@ -8,6 +8,34 @@ exports[`Repertoire > matches snapshot 1`] = `
     <h1>
       Repertoire
     </h1>
+    <section
+      aria-labelledby="train-card-heading"
+      class="train-card"
+    >
+      <h2
+        class="train-card-heading"
+        id="train-card-heading"
+      >
+        Train
+      </h2>
+      <p
+        class="train-card-stat"
+      >
+        Not trained yet
+      </p>
+      <p
+        class="train-card-stat"
+      >
+        0 moves trained today
+      </p>
+      <a
+        class="train-card-action"
+        data-discover="true"
+        href="/train"
+      >
+        Start training
+      </a>
+    </section>
     <form
       class="create-folder-form"
     >

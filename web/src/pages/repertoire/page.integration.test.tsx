@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeAll, expect, it, vi } from 'vitest';
 import { authSettled } from '../../tests-shared/authSettled';
@@ -33,9 +33,9 @@ const isFoldersRequest = (input: RequestInfo | URL) =>
   String(input).includes('/rest/v1/folders');
 
 const listedFolders = async () =>
-  (await screen.findAllByRole('link')).map((link) =>
-    [...link.children].map((part) => part.textContent),
-  );
+  within(await screen.findByRole('list'))
+    .getAllByRole('link')
+    .map((link) => [...link.children].map((part) => part.textContent));
 
 it('shows the heading and a loading indicator while the user loads', async () => {
   // Given a signed-in user not yet loaded
