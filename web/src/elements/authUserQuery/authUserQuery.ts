@@ -8,7 +8,7 @@ const fetchAuthUser = async () =>
   (await supabase.auth.getSession()).data.session?.user ?? null;
 
 export const authUserQuery = queryOptions({
-  queryKey: [AUTH_USER_QUERY_KEY],
+  queryKey: AUTH_USER_QUERY_KEY,
   queryFn: fetchAuthUser,
   staleTime: Infinity,
 });

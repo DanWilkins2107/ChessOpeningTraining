@@ -1,1 +1,1 @@
-export const AUTH_USER_QUERY_KEY = 'authUser';
+export const AUTH_USER_QUERY_KEY = ['authUser'];
