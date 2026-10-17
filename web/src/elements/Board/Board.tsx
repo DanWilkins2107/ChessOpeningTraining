@@ -37,9 +37,9 @@ export function Board({
   onMove,
 }: BoardProps) {
   const { files, ranks } = axesFor(orientation);
-  const pieces = useTrackedPieces(position);
   const { selected, choose, pickUp, promoting, promote, cancelPromotion } =
     useMoveSelection(position, onMove);
+  const pieces = useTrackedPieces(promoting?.shown ?? position);
   // A drop is a click on the square it lands on.
   const { dragged, pointerProps } = usePieceDrag({
     files,

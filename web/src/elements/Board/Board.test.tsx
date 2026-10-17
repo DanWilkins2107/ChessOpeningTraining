@@ -1447,10 +1447,11 @@ it('holds a promoting move back until a piece is picked', () => {
   // When it is clicked, then a8
   clickSquares('a7', 'a8');
 
-  // Then no move is made, the pawn stays on a7, and the picker opens
+  // Then no move is made, the pawn waits on a8, and the picker opens
   expect(onMove).not.toHaveBeenCalled();
-  expect(square('a7, white pawn')).toBeInTheDocument();
-  expect(imageAt('translate(0%, 100%)')).toBeDefined();
+  expect(square('a8, white pawn')).toBeInTheDocument();
+  expect(square('a7')).toBeInTheDocument();
+  expect(imageAt('translate(0%, 0%)')).toBeDefined();
   expect(
     choiceButtons().map((button) => button.getAttribute('aria-label')),
   ).toEqual([
@@ -1550,9 +1551,10 @@ it('cancels the promotion on Escape', () => {
   // When Escape is pressed
   fireEvent.keyDown(choice('queen'), { key: 'Escape' });
 
-  // Then the picker closes with no move, and the pawn is not selected
+  // Then the picker closes with no move, the pawn back on a7 and not selected
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   expect(onMove).not.toHaveBeenCalled();
+  expect(square('a7, white pawn')).toBeInTheDocument();
   expect(squaresMarked('board-square-selected')).toEqual([]);
 });
 
@@ -1605,14 +1607,14 @@ it('cancels the promotion when the position changes', () => {
 });
 
 it('does not pick up the piece beneath a pressed choice', () => {
-  // Given the picker is open, its rook over the a7 pawn
+  // Given the picker is open
   renderPromotion();
   clickSquares('a7', 'a8');
 
-  // When the rook choice is pressed
-  fireEvent.pointerDown(choice('rook'), { ...POINTER, ...centreOf('a7') });
+  // When the rook choice is pressed at the white king's square
+  fireEvent.pointerDown(choice('rook'), { ...POINTER, ...centreOf('e1') });
 
-  // Then the pawn is not selected
+  // Then the king is not selected
   expect(squaresMarked('board-square-selected')).toEqual([]);
 });
 
@@ -1624,9 +1626,9 @@ it('opens the picker for a pawn dragged onto the last rank', () => {
   // When it is dragged to a8
   drag(centreOf('a7'), centreOf('a8'));
 
-  // Then no move is made, the pawn is back on a7, and the picker opens
+  // Then no move is made, the pawn waits on a8, and the picker opens
   expect(onMove).not.toHaveBeenCalled();
   expect(draggedPieces()).toEqual([]);
-  expect(imageAt('translate(0%, 100%)')).toBeDefined();
+  expect(imageAt('translate(0%, 0%)')).toBeDefined();
   expect(choice('queen')).toBeInTheDocument();
 });
