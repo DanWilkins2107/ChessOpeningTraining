@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { act, fireEvent, screen, within } from '@testing-library/react';
+import { act, screen, within } from '@testing-library/react';
 import { afterEach, beforeAll, expect, it, vi } from 'vitest';
 import { renderAt } from '../../../tests-shared/renderAt';
 import { registerTestUser } from '../../../tests-shared/testUser';
@@ -7,7 +7,7 @@ import { env } from '../../../env';
 
 const owner = registerTestUser();
 const stranger = registerTestUser();
-const folderIds = { london: '', caroKann: '', sicilian: '' };
+const folderIds = { london: '', caroKann: '' };
 
 beforeAll(async () => {
   const client = createClient(
@@ -18,12 +18,11 @@ beforeAll(async () => {
   await owner.signIn(client);
   const { data, error } = await client
     .from('folders')
-    .insert([{ name: 'London' }, { name: 'Caro-Kann' }, { name: 'Sicilian' }])
+    .insert([{ name: 'London' }, { name: 'Caro-Kann' }])
     .select('id, name');
   if (error) throw error;
   folderIds.london = data.find(({ name }) => name === 'London')!.id;
   folderIds.caroKann = data.find(({ name }) => name === 'Caro-Kann')!.id;
-  folderIds.sicilian = data.find(({ name }) => name === 'Sicilian')!.id;
   for (const name of ['Main line', 'Alternatives']) {
     const inserted = await client
       .from('move_trees')
@@ -106,30 +105,6 @@ it('says so when the folder has no move trees', async () => {
   await folderHeading('Caro-Kann');
   expect(screen.getByText('No move trees yet')).toBeInTheDocument();
   expect(moveTreeList()).not.toBeInTheDocument();
-});
-
-it('lists a move tree once it is created, keeping the folder on screen', async () => {
-  // Given a signed-in owner on their folder page
-  await owner.signIn();
-  renderAt(`/repertoire/${folderIds.sicilian}`);
-  await folderHeading('Sicilian');
-
-  // When they create a move tree
-  fireEvent.change(screen.getByLabelText('Move tree name'), {
-    target: { value: 'Najdorf' },
-  });
-  fireEvent.click(screen.getByRole('button', { name: 'Create move tree' }));
-
-  // Then it is listed, without the folder falling back to loading
-  expect(
-    await within(
-      await screen.findByRole('list', { name: 'Move trees' }),
-    ).findByText('Najdorf'),
-  ).toBeInTheDocument();
-  expect(
-    screen.getByRole('heading', { level: 1, name: 'Sicilian' }),
-  ).toBeInTheDocument();
-  expect(loadingFolder()).not.toBeInTheDocument();
 });
 
 it('requests the folder once, only once the user has loaded', async () => {

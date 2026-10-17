@@ -5,14 +5,14 @@ import { FolderName } from '../FolderName/FolderName';
 import { useFolder } from '../useFolder/useFolder';
 
 export function FolderDetails({ folderId }: { folderId: string }) {
-  const { folder, refresh } = useFolder(folderId);
+  const folder = useFolder(folderId);
 
   if (folder === undefined) return <FolderLoading />;
 
   return (
     <Suspense key={folderId} fallback={<FolderLoading />}>
       <FolderName folder={folder} />
-      <MoveTreeList folderId={folderId} folder={folder} onCreated={refresh} />
+      <MoveTreeList folder={folder} />
     </Suspense>
   );
 }

@@ -3,7 +3,6 @@ import { beforeAll, expect, it } from 'vitest';
 import { supabase } from '../../../../supabase';
 import { registerTestUser } from '../../../../tests-shared/testUser';
 import { CreateFolderForm } from './CreateFolderForm';
-import { nameFormTests } from '../../tests-shared/nameFormTests';
 
 const author = registerTestUser();
 const atTheCap = registerTestUser();
@@ -99,11 +98,77 @@ it('disables create again once the folder is created', async () => {
   expect(createButton()).toBeDisabled();
 });
 
-nameFormTests({
-  renderForm: () => renderForm(),
-  signIn: () => author.signIn(),
-  nameLabel: 'Folder name',
-  createLabel: 'Create folder',
+it('clears an earlier failure once a folder is created', async () => {
+  // Given a failed create on the form
+  const creations = renderForm();
+  submitFolder('Dutch');
+  await screen.findByRole('alert');
+
+  // When the user signs in and creates it again
+  await author.signIn();
+  fireEvent.click(createButton());
+  await waitFor(() => expect(creations).toHaveLength(1));
+
+  // Then the message is gone
+  expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+});
+
+it('keeps create disabled until a name is typed', () => {
+  // Given the form
+
+  // When it renders
+  renderForm();
+
+  // Then create is disabled
+  expect(createButton()).toBeDisabled();
+});
+
+it('keeps create disabled for a name of only spaces', () => {
+  // Given the form
+  renderForm();
+
+  // When only spaces are typed
+  fireEvent.change(nameField(), { target: { value: '   ' } });
+
+  // Then create is still disabled
+  expect(createButton()).toBeDisabled();
+});
+
+it('enables create once a name is typed', () => {
+  // Given the form
+  renderForm();
+
+  // When a name is typed
+  fireEvent.change(nameField(), { target: { value: 'Pirc' } });
+
+  // Then create is enabled
+  expect(createButton()).toBeEnabled();
+});
+
+it('caps the name at 100 characters', () => {
+  // Given the form
+
+  // When it renders
+  renderForm();
+
+  // Then the name field takes no more than 100 characters
+  expect(nameField()).toHaveAttribute('maxlength', '100');
+});
+
+it('disables create until the attempt finishes', async () => {
+  // Given a named folder on the form
+  renderForm();
+  fireEvent.change(nameField(), { target: { value: 'Grunfeld' } });
+
+  // When the form is submitted
+  const submitted = fireEvent.submit(createButton().closest('form')!);
+
+  // Then the browser's own submission is cancelled, and create is disabled
+  // until the attempt finishes
+  expect(submitted).toBe(false);
+  expect(createButton()).toBeDisabled();
+  await screen.findByRole('alert');
+  expect(createButton()).toBeEnabled();
 });
 
 it('explains the 100-folder cap', async () => {

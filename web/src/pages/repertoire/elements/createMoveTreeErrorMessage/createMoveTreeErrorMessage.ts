@@ -1,8 +1,9 @@
+// fallow-ignore-file unused-file -- 488521b4 2026-11-16 the hook landed ahead of its form.
 import type { PostgrestError } from '@supabase/supabase-js';
 
 const CHECK_VIOLATION = '23514';
 
-// The form sends a trimmed name of 1 to 100 characters and a valid side, so
+// Callers send a name of 1 to 100 characters once trimmed and a valid side, so
 // the only check an insert can fail is the 500-move-tree cap.
 export function createMoveTreeErrorMessage({ code }: PostgrestError): string {
   return code === CHECK_VIOLATION
