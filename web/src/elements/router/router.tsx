@@ -11,6 +11,7 @@ import {
   REPERTOIRE_ROUTE_PATH,
   FOLDER_ROUTE_PATH,
 } from '../../pages/repertoire/router.constants';
+import { MOVE_TREE_ROUTE_PATH } from '../../pages/MoveTree/router.constants';
 import { RootLayout } from '../RootLayout/RootLayout';
 import { Account } from '../../pages/Account/page';
 import { ChangePassword } from '../../pages/ChangePassword/page';
@@ -23,6 +24,7 @@ import { SignIn } from '../../pages/SignIn/page';
 import { SignUp } from '../../pages/SignUp/page';
 import { Repertoire } from '../../pages/repertoire/page';
 import { Folder } from '../../pages/repertoire/[folderId]/page';
+import { MoveTree } from '../../pages/MoveTree/page';
 
 export const router = createBrowserRouter([
   {
@@ -39,6 +41,7 @@ export const router = createBrowserRouter([
           { path: DELETE_ACCOUNT_ROUTE_PATH, element: <DeleteAccount /> },
           { path: REPERTOIRE_ROUTE_PATH, element: <Repertoire /> },
           { path: FOLDER_ROUTE_PATH, element: <Folder /> },
+          { path: MOVE_TREE_ROUTE_PATH, element: <MoveTree /> },
         ],
       },
       { path: 'sign-in', element: <SignIn /> },

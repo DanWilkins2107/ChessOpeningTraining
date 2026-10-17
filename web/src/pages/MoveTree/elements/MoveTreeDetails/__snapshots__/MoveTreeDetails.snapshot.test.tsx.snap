@@ -1,0 +1,27 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`MoveTreeDetails > matches snapshot 1`] = `
+<div>
+  <section
+    aria-label="Move tree"
+    class="move-tree-layout"
+  >
+    <div
+      class="move-tree-layout-board"
+    >
+      <div
+        class="board-loading"
+      >
+        <div
+          aria-label="Loading board"
+          class="spinner"
+          role="status"
+        />
+      </div>
+    </div>
+    <div
+      class="move-tree-layout-panel"
+    />
+  </section>
+</div>
+`;

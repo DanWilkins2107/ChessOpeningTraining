@@ -1,15 +1,15 @@
 import { render, screen } from '@testing-library/react';
 import { afterEach, beforeAll, expect, it, vi } from 'vitest';
-import { LoadBoundary } from '../../shared/LoadBoundary/LoadBoundary';
+import { LoadBoundary } from '../../../../shared/LoadBoundary/LoadBoundary';
 import {
   ERROR,
   LOADING,
   LoadError,
   Loading,
-} from '../../tests-shared/loadStates';
-import { move } from '../../tests-shared/moveNode';
-import { registerTestUser } from '../../tests-shared/testUser';
-import { withQueryClient } from '../../tests-shared/withQueryClient';
+} from '../../../../tests-shared/loadStates';
+import { move } from '../../../../tests-shared/moveNode';
+import { registerTestUser } from '../../../../tests-shared/testUser';
+import { withQueryClient } from '../../../../tests-shared/withQueryClient';
 import { useMoves } from './useMoves';
 
 const treeOwner = registerTestUser();
