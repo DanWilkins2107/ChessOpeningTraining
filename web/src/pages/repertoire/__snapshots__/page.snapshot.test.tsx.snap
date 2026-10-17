@@ -46,7 +46,7 @@ exports[`Repertoire > matches snapshot 1`] = `
       </div>
     </form>
     <div
-      aria-label="Loading folders"
+      aria-label="Loading repertoire"
       class="spinner"
       role="status"
     />

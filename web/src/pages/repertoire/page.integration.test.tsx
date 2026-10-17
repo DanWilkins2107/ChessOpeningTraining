@@ -23,6 +23,20 @@ beforeAll(async () => {
     const { error } = await client.from('folders').insert(folder);
     if (error) throw error;
   }
+  const { data: folder, error } = await client
+    .from('folders')
+    .select('id')
+    .eq('name', 'London')
+    .single();
+  if (error) throw error;
+  for (const moveTree of [
+    { name: 'Scotch', side: 'white' },
+    { name: 'Sicilian', side: 'black' },
+    { name: 'London System', side: 'white', folder_id: folder.id },
+  ]) {
+    const { error } = await client.from('move_trees').insert(moveTree);
+    if (error) throw error;
+  }
 });
 
 afterEach(() => {
@@ -32,10 +46,11 @@ afterEach(() => {
 const isFoldersRequest = (input: RequestInfo | URL) =>
   String(input).includes('/rest/v1/folders');
 
-const listedFolders = async () =>
-  (await screen.findAllByRole('link')).map((link) =>
-    [...link.children].map((part) => part.textContent),
-  );
+const isMoveTreesRequest = (input: RequestInfo | URL) =>
+  String(input).includes('/rest/v1/move_trees');
+
+const listedRows = async () =>
+  (await screen.findAllByRole('listitem')).map((row) => row.textContent);
 
 it('shows the heading and a loading indicator while the user loads', async () => {
   // Given a signed-in user not yet loaded
@@ -48,37 +63,45 @@ it('shows the heading and a loading indicator while the user loads', async () =>
   expect(
     screen.getByRole('heading', { name: 'Repertoire' }),
   ).toBeInTheDocument();
-  expect(screen.getByRole('status')).toHaveAccessibleName('Loading folders');
+  expect(screen.getByRole('status')).toHaveAccessibleName('Loading repertoire');
 });
 
-it("lists the user's folders, newest first", async () => {
-  // Given a user with two folders
+it("lists the user's folders, then their top-level move trees, newest first", async () => {
+  // Given a user with two folders and three move trees, one of them in a folder
   await withFolders.signIn();
 
   // When the page renders
   render(<Repertoire />, { wrapper: MemoryRouter });
 
-  // Then it lists them, newest first, and stops loading
-  expect(await listedFolders()).toEqual([['London'], ['Caro-Kann']]);
+  // Then it lists the folders, then the top-level move trees with their side,
+  // each newest first, and stops loading
+  expect(await listedRows()).toEqual([
+    'London',
+    'Caro-Kann',
+    'Sicilianblack',
+    'Scotchwhite',
+  ]);
   expect(screen.queryByRole('status')).not.toBeInTheDocument();
 });
 
-it('says so when the user has no folders', async () => {
-  // Given a user with no folders
+it('says so when the user has no folders or move trees', async () => {
+  // Given a user with no folders or move trees
   await withoutFolders.signIn();
 
   // When the page renders
   render(<Repertoire />, { wrapper: MemoryRouter });
 
   // Then it shows the empty state
-  expect(await screen.findByText('No folders yet')).toBeInTheDocument();
+  expect(
+    await screen.findByText('No folders or move trees yet'),
+  ).toBeInTheDocument();
 });
 
 it('adds a created folder to the list', async () => {
   // Given a signed-in user with no folders, on the page
   await creatingFolders.signIn();
   render(<Repertoire />, { wrapper: MemoryRouter });
-  await screen.findByText('No folders yet');
+  await screen.findByText('No folders or move trees yet');
 
   // When they create a folder
   fireEvent.change(screen.getByLabelText('Folder name'), {
@@ -90,7 +113,7 @@ it('adds a created folder to the list', async () => {
   expect(await screen.findByText('Najdorf')).toBeInTheDocument();
 });
 
-it('requests folders only once the user has loaded', async () => {
+it('requests folders and move trees only once the user has loaded', async () => {
   // Given a signed-in user not yet loaded
   await withoutFolders.signIn();
   // mock-reason: the requests sent are the assertion, and the page shows the
@@ -99,11 +122,14 @@ it('requests folders only once the user has loaded', async () => {
 
   // When the page renders and loads
   render(<Repertoire />, { wrapper: MemoryRouter });
-  await screen.findByText('No folders yet');
+  await screen.findByText('No folders or move trees yet');
 
-  // Then it requested folders once
+  // Then it requested folders once, and move trees once
   expect(
     fetch.mock.calls.filter(([input]) => isFoldersRequest(input)),
+  ).toHaveLength(1);
+  expect(
+    fetch.mock.calls.filter(([input]) => isMoveTreesRequest(input)),
   ).toHaveLength(1);
 });
 
@@ -116,11 +142,17 @@ it('asks for the columns the list renders and no others', async () => {
 
   // When the page renders and loads
   render(<Repertoire />, { wrapper: MemoryRouter });
-  await screen.findByText('No folders yet');
+  await screen.findByText('No folders or move trees yet');
 
-  // Then the folders request selects those two columns alone
-  const [input] = fetch.mock.calls.find(([input]) => isFoldersRequest(input))!;
-  expect(new URL(String(input)).searchParams.get('select')).toBe('id,name');
+  // Then folders are asked for id and name, and top-level move trees for
+  // id, name and side
+  const params = (isRequest: (input: RequestInfo | URL) => boolean) => {
+    const [input] = fetch.mock.calls.find(([input]) => isRequest(input))!;
+    return new URL(String(input)).searchParams;
+  };
+  expect(params(isFoldersRequest).get('select')).toBe('id,name');
+  expect(params(isMoveTreesRequest).get('select')).toBe('id,name,side');
+  expect(params(isMoveTreesRequest).get('folder_id')).toBe('is.null');
 });
 
 it('shows a generic message when folders fail to load', async () => {
@@ -145,7 +177,7 @@ it('shows a generic message when folders fail to load', async () => {
 
   // Then it shows a generic message, not the server's error
   expect(await screen.findByRole('alert')).toHaveTextContent(
-    "Couldn't load your folders, try again",
+    "Couldn't load your repertoire, try again",
   );
   expect(screen.queryByText(/permission denied/)).not.toBeInTheDocument();
 });
@@ -154,7 +186,7 @@ it("shows loading, not the previous user's folders, when the user changes", asyn
   // Given one user's folders on screen, and a server slow to answer the next
   await withFolders.signIn();
   render(<Repertoire />, { wrapper: MemoryRouter });
-  await listedFolders();
+  await listedRows();
   const realFetch = window.fetch;
   let release = () => {};
   const released = new Promise<void>((resolve) => (release = resolve));
@@ -185,9 +217,9 @@ it('ignores a response for a user who has since changed', async () => {
 
   // When a different user signs in and loads, then the first response arrives
   await act(() => withoutFolders.signIn());
-  await screen.findByText('No folders yet');
+  await screen.findByText('No folders or move trees yet');
   await request.answer();
 
   // Then the second user's result stays
-  expect(screen.getByText('No folders yet')).toBeInTheDocument();
+  expect(screen.getByText('No folders or move trees yet')).toBeInTheDocument();
 });

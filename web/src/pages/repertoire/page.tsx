@@ -1,16 +1,16 @@
 import { CreateFolderForm } from './elements/CreateFolderForm/CreateFolderForm';
-import { FolderList } from './elements/FolderList/FolderList';
-import { useFolders } from './elements/useFolders/useFolders';
+import { RepertoireList } from './elements/RepertoireList/RepertoireList';
+import { useRepertoire } from './elements/useRepertoire/useRepertoire';
 import './page.css';
 
 export function Repertoire() {
-  const { response, refresh } = useFolders();
+  const { response, refresh } = useRepertoire();
 
   return (
     <section className="repertoire">
       <h1>Repertoire</h1>
       <CreateFolderForm onCreated={refresh} />
-      <FolderList response={response} />
+      <RepertoireList response={response} />
     </section>
   );
 }

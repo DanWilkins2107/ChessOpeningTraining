@@ -1,0 +1,53 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`RepertoireList > matches snapshot 1`] = `
+<div>
+  <ul
+    class="repertoire-list"
+  >
+    <li>
+      <a
+        class="repertoire-list-item repertoire-list-folder"
+        data-discover="true"
+        href="/repertoire/a4f1"
+      >
+        <span
+          class="repertoire-list-name"
+        >
+          London
+        </span>
+      </a>
+    </li>
+    <li
+      class="repertoire-list-item"
+    >
+      <span
+        class="repertoire-list-name"
+      >
+        Scotch
+      </span>
+      <span
+        class="repertoire-list-side"
+        data-side="white"
+      >
+        white
+      </span>
+    </li>
+    <li
+      class="repertoire-list-item"
+    >
+      <span
+        class="repertoire-list-name"
+      >
+        Sicilian
+      </span>
+      <span
+        class="repertoire-list-side"
+        data-side="black"
+      >
+        black
+      </span>
+    </li>
+  </ul>
+</div>
+`;
