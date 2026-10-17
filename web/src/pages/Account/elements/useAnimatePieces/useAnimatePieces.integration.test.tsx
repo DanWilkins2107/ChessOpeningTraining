@@ -3,7 +3,6 @@ import { act, render, screen } from '@testing-library/react';
 import { afterEach, beforeAll, expect, it, vi } from 'vitest';
 import { createQueryClient } from '../../../../elements/createQueryClient/createQueryClient';
 import { LoadBoundary } from '../../../../shared/LoadBoundary/LoadBoundary';
-import { useUser } from '../../../../shared/useUser/useUser';
 import { authSettled } from '../../../../tests-shared/authSettled';
 import { holdFirstRequest } from '../../../../tests-shared/heldRequest';
 import {
@@ -27,26 +26,17 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-function Setting({ userId }: { userId: string }) {
-  const { data } = useAnimatePieces(userId);
+function Setting() {
+  const { data } = useAnimatePieces();
   return data ? 'animate' : 'still';
-}
-
-function SignedInSetting() {
-  const userId = useUser()?.id;
-  return (
-    userId && (
-      <LoadBoundary Loading={Loading} LoadError={LoadError}>
-        <Setting userId={userId} />
-      </LoadBoundary>
-    )
-  );
 }
 
 const renderSettingTestingHarness = () =>
   render(
     <QueryClientProvider client={createQueryClient()}>
-      <SignedInSetting />
+      <LoadBoundary Loading={Loading} LoadError={LoadError}>
+        <Setting />
+      </LoadBoundary>
     </QueryClientProvider>,
   );
 
@@ -97,12 +87,12 @@ it('ignores a setting for a user who has since changed', async () => {
   await authSettled();
   await request.sent();
 
-  // When a user with no saved setting signs in and their setting shows, then
-  // the first response arrives
+  // When a user with no saved setting signs in, then the first response
+  // arrives
   await act(() => animating.signIn());
-  await screen.findByText('animate');
   await request.answer();
 
-  // Then it still says to animate
-  expect(screen.getByText('animate')).toBeInTheDocument();
+  // Then it never shows that setting, only their own
+  expect(screen.queryByText('still')).not.toBeInTheDocument();
+  expect(await screen.findByText('animate')).toBeInTheDocument();
 });

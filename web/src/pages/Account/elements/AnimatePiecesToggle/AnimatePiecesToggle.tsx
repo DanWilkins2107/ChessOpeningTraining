@@ -5,10 +5,8 @@ import { useAnimatePieces } from '../useAnimatePieces/useAnimatePieces';
 import { useSaveAnimatePieces } from '../useSaveAnimatePieces/useSaveAnimatePieces';
 import './AnimatePiecesToggle.css';
 
-type AnimatePiecesToggleProps = { userId: string };
-
-export function AnimatePiecesToggle({ userId }: AnimatePiecesToggleProps) {
-  const { data } = useAnimatePieces(userId);
+export function AnimatePiecesToggle() {
+  const { data } = useAnimatePieces();
   const { animatePieces, choose, outcome } = useSaveAnimatePieces(data);
 
   return (

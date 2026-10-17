@@ -24,6 +24,12 @@ const TEMPORARY_EXCLUDES: TemporaryExclude[] = [
     reason:
       'Account is its only consumer until the studies list (94afaf5e) and study header (692f17d4) move onto it.',
   },
+  {
+    path: 'src/shared/useAuthenticatedUser',
+    expiry: '2026-11-16',
+    reason:
+      'Account is its only consumer until the load-moves hook (ed293461) and repertoire list (94afaf5e) move onto it.',
+  },
 ];
 
 const sources = moduleSources();
