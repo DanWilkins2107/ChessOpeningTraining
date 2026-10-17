@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { afterAll, afterEach, beforeAll, onTestFinished } from 'vitest';
 import { env } from '../env';
 import { supabase } from '../supabase';
@@ -35,10 +35,25 @@ async function removeUser(id: string) {
 
 const signOut = () => supabase.auth.signOut({ scope: 'local' });
 
-const signInAs = (credentials: Credentials) =>
-  async function signIn(client = supabase) {
-    const { error } = await client.auth.signInWithPassword(credentials);
-    if (error) throw error;
+async function signInWith(client: SupabaseClient, credentials: Credentials) {
+  const { error } = await client.auth.signInWithPassword(credentials);
+  if (error) throw error;
+}
+
+const signInAs = (credentials: Credentials) => () =>
+  signInWith(supabase, credentials);
+
+// A separate client signed in as the user, for seeding data or acting as
+// another device without touching the app's session.
+const signedInClientAs = (credentials: Credentials) =>
+  async function signedInClient() {
+    const client = createClient(
+      env.VITE_SUPABASE_URL,
+      env.VITE_SUPABASE_ANON_KEY,
+      { auth: { persistSession: false, autoRefreshToken: false } },
+    );
+    await signInWith(client, credentials);
+    return client;
   };
 
 export function registerTestUser({
@@ -56,7 +71,12 @@ export function registerTestUser({
 
   afterEach(signOut);
 
-  return { user, credentials, signIn: signInAs(credentials) };
+  return {
+    user,
+    credentials,
+    signIn: signInAs(credentials),
+    signedInClient: signedInClientAs(credentials),
+  };
 }
 
 // A user for one test only, for tests that leave the account changed.
