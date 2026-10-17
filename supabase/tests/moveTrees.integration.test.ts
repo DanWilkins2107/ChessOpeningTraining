@@ -3,6 +3,7 @@ import { env } from 'node:process';
 import { expect, it } from 'vitest';
 import type { MoveNode } from '../../web/src/elements/MoveNode/MoveNode';
 import { leaves, move } from '../../web/src/tests-shared/moveNode';
+import { existingFolderId } from './tests-shared/existingFolderId';
 import {
   admin,
   anonClient,
@@ -21,16 +22,6 @@ import { SERVER_FILLED_COLUMNS } from './tests-shared/serverFilledColumns';
 const MAX_MOVES_BYTES = 512 * 1024;
 
 const MOVES = [move('e4', move('c6', move('d4'), move('Nc3')))];
-
-async function existingFolderId(client: SupabaseClient): Promise<string> {
-  const { data, error } = await client
-    .from('folders')
-    .insert({ name: 'Caro-Kann' })
-    .select()
-    .single();
-  if (error) throw error;
-  return data.id;
-}
 
 async function folderOwner() {
   const { id, client } = await signedInUser();
@@ -124,6 +115,7 @@ it('creates a move tree with no moves in the owner’s folder', async () => {
     name: 'Main line',
     side: 'black',
     moves: [],
+    position: 0,
     created_at: expect.any(String),
   });
 });
@@ -179,6 +171,7 @@ it.each([
   ['created_at', async () => randomTimestamp()],
   ['folder_id', existingFolderId],
   ['owner_id', async () => (await signedInUser()).id],
+  ['position', async () => 5],
 ])('refuses changing a move tree’s %s', async (column, newValue) => {
   // Given a user with a move tree
   const { client, folderId } = await folderOwner();

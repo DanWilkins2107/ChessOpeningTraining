@@ -17,7 +17,6 @@ async function fetchFolder(folderId: string): Promise<FolderResponse> {
     .from('folders')
     .select('name, move_trees(id, name)')
     .eq('id', folderId)
-    .order('created_at', { referencedTable: 'move_trees' })
-    .order('id', { referencedTable: 'move_trees' })
+    .order('position', { referencedTable: 'move_trees' })
     .maybeSingle();
 }
