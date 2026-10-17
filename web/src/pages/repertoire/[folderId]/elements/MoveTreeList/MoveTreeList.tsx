@@ -1,7 +1,7 @@
 import { use } from 'react';
 import { generatePath } from 'react-router-dom';
 import { MOVE_TREE_ROUTE_PATH } from '../../../../MoveTree/router.constants';
-import { RowLink } from '../../../shared/RowLink/RowLink';
+import { RowLink } from '../RowLink/RowLink';
 import type { FolderResponse } from '../FolderResponse/FolderResponse';
 import './MoveTreeList.css';
 
