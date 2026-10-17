@@ -1,6 +1,6 @@
 import { act, fireEvent, screen } from '@testing-library/react';
 import { afterEach, beforeAll, expect, it, vi } from 'vitest';
-import { holdFirstRequest } from '../../../../tests-shared/heldRequest';
+import { holdFirstRequest } from '../../tests-shared/heldRequest';
 import {
   isProfilesRequest,
   turnOffSettingFor,
