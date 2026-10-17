@@ -1,0 +1,22 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SettingsLoadError > matches snapshot 1`] = `
+<div>
+  <label
+    class="setting-row"
+  >
+    Animate pieces
+  </label>
+  <label
+    class="setting-row"
+  >
+    Show move hints
+  </label>
+  <p
+    class="error-message"
+    role="alert"
+  >
+    Couldn't load your settings, try again
+  </p>
+</div>
+`;

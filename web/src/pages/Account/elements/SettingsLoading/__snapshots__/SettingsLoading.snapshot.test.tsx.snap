@@ -1,0 +1,26 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SettingsLoading > matches snapshot 1`] = `
+<div>
+  <label
+    class="setting-row"
+  >
+    Animate pieces
+    <span
+      aria-label="Loading your setting"
+      class="setting-placeholder"
+      role="status"
+    />
+  </label>
+  <label
+    class="setting-row"
+  >
+    Show move hints
+    <span
+      aria-label="Loading your setting"
+      class="setting-placeholder"
+      role="status"
+    />
+  </label>
+</div>
+`;

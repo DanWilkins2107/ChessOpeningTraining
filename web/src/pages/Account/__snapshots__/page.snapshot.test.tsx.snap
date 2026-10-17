@@ -11,15 +11,25 @@ exports[`Account > matches snapshot 1`] = `
       Account
     </h1>
     <div
-      class="animate-pieces"
+      class="profile-settings"
     >
       <label
-        class="animate-pieces-row"
+        class="setting-row"
       >
         Animate pieces
         <span
           aria-label="Loading your setting"
-          class="animate-pieces-placeholder"
+          class="setting-placeholder"
+          role="status"
+        />
+      </label>
+      <label
+        class="setting-row"
+      >
+        Show move hints
+        <span
+          aria-label="Loading your setting"
+          class="setting-placeholder"
           role="status"
         />
       </label>
