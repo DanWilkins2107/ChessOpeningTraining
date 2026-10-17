@@ -1,11 +1,9 @@
-import { createClient } from '@supabase/supabase-js';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeAll, expect, it, vi } from 'vitest';
 import { authSettled } from '../../tests-shared/authSettled';
 import { holdFirstRequest } from '../../tests-shared/heldRequest';
 import { registerTestUser } from '../../tests-shared/testUser';
-import { env } from '../../env';
 import { Repertoire } from './page';
 import { withQueryClient } from '../../tests-shared/withQueryClient';
 
@@ -14,12 +12,7 @@ const withoutFolders = registerTestUser();
 const creatingFolders = registerTestUser();
 
 beforeAll(async () => {
-  const client = createClient(
-    env.VITE_SUPABASE_URL,
-    env.VITE_SUPABASE_ANON_KEY,
-    { auth: { persistSession: false, autoRefreshToken: false } },
-  );
-  await withFolders.signIn(client);
+  const client = await withFolders.signedInClient();
   for (const folder of [{ name: 'Caro-Kann' }, { name: 'London' }]) {
     const { error } = await client.from('folders').insert(folder);
     if (error) throw error;

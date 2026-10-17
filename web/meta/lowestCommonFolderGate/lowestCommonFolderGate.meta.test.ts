@@ -17,7 +17,14 @@ const ROOT_EXCEPTIONS = [
 
 // Modules knowingly left above or below their lowest common folder, each only
 // until its expiry.
-const TEMPORARY_EXCLUDES: TemporaryExclude[] = [];
+const TEMPORARY_EXCLUDES: TemporaryExclude[] = [
+  {
+    path: 'src/shared/useAuthenticatedUser',
+    expiry: '2026-11-16',
+    reason:
+      'useMoves is its only consumer until the other user-scoped hooks move over',
+  },
+];
 
 const sources = moduleSources();
 

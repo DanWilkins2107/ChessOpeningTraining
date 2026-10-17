@@ -10,6 +10,7 @@ import {
 } from '../../tests-shared/profiles';
 import { registerTestUser } from '../../../../tests-shared/testUser';
 import { useAnimatePieces } from './useAnimatePieces';
+import { spyOnFetch } from '../../../../tests-shared/spyOnFetch';
 
 const animating = registerTestUser();
 const still = registerTestUser();
@@ -32,10 +33,6 @@ const renderSettingTestingHarness = () =>
       <Setting />
     </QueryClientProvider>,
   );
-
-// mock-reason: spying only, to see which requests go out. Every request is
-// sent for real.
-const spyOnFetch = () => vi.spyOn(window, 'fetch');
 
 it('animates for a user who never changed the setting', async () => {
   // Given a user with no saved setting
