@@ -1,4 +1,3 @@
-// fallow-ignore-file unused-file -- 94afaf5e 2026-11-12 landed ahead of the folders list, its first consumer.
 import { useQueryErrorResetBoundary } from '@tanstack/react-query';
 import { Suspense } from 'react';
 import type { ComponentType, ReactNode } from 'react';

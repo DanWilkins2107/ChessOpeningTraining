@@ -11,12 +11,15 @@ import { move } from '../../tests-shared/moveNode';
 import { registerTestUser } from '../../tests-shared/testUser';
 import { withQueryClient } from '../../tests-shared/withQueryClient';
 import { useMoves } from './useMoves';
-import { spyOnFetch } from '../../tests-shared/spyOnFetch';
 
 const treeOwner = registerTestUser();
 const nonOwner = registerTestUser();
 const moves = [move('e4', move('c6', move('d4'), move('Nc3')))];
 let moveTreeId = '';
+
+// mock-reason: spying only, to see which requests go out. Every request is
+// sent for real.
+const spyOnFetch = () => vi.spyOn(window, 'fetch');
 
 beforeAll(async () => {
   const client = await treeOwner.signedInClient();
