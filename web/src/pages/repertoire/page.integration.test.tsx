@@ -5,11 +5,11 @@ import { supabase } from '../../supabase';
 import { registerTestUser } from '../../tests-shared/testUser';
 import { Repertoire } from './page';
 
-const author = registerTestUser();
+const pageUser = registerTestUser();
 
 it('creates a folder from the page', async () => {
   // Given a signed-in user on the page
-  await author.signIn();
+  await pageUser.signIn();
   render(<Repertoire />, { wrapper: MemoryRouter });
 
   // When they create a folder

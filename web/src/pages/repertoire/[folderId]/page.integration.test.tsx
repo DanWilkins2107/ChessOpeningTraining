@@ -199,7 +199,9 @@ it("shows loading, not the previous user's folder, when the user changes", async
   await act(() => stranger.signIn());
 
   // Then it shows loading in place of the owner's folder
-  expect(loadingFolder()).toBeInTheDocument();
+  expect(
+    await screen.findByRole('status', { name: 'Loading folder' }),
+  ).toBeInTheDocument();
   expect(screen.queryByRole('heading', { level: 1 })).not.toBeInTheDocument();
 });
 
