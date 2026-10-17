@@ -1,0 +1,35 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`MoveTreeLayout > matches snapshot when busy is false 1`] = `
+<div>
+  <section
+    aria-busy="false"
+    aria-label="Move tree"
+    class="move-tree-layout"
+  >
+    <div
+      class="move-tree-layout-board"
+    />
+    <div
+      class="move-tree-layout-panel"
+    />
+  </section>
+</div>
+`;
+
+exports[`MoveTreeLayout > matches snapshot when busy is true 1`] = `
+<div>
+  <section
+    aria-busy="true"
+    aria-label="Move tree"
+    class="move-tree-layout"
+  >
+    <div
+      class="move-tree-layout-board"
+    />
+    <div
+      class="move-tree-layout-panel"
+    />
+  </section>
+</div>
+`;

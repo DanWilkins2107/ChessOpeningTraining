@@ -1,5 +1,6 @@
 import { act, render } from '@testing-library/react';
 import { Suspense } from 'react';
+import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 import type { MoveTree } from '../MoveTree/MoveTree';
 import type { FolderResponse } from '../FolderResponse/FolderResponse';
@@ -24,9 +25,11 @@ describe('MoveTreeList', () => {
   ])('matches snapshot with %s', async (_, moveTrees) => {
     const { container } = await act(() =>
       render(
-        <Suspense>
-          <MoveTreeList folder={Promise.resolve(respond(moveTrees))} />
-        </Suspense>,
+        <MemoryRouter>
+          <Suspense>
+            <MoveTreeList folder={Promise.resolve(respond(moveTrees))} />
+          </Suspense>
+        </MemoryRouter>,
       ),
     );
     expect(container).toMatchSnapshot();

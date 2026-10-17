@@ -93,6 +93,29 @@ it('sends a signed-out visitor from a folder page to sign in', async () => {
   expect(pathOf(memoryRouter)).toBe('/sign-in?next=%2Ffolders%2Fab12');
 });
 
+it('shows a move tree page to a signed-in user', async () => {
+  // Given a signed-in user
+  await signIn();
+
+  // When the router renders a move tree path and the user loads
+  renderAt('/tree/ab12');
+  await authSettled();
+
+  // Then it shows the move tree page
+  expect(screen.getByRole('alert')).toHaveTextContent('Move tree not found');
+});
+
+it('sends a signed-out visitor from a move tree page to sign in', async () => {
+  // Given a signed-out visitor
+
+  // When they open a move tree page
+  const memoryRouter = renderAt('/tree/ab12');
+  await authSettled();
+
+  // Then they are at sign in, carrying the move tree path
+  expect(pathOf(memoryRouter)).toBe('/sign-in?next=%2Ftree%2Fab12');
+});
+
 it('shows the header links on a protected page while the user is loading', () => {
   // Given the user not yet loaded
 
