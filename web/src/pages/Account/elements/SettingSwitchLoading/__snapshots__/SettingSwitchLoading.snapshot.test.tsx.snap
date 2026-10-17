@@ -1,0 +1,11 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SettingSwitchLoading > matches snapshot 1`] = `
+<div>
+  <span
+    aria-label="Loading your setting"
+    class="setting-placeholder"
+    role="status"
+  />
+</div>
+`;
