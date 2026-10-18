@@ -1,0 +1,47 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`MoveTreeItem > matches snapshot 1`] = `
+<div>
+  <ul>
+    <li
+      class="move-tree-item"
+    >
+      <svg
+        aria-hidden="true"
+        class="move-tree-item-icon"
+        viewBox="0 0 24 24"
+      >
+        <circle
+          cx="6"
+          cy="5"
+          r="2.5"
+        />
+        <circle
+          cx="6"
+          cy="19"
+          r="2.5"
+        />
+        <circle
+          cx="18"
+          cy="8"
+          r="2.5"
+        />
+        <path
+          d="M6 7.5v9M18 10.5c0 4-4 5.5-10 6.5"
+        />
+      </svg>
+      <span
+        class="move-tree-item-name"
+      >
+        Sicilian
+      </span>
+      <span
+        class="move-tree-item-side"
+        data-side="black"
+      >
+        black
+      </span>
+    </li>
+  </ul>
+</div>
+`;
