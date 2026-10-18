@@ -1,29 +1,11 @@
 import { QueryClientProvider } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';
-import { beforeAll, expect, it } from 'vitest';
+import { expect, it } from 'vitest';
 import { createQueryClient } from '../../../../elements/createQueryClient/createQueryClient';
 import { supabase } from '../../../../supabase';
-import {
-  createTestUser,
-  registerTestUser,
-} from '../../../../tests-shared/testUser';
+import { createTestUser } from '../../../../tests-shared/testUser';
 import { useCreateMoveTree } from './useCreateMoveTree';
-
-const moveTreeAuthor = registerTestUser();
-const londonFolder = { id: '' };
-
-beforeAll(async () => {
-  await moveTreeAuthor.signIn();
-  const { data, error } = await supabase
-    .from('folders')
-    .insert({ name: 'London' })
-    .select('id')
-    .single();
-  if (error) throw error;
-  londonFolder.id = data.id;
-  await supabase.auth.signOut({ scope: 'local' });
-});
 
 function renderCreateMoveTreeTestingHarness() {
   const client = createQueryClient();
@@ -63,7 +45,15 @@ const newestMoveTree = async () =>
   ).data;
 
 it('creates a move tree in the folder on the given side', async () => {
-  // Given a signed-in user
+  // Given a signed-in user with a folder
+  const moveTreeAuthor = await createTestUser();
+  const client = await moveTreeAuthor.signedInClient();
+  const { data: londonFolder, error } = await client
+    .from('folders')
+    .insert({ name: 'London' })
+    .select('id')
+    .single();
+  if (error) throw error;
   await moveTreeAuthor.signIn();
   const hook = renderCreateMoveTreeTestingHarness();
 
@@ -86,6 +76,7 @@ it('creates a move tree in the folder on the given side', async () => {
 
 it('creates a top-level move tree without a folder', async () => {
   // Given a signed-in user
+  const moveTreeAuthor = await createTestUser();
   await moveTreeAuthor.signIn();
   const hook = renderCreateMoveTreeTestingHarness();
 
@@ -98,6 +89,7 @@ it('creates a top-level move tree without a folder', async () => {
 
 it('trims the name it stores', async () => {
   // Given a signed-in user
+  const moveTreeAuthor = await createTestUser();
   await moveTreeAuthor.signIn();
   const hook = renderCreateMoveTreeTestingHarness();
 
@@ -133,6 +125,7 @@ it('explains the 500-move-tree cap', async () => {
 
 it('clears an earlier failure once created', async () => {
   // Given a failed create while signed out
+  const moveTreeAuthor = await createTestUser();
   const hook = renderCreateMoveTreeTestingHarness();
   await create(hook, { folderId: null, name: 'Dutch', side: 'white' });
   await waitFor(() =>

@@ -1,13 +1,8 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { expect, it } from 'vitest';
 import { supabase } from '../../../../supabase';
-import {
-  createTestUser,
-  registerTestUser,
-} from '../../../../tests-shared/testUser';
+import { createTestUser } from '../../../../tests-shared/testUser';
 import { CreateFolderForm } from './CreateFolderForm';
-
-const author = registerTestUser();
 
 const createButton = () =>
   screen.getByRole('button', { name: 'Create folder' });
@@ -21,6 +16,7 @@ function renderForm() {
 }
 
 async function signedInForm() {
+  const author = await createTestUser();
   await author.signIn();
   return renderForm();
 }
@@ -91,6 +87,7 @@ it('disables create again once the folder is created', async () => {
 
 it('clears an earlier failure once a folder is created', async () => {
   // Given a failed create on the form
+  const author = await createTestUser();
   const creations = renderForm();
   submitFolder('Dutch');
   await screen.findByRole('alert');
