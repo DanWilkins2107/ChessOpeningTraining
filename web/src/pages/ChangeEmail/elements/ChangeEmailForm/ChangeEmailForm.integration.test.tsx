@@ -18,11 +18,11 @@ const enterNewEmail = (email: string) =>
     target: { value: email },
   });
 
-async function changeEmailPageAsNewUser() {
+async function changeEmailPageAsNewUser(hash = '') {
   const user = await createTestUser();
   await user.signIn();
-  await renderSettledAt('/account/email');
-  return user;
+  const memoryRouter = await renderSettledAt(`/account/email${hash}`);
+  return { ...user, memoryRouter };
 }
 
 it('shows their current email and no pending change', async () => {
@@ -134,4 +134,57 @@ it('keeps change email disabled until the new email is valid', async () => {
   // Then the button only enables for the email
   expect(disabledForInvalid).toBe(true);
   expect(changeEmailButton()).toBeEnabled();
+});
+
+it('confirms the first link and clears it from the address', async () => {
+  // Given a signed-in user
+
+  // When they come back from the first of the two email links
+  const { memoryRouter } = await changeEmailPageAsNewUser(
+    '#message=Confirmation+link+accepted',
+  );
+
+  // Then they are told to open the other link, and the hash is gone
+  expect(screen.getByRole('status')).toHaveTextContent(
+    'Confirmed, now open the link sent to your other email',
+  );
+  expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  expect(memoryRouter.state.location.hash).toBe('');
+});
+
+it('confirms the change once the last link is opened', async () => {
+  // Given the hash Supabase adds after the last link, carrying the new session
+  const hash = `#type=email_change&access_token=${crypto.randomUUID()}`;
+
+  // When their change email page opens with it
+  const { memoryRouter } = await changeEmailPageAsNewUser(hash);
+
+  // Then the change is confirmed, and the session hash is left for Supabase
+  expect(screen.getByRole('status')).toHaveTextContent('Email changed');
+  expect(memoryRouter.state.location.hash).toBe(hash);
+});
+
+it('reports a link that failed and clears it from the address', async () => {
+  // Given a signed-in user
+
+  // When they come back from an expired email link
+  const { memoryRouter } = await changeEmailPageAsNewUser(
+    '#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired',
+  );
+
+  // Then they are told to ask for fresh links, and the hash is gone
+  expect(screen.getByRole('alert')).toHaveTextContent(
+    'That link has expired or was already used. Enter your new email again to get fresh links',
+  );
+  expect(memoryRouter.state.location.hash).toBe('');
+});
+
+it('leaves a hash that is not about an email link alone', async () => {
+  // Given a signed-in user
+
+  // When they open their change email page with an unrelated hash
+  const { memoryRouter } = await changeEmailPageAsNewUser('#section');
+
+  // Then the hash stays
+  expect(memoryRouter.state.location.hash).toBe('#section');
 });
