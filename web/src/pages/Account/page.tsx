@@ -4,14 +4,12 @@ import {
   SIGNED_OUT_PARAM,
   SIGNED_OUT_PENDING,
 } from '../../shared/signOut/signOut.constants';
-import { useAnimatePieces } from './elements/useAnimatePieces/useAnimatePieces';
 import { supabase } from '../../supabase';
-import { AnimatePiecesToggle } from './elements/AnimatePiecesToggle/AnimatePiecesToggle';
+import { AnimatePiecesSetting } from './elements/AnimatePiecesSetting/AnimatePiecesSetting';
 import './page.css';
 
 export function Account() {
   const navigate = useNavigate();
-  const animatePieces = useAnimatePieces();
 
   async function signOut() {
     const leaveWith = (outcome: string) =>
@@ -27,7 +25,10 @@ export function Account() {
   return (
     <section className="account-card">
       <h1 className="account-heading">Account</h1>
-      <AnimatePiecesToggle setting={animatePieces} />
+      <Link to="/account/email" className="account-action">
+        Change email
+      </Link>
+      <AnimatePiecesSetting />
       <Link to="/account/password" className="account-action">
         Change password
       </Link>
