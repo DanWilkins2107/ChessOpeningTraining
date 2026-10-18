@@ -46,12 +46,17 @@ async function create(
   hook: Created,
   moveTree: Parameters<Created['current']['createMoveTree']>[0],
 ) {
+  let succeeded = false;
   await act(
     () =>
       new Promise<void>((resolve) =>
-        hook.current.createMoveTree(moveTree, { onSettled: () => resolve() }),
+        hook.current.createMoveTree(moveTree, {
+          onSuccess: () => (succeeded = true),
+          onSettled: () => resolve(),
+        }),
       ),
   );
+  return succeeded;
 }
 
 const newestMoveTree = async () =>
@@ -70,13 +75,14 @@ it('creates a move tree in the folder on the given side', async () => {
   const hook = renderCreateMoveTreeTestingHarness();
 
   // When they create a black move tree in their folder
-  await create(hook, {
+  const succeeded = await create(hook, {
     folderId: londonFolder.id,
     name: 'Caro-Kann',
     side: 'black',
   });
 
-  // Then it is stored there, with no error
+  // Then it succeeds and is stored there, with no error
+  expect(succeeded).toBe(true);
   expect(await newestMoveTree()).toEqual({
     folder_id: londonFolder.id,
     name: 'Caro-Kann',
