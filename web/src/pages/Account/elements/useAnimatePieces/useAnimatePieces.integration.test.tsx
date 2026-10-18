@@ -4,7 +4,7 @@ import { afterEach, beforeAll, expect, it, vi } from 'vitest';
 import { createQueryClient } from '../../../../elements/createQueryClient/createQueryClient';
 import { LoadBoundary } from '../../../../shared/LoadBoundary/LoadBoundary';
 import { authSettled } from '../../../../tests-shared/authSettled';
-import { holdFirstRequest } from '../../../../tests-shared/heldRequest';
+import { holdFirstRequest } from '../../tests-shared/heldRequest';
 import {
   LOADING,
   LoadError,
