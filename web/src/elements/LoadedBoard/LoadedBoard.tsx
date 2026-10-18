@@ -1,5 +1,5 @@
 // fallow-ignore-file unused-file -- ef93ff81 2026-11-16 landed ahead of the folder page, its first consumer.
-import './Board.css';
+import './LoadedBoard.css';
 import type { Move, PartialMove } from 'chess.ts';
 import { BoardPieces } from '../BoardPieces/BoardPieces';
 import { BoardSquares } from '../BoardSquares/BoardSquares';
@@ -21,7 +21,7 @@ const axesFor = (orientation: 'white' | 'black') =>
     ? { files: FILES, ranks: RANKS }
     : { files: [...FILES].reverse(), ranks: [...RANKS].reverse() };
 
-type BoardProps = {
+type LoadedBoardProps = {
   position: string;
   orientation: 'white' | 'black';
   animatePieces: boolean;
@@ -29,13 +29,13 @@ type BoardProps = {
   onMove?: (move: PartialMove) => void;
 };
 
-export function Board({
+export function LoadedBoard({
   position,
   orientation,
   animatePieces,
   showMoveHints,
   onMove,
-}: BoardProps) {
+}: LoadedBoardProps) {
   const { files, ranks } = axesFor(orientation);
   const { selected, choose, pickUp, promoting, promote, cancelPromotion } =
     useMoveSelection(position, onMove);
