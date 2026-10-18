@@ -12,8 +12,6 @@ async function inserted(table: string, rows: object[]) {
 }
 
 it('returns every folder and move tree with its parent, newest first', async () => {
-  // Given a user with two top-level folders, a folder inside one, a top-level
-  // move tree and a move tree inside the nested folder
   const { id, client } = await signedInUser();
   const [london, caroKann] = await inserted('folders', [
     { owner_id: id, name: 'London', created_at: '2026-01-02T00:00:00Z' },

@@ -1,5 +1,3 @@
--- Returns the user's whole folder tree in one call, so expanding a folder needs no further fetch. The per-owner caps
--- (100 folders, 500 move trees) bound the result, and moves are left out so it stays small.
 create function public.get_repertoire()
 returns jsonb
 language sql
