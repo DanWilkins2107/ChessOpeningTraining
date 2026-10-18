@@ -16,6 +16,8 @@ import { RootLayout } from '../RootLayout/RootLayout';
 import { Account } from '../../pages/Account/page';
 import { ChangeEmail } from '../../pages/ChangeEmail/page';
 import { ChangePassword } from '../../pages/ChangePassword/page';
+import { ChangePasswordConfirmation } from '../../pages/ChangePassword/confirmation/page';
+import { CHANGE_PASSWORD_CONFIRMATION_ROUTE_PATH } from '../../pages/ChangePassword/router.constants';
 import { DeleteAccount } from '../../pages/DeleteAccount/page';
 import { ForgotPassword } from '../../pages/ForgotPassword/page';
 import { Home } from '../../pages/Home/page';
@@ -38,7 +40,16 @@ export const router = createBrowserRouter([
           { index: true, element: <Home /> },
           { path: ACCOUNT_ROUTE_PATH, element: <Account /> },
           { path: ACCOUNT_EMAIL_ROUTE_PATH, element: <ChangeEmail /> },
-          { path: CHANGE_PASSWORD_ROUTE_PATH, element: <ChangePassword /> },
+          {
+            path: CHANGE_PASSWORD_ROUTE_PATH,
+            element: <ChangePassword />,
+            children: [
+              {
+                path: CHANGE_PASSWORD_CONFIRMATION_ROUTE_PATH,
+                element: <ChangePasswordConfirmation />,
+              },
+            ],
+          },
           { path: DELETE_ACCOUNT_ROUTE_PATH, element: <DeleteAccount /> },
           { path: REPERTOIRE_ROUTE_PATH, element: <Repertoire /> },
           { path: FOLDER_ROUTE_PATH, element: <Folder /> },
