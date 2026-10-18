@@ -13,7 +13,6 @@ import {
 import { supabase } from '../../../../supabase';
 
 const firstVisit = registerTestUser();
-const failing = registerTestUser();
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -249,7 +248,8 @@ it('shows a saved choice straight away on coming back', async () => {
 });
 
 it('says so when the setting fails to load', async () => {
-  // Given a server that fails the profile request
+  // Given a user, and a server that fails the profile request
+  const failing = await createTestUser();
   failProfilesRequests('GET');
 
   // When the toggle renders
@@ -265,6 +265,7 @@ it('says so when the setting fails to load', async () => {
 
 it('turns back on and says so when saving fails', async () => {
   // Given a user on the toggle, and a server that fails the save
+  const failing = await createTestUser();
   await renderFor(failing);
   const box = await loadedToggle();
   failProfilesRequests('POST');
