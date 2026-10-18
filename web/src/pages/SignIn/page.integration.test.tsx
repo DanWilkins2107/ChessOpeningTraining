@@ -6,10 +6,9 @@ import {
   submitCredentials,
 } from '../../tests-shared/credentialsForm';
 import { pathOf, renderAt, renderSettledAt } from '../../tests-shared/renderAt';
-import { registerTestUser } from '../../tests-shared/testUser';
+import { createTestUser, registerTestUser } from '../../tests-shared/testUser';
 
 const confirmed = registerTestUser();
-const unconfirmed = registerTestUser({ emailConfirmed: false });
 
 const signInButton = () => screen.getByRole('button', { name: 'Sign in' });
 
@@ -164,10 +163,11 @@ it('links to sign up', async () => {
 });
 
 it('asks for email confirmation when the password matches', async () => {
-  // Given a signed-out visitor on sign in
+  // Given a signed-out visitor on sign in, with an unconfirmed account
+  const unconfirmed = await createTestUser({ emailConfirmed: false });
   await renderSettledAt('/sign-in');
 
-  // When they submit the correct credentials of an unconfirmed account
+  // When they submit its correct credentials
   submitCredentials(signInButton(), unconfirmed.credentials);
 
   // Then they are asked to confirm their email
