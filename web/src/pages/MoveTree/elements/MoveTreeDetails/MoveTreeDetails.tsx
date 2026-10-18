@@ -9,5 +9,5 @@ export function MoveTreeDetails({ moveTreeId }: { moveTreeId: string }) {
   if (isError) return <MoveTreeLoadError />;
   if (data === null) return <MoveTreeNotFound />;
 
-  return <MoveTreeLayout moveTreeId={moveTreeId} />;
+  return <MoveTreeLayout />;
 }

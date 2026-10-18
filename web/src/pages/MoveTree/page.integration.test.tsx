@@ -31,14 +31,20 @@ const selectOf = (input: RequestInfo | URL) =>
 const isNameAndSideRequest = (input: RequestInfo | URL) =>
   isMoveTreeRequest(input) && selectOf(input) === 'name,side';
 
-const isMovesRequest = (input: RequestInfo | URL) =>
-  isMoveTreeRequest(input) && selectOf(input) === 'moves';
-
 const moveTreeLayout = () =>
   screen.queryByRole('region', { name: 'Move tree' });
 
 const placeholderBoard = () =>
   screen.queryByRole('status', { name: 'Loading board' });
+
+// The board suspends for good, so effects only flush once act is awaited.
+async function renderPageAt(path: string) {
+  let memoryRouter!: ReturnType<typeof renderAt>;
+  await act(async () => {
+    memoryRouter = renderAt(path);
+  });
+  return memoryRouter;
+}
 
 function spyOnMoveTreeRequests() {
   // mock-reason: the requests sent are the assertion. Every call is real.
@@ -86,63 +92,44 @@ it('shows the layout with a placeholder board while the move tree loads', async 
   stallMoveTreeRequests();
 
   // When their move tree page renders
-  renderAt(`/tree/${mainLineId}`);
+  await renderPageAt(`/tree/${mainLineId}`);
 
   // Then it shows the layout straight away, with a placeholder board
   expect(moveTreeLayout()).toBeInTheDocument();
   expect(placeholderBoard()).toBeInTheDocument();
 });
 
-it('keeps the layout, with no error, and drops the placeholder board once the move tree loads', async () => {
+it('keeps the layout and placeholder board, with no error, once the move tree loads', async () => {
   // Given a signed-in owner
   await moveTreeOwner.signIn();
+  const moveTreeRequests = spyOnMoveTreeRequests();
 
   // When their move tree page renders and the move tree loads
-  renderAt(`/tree/${mainLineId}`);
-  await vi.waitFor(() => expect(placeholderBoard()).not.toBeInTheDocument());
+  await renderPageAt(`/tree/${mainLineId}`);
+  await moveTreeRequests.answered();
 
-  // Then the layout stays, with no error
+  // Then the layout stays, with the placeholder board and no error
   expect(moveTreeLayout()).toBeInTheDocument();
+  expect(placeholderBoard()).toBeInTheDocument();
   expect(screen.queryByRole('alert')).not.toBeInTheDocument();
 });
 
-it('requests the name and side once, and the moves once', async () => {
+it('requests the name and side once, never the moves', async () => {
   // Given a signed-in owner
   await moveTreeOwner.signIn();
   const moveTreeRequests = spyOnMoveTreeRequests();
 
   // When their move tree page renders and loads
-  renderAt(`/tree/${mainLineId}`);
-  await vi.waitFor(() => expect(placeholderBoard()).not.toBeInTheDocument());
+  await renderPageAt(`/tree/${mainLineId}`);
+  await moveTreeRequests.answered();
 
-  // Then it requested the name and side once, and the moves once
-  const searchParams = moveTreeRequests
-    .requests()
-    .map(({ input }) =>
-      Object.fromEntries(new URL(String(input)).searchParams),
-    );
-  expect(searchParams).toHaveLength(2);
-  expect(searchParams).toEqual(
-    expect.arrayContaining([
-      { select: 'name,side', id: `eq.${mainLineId}` },
-      { select: 'moves', id: `eq.${mainLineId}` },
-    ]),
-  );
-});
-
-it('keeps the layout and shows a board load error when only the moves fail', async () => {
-  // Given a signed-in owner, and the moves request failing on the server
-  await moveTreeOwner.signIn();
-  failRequests(isMovesRequest);
-
-  // When their move tree page renders
-  renderAt(`/tree/${mainLineId}`);
-
-  // Then the board slot shows the load error, inside the layout
-  expect(await screen.findByRole('alert')).toHaveTextContent(
-    "Couldn't load the moves, try again",
-  );
-  expect(moveTreeLayout()).toBeInTheDocument();
+  // Then it requested the move tree once, for its name and side alone
+  const [{ input }, ...later] = moveTreeRequests.requests();
+  expect(later).toEqual([]);
+  expect(Object.fromEntries(new URL(String(input)).searchParams)).toEqual({
+    select: 'name,side',
+    id: `eq.${mainLineId}`,
+  });
 });
 
 it.each([
@@ -154,7 +141,7 @@ it.each([
   const moveTreeRequests = spyOnMoveTreeRequests();
 
   // When they open it
-  renderAt(`/tree/${moveTreeId()}`);
+  await renderPageAt(`/tree/${moveTreeId()}`);
 
   // Then it shows not found in place of the layout, after a single request
   // for the name and side
@@ -175,7 +162,7 @@ it('shows a load error when the request fails', async () => {
   failRequests(isMoveTreeRequest);
 
   // When their move tree page renders
-  renderAt(`/tree/${mainLineId}`);
+  await renderPageAt(`/tree/${mainLineId}`);
 
   // Then it shows the load error in place of the layout
   await vi.waitFor(() =>
@@ -192,7 +179,7 @@ it("shows not found, without asking, for an id that isn't a move tree id", async
   const moveTreeRequests = spyOnMoveTreeRequests();
 
   // When they open a malformed move tree id
-  renderAt('/tree/ab12');
+  await renderPageAt('/tree/ab12');
 
   // Then it shows not found, without requesting the move tree
   await vi.waitFor(() =>
@@ -205,7 +192,7 @@ it('asks again, as the new user, when the user changes', async () => {
   // Given the owner's move tree loaded
   await moveTreeOwner.signIn();
   const moveTreeRequests = spyOnMoveTreeRequests();
-  renderAt(`/tree/${mainLineId}`);
+  await renderPageAt(`/tree/${mainLineId}`);
   await moveTreeRequests.answered();
 
   // When a different user signs in
@@ -221,7 +208,7 @@ it('asks again when the move tree changes', async () => {
   // Given one move tree loaded
   await moveTreeOwner.signIn();
   const moveTreeRequests = spyOnMoveTreeRequests();
-  const memoryRouter = renderAt(`/tree/${mainLineId}`);
+  const memoryRouter = await renderPageAt(`/tree/${mainLineId}`);
   await moveTreeRequests.answered();
 
   // When the user moves to a move tree that does not exist

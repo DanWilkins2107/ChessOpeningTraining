@@ -1,3 +1,4 @@
+// fallow-ignore-file unused-file -- ef93ff81 2026-11-16 landed ahead of the folder page, its first consumer.
 import { z } from '../../z';
 import { mapMovesToLineArray } from '../mapMovesToLineArray/mapMovesToLineArray';
 import type { MoveNode } from '../MoveNode/MoveNode';

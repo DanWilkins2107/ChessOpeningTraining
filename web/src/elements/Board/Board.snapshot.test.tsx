@@ -6,7 +6,7 @@ describe('Board', () => {
   it('matches snapshot', () => {
     const { container } = render(
       <Board
-        position="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+        position={new Promise<string>(() => {})}
         orientation="white"
         animatePieces
         showMoveHints

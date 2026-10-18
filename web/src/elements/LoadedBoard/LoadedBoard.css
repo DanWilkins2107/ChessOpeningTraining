@@ -1,0 +1,15 @@
+/* The positioning parent for the piece layer, which is placed against the whole
+   board rather than inside a square. */
+.board {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+/* A finger on the board moves pieces rather than scrolling the page. */
+.board-interactive {
+  touch-action: none;
+  user-select: none;
+}

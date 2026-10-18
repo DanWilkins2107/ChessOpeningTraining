@@ -1,4 +1,3 @@
-// fallow-ignore-file unused-file -- ef93ff81 2026-11-16 landed ahead of the folder page, its first consumer.
 // The images are the cburnett set; the LICENSE.txt beside this file is their
 // licence and names each file, so moving them means updating it too.
 import bB from './bB.svg';

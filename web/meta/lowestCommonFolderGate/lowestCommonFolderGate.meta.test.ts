@@ -19,10 +19,16 @@ const ROOT_EXCEPTIONS = [
 // until its expiry.
 const TEMPORARY_EXCLUDES: TemporaryExclude[] = [
   {
-    path: 'src/elements/movesSchema',
-    expiry: '2026-11-15',
+    path: 'src/shared/LoadBoundary',
+    expiry: '2026-11-12',
     reason:
-      'The move tree page is its only consumer until Save (a5b769ed) validates moves with it. Moving it would also mean editing the path in migration 0003.',
+      'Account is its only consumer until the studies list (94afaf5e) and study header (692f17d4) move onto it.',
+  },
+  {
+    path: 'src/elements/Board',
+    expiry: '2026-11-17',
+    reason:
+      'The move tree page is its only consumer until Training and Daily test (604a0091) reuse it.',
   },
 ];
 
