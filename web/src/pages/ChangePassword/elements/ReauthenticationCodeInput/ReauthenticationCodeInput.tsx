@@ -1,0 +1,17 @@
+// fallow-ignore-file unused-file -- a65315e5 2026-11-17 landed ahead of the code screen, its first consumer.
+import { TextInput } from '../../../../shared/TextInput/TextInput';
+import { CODE_SENT_MESSAGE } from './ReauthenticationCodeInput.constants';
+
+export function ReauthenticationCodeInput() {
+  return (
+    <>
+      <p>{CODE_SENT_MESSAGE}</p>
+      <TextInput
+        label="Code"
+        name="code"
+        type="text"
+        autoComplete="one-time-code"
+      />
+    </>
+  );
+}
