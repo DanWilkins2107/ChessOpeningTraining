@@ -1,4 +1,4 @@
-import { TextInput } from '../../shared/TextInput/TextInput';
+import { TextInput } from '../../../../../shared/TextInput/TextInput';
 import { CODE_SENT_MESSAGE } from './ReauthenticationCodeInput.constants';
 
 export function ReauthenticationCodeInput() {
