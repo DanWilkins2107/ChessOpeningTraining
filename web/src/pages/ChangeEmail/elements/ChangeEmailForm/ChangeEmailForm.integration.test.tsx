@@ -1,6 +1,11 @@
-import { fireEvent, screen } from '@testing-library/react';
+import { act, fireEvent, screen } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
-import { renderSettledAt } from '../../../../tests-shared/renderAt';
+import { authSettled } from '../../../../tests-shared/authSettled';
+import {
+  pathOf,
+  renderAt,
+  renderSettledAt,
+} from '../../../../tests-shared/renderAt';
 import { createTestUser } from '../../../../tests-shared/testUser';
 import { supabase } from '../../../../supabase';
 
@@ -177,6 +182,23 @@ it('reports a link that failed and clears it from the address', async () => {
     'That link has expired or was already used. Enter your new email again to get fresh links',
   );
   expect(memoryRouter.state.location.hash).toBe('');
+});
+
+it('leaves the spent email link out of history', async () => {
+  // Given a user who came back from an email link
+  const user = await createTestUser();
+  await user.signIn();
+  const memoryRouter = renderAt(
+    '/elsewhere',
+    '/account/email#error=access_denied&error_code=otp_expired',
+  );
+  await authSettled();
+
+  // When they go back
+  await act(() => memoryRouter.navigate(-1));
+
+  // Then they land where they were before it
+  expect(pathOf(memoryRouter)).toBe('/elsewhere');
 });
 
 it('leaves a hash that is not about an email link alone', async () => {
