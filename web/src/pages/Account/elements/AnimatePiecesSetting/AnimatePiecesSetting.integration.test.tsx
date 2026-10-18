@@ -6,13 +6,8 @@ import {
   turnOffAnimationFor,
 } from '../../tests-shared/profiles';
 import { renderSettledAt } from '../../../../tests-shared/renderAt';
-import {
-  createTestUser,
-  registerTestUser,
-} from '../../../../tests-shared/testUser';
+import { createTestUser } from '../../../../tests-shared/testUser';
 import { supabase } from '../../../../supabase';
-
-const firstVisit = registerTestUser();
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -31,7 +26,7 @@ const SUSPENSE_MIN_STALE_MS = 1000;
 const pause = (ms: number) =>
   act(() => new Promise((resolve) => setTimeout(resolve, ms)));
 
-async function renderFor(user: ReturnType<typeof registerTestUser>) {
+async function renderFor(user: Awaited<ReturnType<typeof createTestUser>>) {
   await user.signIn();
   return renderSettledAt('/account');
 }
@@ -83,6 +78,7 @@ async function savedAnimatePieces() {
 
 it('shows a placeholder until the setting loads', async () => {
   // Given a signed-in user, whose setting request is held
+  const firstVisit = await createTestUser();
   const request = holdFirstRequest(isProfilesRequest);
 
   // When the toggle renders
@@ -101,6 +97,7 @@ it('shows a placeholder until the setting loads', async () => {
 
 it('animates pieces for a user who never changed the setting', async () => {
   // Given a user with no saved setting
+  const firstVisit = await createTestUser();
 
   // When the toggle loads
   await renderFor(firstVisit);
