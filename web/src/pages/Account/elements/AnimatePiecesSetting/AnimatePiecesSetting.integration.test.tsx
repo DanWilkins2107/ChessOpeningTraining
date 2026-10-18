@@ -1,26 +1,13 @@
 import { act, fireEvent, screen } from '@testing-library/react';
-import { afterEach, beforeAll, expect, it, vi } from 'vitest';
+import { afterEach, expect, it, vi } from 'vitest';
 import { holdFirstRequest } from '../../tests-shared/heldRequest';
 import {
   isProfilesRequest,
   turnOffAnimationFor,
 } from '../../tests-shared/profiles';
 import { renderSettledAt } from '../../../../tests-shared/renderAt';
-import { registerTestUser } from '../../../../tests-shared/testUser';
+import { createTestUser } from '../../../../tests-shared/testUser';
 import { supabase } from '../../../../supabase';
-
-const firstVisit = registerTestUser();
-const savedOff = registerTestUser();
-const turningOff = registerTestUser();
-const confirming = registerTestUser();
-const clickingOnAndOff = registerTestUser();
-const undoing = registerTestUser();
-const turningBackOn = registerTestUser();
-const clickingDuringSave = registerTestUser();
-const failing = registerTestUser();
-const comingBack = registerTestUser();
-
-beforeAll(() => turnOffAnimationFor(savedOff));
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -39,7 +26,7 @@ const SUSPENSE_MIN_STALE_MS = 1000;
 const pause = (ms: number) =>
   act(() => new Promise((resolve) => setTimeout(resolve, ms)));
 
-async function renderFor(user: ReturnType<typeof registerTestUser>) {
+async function renderFor(user: Awaited<ReturnType<typeof createTestUser>>) {
   await user.signIn();
   return renderSettledAt('/account');
 }
@@ -91,6 +78,7 @@ async function savedAnimatePieces() {
 
 it('shows a placeholder until the setting loads', async () => {
   // Given a signed-in user, whose setting request is held
+  const firstVisit = await createTestUser();
   const request = holdFirstRequest(isProfilesRequest);
 
   // When the toggle renders
@@ -109,6 +97,7 @@ it('shows a placeholder until the setting loads', async () => {
 
 it('animates pieces for a user who never changed the setting', async () => {
   // Given a user with no saved setting
+  const firstVisit = await createTestUser();
 
   // When the toggle loads
   await renderFor(firstVisit);
@@ -119,6 +108,8 @@ it('animates pieces for a user who never changed the setting', async () => {
 
 it('shows a setting saved earlier', async () => {
   // Given a user who turned animation off before
+  const savedOff = await createTestUser();
+  await turnOffAnimationFor(savedOff);
 
   // When the toggle loads
   await renderFor(savedOff);
@@ -129,6 +120,7 @@ it('shows a setting saved earlier', async () => {
 
 it('turns off at once, and saves after a pause', async () => {
   // Given a user on the toggle
+  const turningOff = await createTestUser();
   await renderFor(turningOff);
   const { saves } = recordSaves();
 
@@ -145,6 +137,7 @@ it('turns off at once, and saves after a pause', async () => {
 
 it('says Saved once saved, until the next click', async () => {
   // Given a user on the toggle
+  const confirming = await createTestUser();
   await renderFor(confirming);
 
   // When they turn it off
@@ -162,6 +155,7 @@ it('says Saved once saved, until the next click', async () => {
 
 it('saves only once the clicks stop', async () => {
   // Given a user on the toggle
+  const clickingOnAndOff = await createTestUser();
   await renderFor(clickingOnAndOff);
   const { saves } = recordSaves();
 
@@ -179,6 +173,7 @@ it('saves only once the clicks stop', async () => {
 
 it('saves nothing when a click is undone', async () => {
   // Given a user on the toggle
+  const undoing = await createTestUser();
   await renderFor(undoing);
   const { saves } = recordSaves();
 
@@ -195,6 +190,7 @@ it('saves nothing when a click is undone', async () => {
 
 it('saves over a setting already saved', async () => {
   // Given a user who turned animation off
+  const turningBackOn = await createTestUser();
   await renderFor(turningBackOn);
   fireEvent.click(await loadedToggle());
   await vi.waitFor(async () => expect(await savedAnimatePieces()).toBe(false));
@@ -208,6 +204,7 @@ it('saves over a setting already saved', async () => {
 
 it('sends a later choice only after the save in flight', async () => {
   // Given a user whose save of off is in flight
+  const clickingDuringSave = await createTestUser();
   await renderFor(clickingDuringSave);
   const { saves, release } = recordSaves({ holdFirst: true });
   fireEvent.click(await loadedToggle());
@@ -230,6 +227,7 @@ it('sends a later choice only after the save in flight', async () => {
 
 it('shows a saved choice straight away on coming back', async () => {
   // Given a user who turned animation off and saw it saved
+  const comingBack = await createTestUser();
   const memoryRouter = await renderFor(comingBack);
   fireEvent.click(await loadedToggle());
   await screen.findByRole('status');
@@ -247,7 +245,8 @@ it('shows a saved choice straight away on coming back', async () => {
 });
 
 it('says so when the setting fails to load', async () => {
-  // Given a server that fails the profile request
+  // Given a user, and a server that fails the profile request
+  const failing = await createTestUser();
   failProfilesRequests('GET');
 
   // When the toggle renders
@@ -263,6 +262,7 @@ it('says so when the setting fails to load', async () => {
 
 it('turns back on and says so when saving fails', async () => {
   // Given a user on the toggle, and a server that fails the save
+  const failing = await createTestUser();
   await renderFor(failing);
   const box = await loadedToggle();
   failProfilesRequests('POST');
