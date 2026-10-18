@@ -1,0 +1,38 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ChangeEmailForm > matches snapshot 1`] = `
+<div>
+  <form
+    class="change-email-form"
+  >
+    <div
+      class="text-input"
+    >
+      <label
+        for="_r_0_"
+      >
+        New email
+      </label>
+      <div
+        class="text-input-control"
+      >
+        <input
+          autocomplete="email"
+          class="text-input-field"
+          id="_r_0_"
+          name="email"
+          required=""
+          type="email"
+        />
+      </div>
+    </div>
+    <button
+      class="button"
+      disabled=""
+      type="submit"
+    >
+      Change email
+    </button>
+  </form>
+</div>
+`;

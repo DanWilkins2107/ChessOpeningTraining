@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { ProtectedLayout } from '../ProtectedLayout/ProtectedLayout';
 import {
+  ACCOUNT_EMAIL_ROUTE_PATH,
   ACCOUNT_ROUTE_PATH,
   CHANGE_PASSWORD_ROUTE_PATH,
   DELETE_ACCOUNT_ROUTE_PATH,
@@ -13,6 +14,7 @@ import {
 } from '../../pages/repertoire/router.constants';
 import { RootLayout } from '../RootLayout/RootLayout';
 import { Account } from '../../pages/Account/page';
+import { ChangeEmail } from '../../pages/ChangeEmail/page';
 import { ChangePassword } from '../../pages/ChangePassword/page';
 import { ChangePasswordConfirmation } from '../../pages/ChangePassword/confirmation/page';
 import { CHANGE_PASSWORD_CONFIRMATION_ROUTE_PATH } from '../../pages/ChangePassword/router.constants';
@@ -37,6 +39,7 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <Home /> },
           { path: ACCOUNT_ROUTE_PATH, element: <Account /> },
+          { path: ACCOUNT_EMAIL_ROUTE_PATH, element: <ChangeEmail /> },
           {
             path: CHANGE_PASSWORD_ROUTE_PATH,
             element: <ChangePassword />,
