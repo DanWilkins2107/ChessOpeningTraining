@@ -11,52 +11,69 @@ async function inserted(table: string, rows: object[]) {
   return data;
 }
 
-it('returns every folder and move tree with its parent, newest first', async () => {
+const byName = <Row extends { name: string }>(rows: Row[]) =>
+  [...rows].sort((a, b) => a.name.localeCompare(b.name));
+
+it('returns every folder and move tree with its parent', async () => {
+  // Given a user with folders and move trees at the root and nested
   const { id, client } = await signedInUser();
   const [london, caroKann] = await inserted('folders', [
-    { owner_id: id, name: 'London', created_at: '2026-01-02T00:00:00Z' },
-    { owner_id: id, name: 'Caro-Kann', created_at: '2026-01-01T00:00:00Z' },
+    { owner_id: id, name: 'London' },
+    { owner_id: id, name: 'Caro-Kann' },
   ]);
   const [jobava] = await inserted('folders', [
-    {
-      owner_id: id,
-      name: 'Jobava',
-      parent_id: london.id,
-      created_at: '2026-01-03T00:00:00Z',
-    },
+    { owner_id: id, name: 'Jobava', parent_id: london.id },
   ]);
   const [scotch, advance] = await inserted('move_trees', [
-    {
-      owner_id: id,
-      name: 'Scotch',
-      side: 'white',
-      created_at: '2026-01-01T00:00:00Z',
-    },
-    {
-      owner_id: id,
-      name: 'Advance',
-      side: 'black',
-      folder_id: jobava.id,
-      created_at: '2026-01-02T00:00:00Z',
-    },
+    { owner_id: id, name: 'Scotch', side: 'white' },
+    { owner_id: id, name: 'Advance', side: 'black', folder_id: jobava.id },
   ]);
 
   // When they get their repertoire
   const { data, error } = await getRepertoire(client);
 
-  // Then it lists every level, newest first, with no other columns
+  // Then it lists every level, with no other columns
   expect(error).toBeNull();
-  expect(data).toEqual({
-    folders: [
-      { id: jobava.id, name: 'Jobava', parent_id: london.id },
-      { id: london.id, name: 'London', parent_id: null },
-      { id: caroKann.id, name: 'Caro-Kann', parent_id: null },
-    ],
-    move_trees: [
-      { id: advance.id, name: 'Advance', side: 'black', folder_id: jobava.id },
-      { id: scotch.id, name: 'Scotch', side: 'white', folder_id: null },
-    ],
-  });
+  expect(byName(data.folders)).toEqual([
+    { id: caroKann.id, name: 'Caro-Kann', parent_id: null },
+    { id: jobava.id, name: 'Jobava', parent_id: london.id },
+    { id: london.id, name: 'London', parent_id: null },
+  ]);
+  expect(byName(data.move_trees)).toEqual([
+    { id: advance.id, name: 'Advance', side: 'black', folder_id: jobava.id },
+    { id: scotch.id, name: 'Scotch', side: 'white', folder_id: null },
+  ]);
+});
+
+it.each([
+  ['folders', { name: 'London' }],
+  ['move_trees', { name: 'Scotch', side: 'white' }],
+])('lists sibling %s in position order', async (table, row) => {
+  // Given a user with three siblings, the oldest moved to the end
+  const { id, client } = await signedInUser();
+  const [first, second, third] = await inserted(
+    table,
+    ['2026-01-01', '2026-01-02', '2026-01-03'].map((day) => ({
+      ...row,
+      owner_id: id,
+      created_at: `${day}T00:00:00Z`,
+    })),
+  );
+  const { error: moveError } = await admin
+    .from(table)
+    .update({ position: 5 })
+    .eq('id', first.id);
+  if (moveError) throw moveError;
+
+  // When they get their repertoire
+  const { data } = await getRepertoire(client);
+
+  // Then the siblings come back by position, not by age
+  expect(data[table].map(({ id: rowId }) => rowId)).toEqual([
+    second.id,
+    third.id,
+    first.id,
+  ]);
 });
 
 it('returns empty lists for a user with nothing yet', async () => {

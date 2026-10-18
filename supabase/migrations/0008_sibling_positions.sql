@@ -80,3 +80,29 @@ $$;
 create trigger set_move_tree_position
   before insert on public.move_trees
   for each row execute function public.append_move_tree_position();
+
+-- Siblings come back in position order. The client groups rows by parent, so ordering the flat lists is enough.
+create or replace function public.get_repertoire()
+returns jsonb
+language sql
+stable
+security invoker
+set search_path = ''
+as $$
+  select jsonb_build_object(
+    'folders', coalesce((
+      select jsonb_agg(
+        jsonb_build_object('id', id, 'name', name, 'parent_id', parent_id) order by position, id
+      )
+      from public.folders
+      where owner_id = (select auth.uid())
+    ), '[]'),
+    'move_trees', coalesce((
+      select jsonb_agg(
+        jsonb_build_object('id', id, 'name', name, 'side', side, 'folder_id', folder_id) order by position, id
+      )
+      from public.move_trees
+      where owner_id = (select auth.uid())
+    ), '[]')
+  );
+$$;
