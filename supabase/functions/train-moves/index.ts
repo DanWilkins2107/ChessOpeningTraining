@@ -1,4 +1,4 @@
-// Calls public.train_moves (supabase/migrations/0008_train_moves.sql), which trusts the user_id passed here.
+// Calls public.train_moves (supabase/migrations/0009_train_moves.sql), which trusts the user_id passed here.
 // Moving either means updating the other's reference.
 import { createClient } from 'npm:@supabase/supabase-js@2.116.0';
 import { z } from 'npm:zod@4.5.4';
