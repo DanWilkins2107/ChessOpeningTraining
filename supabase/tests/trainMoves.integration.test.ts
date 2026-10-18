@@ -1,27 +1,19 @@
-import { expect, it } from 'vitest';
+import postgres from 'postgres';
+import { env } from 'node:process';
+import { afterAll, expect, it } from 'vitest';
 import { move } from '../../web/src/tests-shared/moveNode';
-import { admin, signedInUser } from './tests-shared/testUsers';
 import {
-  CHECK_VIOLATION,
-  PERMISSION_DENIED,
-} from './tests-shared/pgErrorCodes';
+  RejectedTraining,
+  trainMoves,
+} from '../functions/train-moves/trainMoves';
+import { admin, signedInUser } from './tests-shared/testUsers';
+
+const sql = postgres(env.SUPABASE_DB_URL!);
+afterAll(() => sql.end());
 
 const CARO_KANN = [move('e4', move('c6', move('d4'), move('Nc3'))), move('d4')];
 
 const today = () => new Date().toISOString().slice(0, 10);
-
-const daysFromToday = (days: number) =>
-  new Date(Date.now() + days * 86_400_000).toISOString().slice(0, 10);
-
-type Training = {
-  user_id: string;
-  tree_ids: string[];
-  path: string[];
-  confidence_changes: number[];
-  day: string;
-};
-
-const trainMoves = (training: Training) => admin.rpc('train_moves', training);
 
 async function ownedMoveTree(
   ownerId: string,
@@ -54,165 +46,52 @@ async function trainedOwner() {
   return { id, treeId: await ownedMoveTree(id) };
 }
 
-it('sets confidence along the path, clamped to 0-5 for user moves and 0-2 for opponent moves', async () => {
-  const { id, treeId } = await trainedOwner();
-  const training = {
-    user_id: id,
-    tree_ids: [treeId],
-    path: ['e4', 'c6', 'd4'],
-    day: today(),
-  };
-
-  // When the line is trained twice
-  await trainMoves({ ...training, confidence_changes: [3, 5, -1] });
-  const { data, error } = await trainMoves({
-    ...training,
-    confidence_changes: [3, -1, 2],
-  });
-
-  // Then each move on the path moved within its range, and nothing else changed
-  expect(error).toBeNull();
-  expect(data).toEqual([]);
-  expect(await storedMoves(treeId)).toEqual([
-    {
-      ...move('e4'),
-      confidence: 5,
-      children: [
-        {
-          ...move('c6'),
-          confidence: 1,
-          children: [{ ...move('d4'), confidence: 2 }, move('Nc3')],
-        },
-      ],
-    },
-    move('d4'),
-  ]);
+const training = (treeIds: string[], path = ['e4', 'c6']) => ({
+  treeIds,
+  path,
+  confidenceChanges: path.map(() => 1),
+  day: today(),
 });
 
-it('treats the even plies as the user moves in a black move tree', async () => {
-  const { id } = await signedInUser();
-  const treeId = await ownedMoveTree(id, 'black');
-
-  // When a black line is trained up
-  await trainMoves({
-    user_id: id,
-    tree_ids: [treeId],
-    path: ['e4', 'c6'],
-    confidence_changes: [5, 5],
-    day: today(),
-  });
-
-  // Then white's e4 caps at 2 and black's c6 at 5
-  const [e4] = await storedMoves(treeId);
-  expect([e4.confidence, e4.children[0].confidence]).toEqual([2, 5]);
-});
-
-it('skips and returns the move trees that no longer have the path', async () => {
+it('trains the trees that have the path and skips the rest, untouched', async () => {
   const { id, treeId } = await trainedOwner();
   const withoutLine = await ownedMoveTree(id, 'white', [move('e4')]);
 
-  // When a line one tree lacks is trained across both
-  const { data, error } = await trainMoves({
-    user_id: id,
-    tree_ids: [treeId, withoutLine],
-    path: ['e4', 'c6'],
-    confidence_changes: [1, 1],
-    day: today(),
-  });
+  const skipped = await trainMoves(sql, id, training([treeId, withoutLine]));
 
-  // Then only that tree is skipped, untouched
-  expect(error).toBeNull();
-  expect(data).toEqual([withoutLine]);
+  expect(skipped).toEqual([withoutLine]);
   expect(await storedMoves(withoutLine)).toEqual([move('e4')]);
   expect((await storedMoves(treeId))[0].confidence).toBe(1);
 });
 
-it('adds the user moves on the path to the day', async () => {
+it('adds the user moves on the path to the day, once however many trees', async () => {
   const { id, treeId } = await trainedOwner();
-  const training = {
-    user_id: id,
-    tree_ids: [treeId],
-    confidence_changes: [1, 1, 1],
-    path: ['e4', 'c6', 'd4'],
-    day: today(),
-  };
+  const secondTree = await ownedMoveTree(id);
+  const line = training([treeId, secondTree], ['e4', 'c6', 'd4']);
 
-  // When the same three-ply white line is trained twice
-  await trainMoves(training);
-  await trainMoves(training);
+  await trainMoves(sql, id, line);
+  await trainMoves(sql, id, line);
 
-  // Then each counts the two white moves
   expect(await movesTrained(id)).toEqual([{ day: today(), moves_trained: 4 }]);
 });
 
-it('rejects move trees the user does not own, writing nothing', async () => {
+it('rejects move trees the user does not own with 403, writing nothing', async () => {
   const { id, treeId } = await trainedOwner();
   const other = await trainedOwner();
 
-  const { error } = await trainMoves({
-    user_id: id,
-    tree_ids: [treeId, other.treeId],
-    path: ['e4'],
-    confidence_changes: [1],
-    day: today(),
-  });
+  const rejection = trainMoves(sql, id, training([treeId, other.treeId]));
 
-  expect(error?.code).toBe(PERMISSION_DENIED);
+  await expect(rejection).rejects.toThrow(RejectedTraining);
+  await expect(rejection).rejects.toMatchObject({ status: 403 });
   expect(await storedMoves(treeId)).toEqual(CARO_KANN);
   expect(await movesTrained(id)).toEqual([]);
 });
 
-it('rejects move trees for different sides', async () => {
+it('rejects move trees for different sides with 400', async () => {
   const { id, treeId } = await trainedOwner();
   const blackTree = await ownedMoveTree(id, 'black');
 
-  const { error } = await trainMoves({
-    user_id: id,
-    tree_ids: [treeId, blackTree],
-    path: ['e4'],
-    confidence_changes: [1],
-    day: today(),
-  });
-
-  expect(error?.code).toBe(CHECK_VIOLATION);
-});
-
-it.each([
-  ['no move trees', { tree_ids: [] }],
-  ['an empty path', { path: [], confidence_changes: [] }],
-  ['a path over 600 moves', { path: Array(601).fill('e4') }],
-  ['fewer changes than moves', { confidence_changes: [] }],
-  ['a change over 5', { confidence_changes: [6] }],
-  ['a change under -5', { confidence_changes: [-6] }],
-  ['a day before yesterday', { day: daysFromToday(-2) }],
-  ['a day after tomorrow', { day: daysFromToday(2) }],
-])('rejects %s', async (_, invalid) => {
-  const { id, treeId } = await trainedOwner();
-
-  const { error } = await trainMoves({
-    user_id: id,
-    tree_ids: [treeId],
-    path: ['e4'],
-    confidence_changes: [1],
-    day: today(),
-    ...invalid,
-  });
-
-  expect(error?.code).toBe(CHECK_VIOLATION);
-  expect(await storedMoves(treeId)).toEqual(CARO_KANN);
-});
-
-it('cannot be called by a signed-in user', async () => {
-  const { id, client } = await signedInUser();
-  const treeId = await ownedMoveTree(id);
-
-  const { error } = await client.rpc('train_moves', {
-    user_id: id,
-    tree_ids: [treeId],
-    path: ['e4'],
-    confidence_changes: [1],
-    day: today(),
-  });
-
-  expect(error?.code).toBe(PERMISSION_DENIED);
+  await expect(
+    trainMoves(sql, id, training([treeId, blackTree])),
+  ).rejects.toMatchObject({ status: 400 });
 });

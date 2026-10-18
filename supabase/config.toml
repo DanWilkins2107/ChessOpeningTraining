@@ -36,3 +36,7 @@ double_confirm_changes = true
 # SMS autoconfirms, so SMS confirmations are on even though SMS sign-up is not.
 [auth.sms]
 enable_confirmations = true
+
+# Production sets these with `supabase secrets set`.
+[edge_runtime.secrets]
+ALLOWED_ORIGIN = "http://localhost:5173"
