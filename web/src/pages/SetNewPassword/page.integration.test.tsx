@@ -8,14 +8,11 @@ import {
   savePassword,
 } from '../../tests-shared/newPasswordForm';
 import { pathOf, renderAt, renderSettledAt } from '../../tests-shared/renderAt';
-import { registerTestUser } from '../../tests-shared/testUser';
+import { createTestUser, registerTestUser } from '../../tests-shared/testUser';
 import { supabase } from '../../supabase';
 
 const currentPassword = `Aa1!${crypto.randomUUID()}`;
 
-const recovering = registerTestUser();
-const landing = registerTestUser();
-const returning = registerTestUser();
 const rejecting = registerTestUser({ password: currentPassword });
 
 const spentNotice = () =>
@@ -166,6 +163,7 @@ it('enables save once the password meets every rule', async () => {
 
 it('changes the account password to the one submitted', async () => {
   // Given a user on set new password
+  const recovering = await createTestUser();
   await recovering.signIn();
   await renderSettledAt('/set-new-password');
   const newPassword = `Aa1!${crypto.randomUUID()}`;
@@ -186,6 +184,7 @@ it('changes the account password to the one submitted', async () => {
 
 it('sends them home once the password is saved', async () => {
   // Given a user on set new password
+  const landing = await createTestUser();
   await landing.signIn();
   const memoryRouter = await renderSettledAt('/set-new-password');
 
@@ -199,6 +198,7 @@ it('sends them home once the password is saved', async () => {
 
 it('leaves the spent reset link out of history', async () => {
   // Given a user who saved a new password from set new password
+  const returning = await createTestUser();
   await returning.signIn();
   const memoryRouter = renderAt('/elsewhere', '/set-new-password');
   await authSettled();
