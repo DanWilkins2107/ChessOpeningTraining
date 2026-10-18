@@ -1,13 +1,8 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
-import { registerTestUser } from '../../../../tests-shared/testUser';
+import { createTestUser } from '../../../../tests-shared/testUser';
 import { supabase } from '../../../../supabase';
 import { CheckEmail } from './CheckEmail';
-
-// Separate accounts, because the server refuses a second resend to one email
-// within a second.
-const resentTo = registerTestUser({ emailConfirmed: false });
-const pendingFor = registerTestUser({ emailConfirmed: false });
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -15,9 +10,10 @@ afterEach(() => {
 
 const resendButton = () => screen.getByRole('button', { name: 'Resend email' });
 
-it('shows the email the link was sent to', () => {
+it('shows the email the link was sent to', async () => {
   // Given an email that was signed up
-  const { email } = resentTo.credentials;
+  const signedUp = await createTestUser({ emailConfirmed: false });
+  const { email } = signedUp.credentials;
 
   // When the page renders
   render(<CheckEmail email={email} />);
@@ -28,7 +24,8 @@ it('shows the email the link was sent to', () => {
 
 it('resends the link back to this site', async () => {
   // Given the check email page for an unconfirmed account
-  const { email } = resentTo.credentials;
+  const signedUp = await createTestUser({ emailConfirmed: false });
+  const { email } = signedUp.credentials;
   render(<CheckEmail email={email} />);
   // mock-reason: the redirect is the assertion, and the test stack only honours
   // redirects on its allow list, which the test origin is not on, so the email
@@ -50,7 +47,8 @@ it('resends the link back to this site', async () => {
 
 it('disables the button until the resend finishes', async () => {
   // Given the check email page
-  render(<CheckEmail email={pendingFor.credentials.email} />);
+  const pending = await createTestUser({ emailConfirmed: false });
+  render(<CheckEmail email={pending.credentials.email} />);
 
   // When the form is submitted
   const submitted = fireEvent.submit(resendButton().closest('form')!);
@@ -65,7 +63,8 @@ it('disables the button until the resend finishes', async () => {
 
 it('asks them to retry when the resend fails', async () => {
   // Given the check email page, and a server that fails the resend
-  render(<CheckEmail email={pendingFor.credentials.email} />);
+  const pending = await createTestUser({ emailConfirmed: false });
+  render(<CheckEmail email={pending.credentials.email} />);
   const realFetch = window.fetch;
   // mock-reason: the local auth server cannot be made to fail a resend on
   // demand. Only the resend request is failed; everything else is real.
