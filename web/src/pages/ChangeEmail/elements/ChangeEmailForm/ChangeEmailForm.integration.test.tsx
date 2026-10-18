@@ -1,0 +1,212 @@
+import { act, fireEvent, screen } from '@testing-library/react';
+import { afterEach, expect, it, vi } from 'vitest';
+import { authSettled } from '../../../../tests-shared/authSettled';
+import {
+  pathOf,
+  renderAt,
+  renderSettledAt,
+} from '../../../../tests-shared/renderAt';
+import { createTestUser } from '../../../../tests-shared/testUser';
+import { supabase } from '../../../../supabase';
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
+const unusedEmail = () => `test-${crypto.randomUUID()}@example.test`;
+
+const changeEmailButton = () =>
+  screen.getByRole('button', { name: 'Change email' });
+
+const enterNewEmail = (email: string) =>
+  fireEvent.change(screen.getByLabelText('New email'), {
+    target: { value: email },
+  });
+
+async function changeEmailPageAsNewUser(hash = '') {
+  const user = await createTestUser();
+  await user.signIn();
+  const memoryRouter = await renderSettledAt(`/account/email${hash}`);
+  return { ...user, memoryRouter };
+}
+
+it('shows their current email and no pending change', async () => {
+  // Given a signed-in user
+
+  // When they open their change email page
+  const { credentials } = await changeEmailPageAsNewUser();
+
+  // Then it shows the email they have, with nothing waiting
+  expect(
+    await screen.findByText(`Current email: ${credentials.email}`),
+  ).toBeInTheDocument();
+  expect(screen.queryByRole('status')).not.toBeInTheDocument();
+});
+
+it('asks them to check both inboxes once a change is requested', async () => {
+  // Given a signed-in user on their change email page
+  await changeEmailPageAsNewUser();
+  // mock-reason: the redirect is the assertion, and the test stack only honours
+  // redirects on its allow list, which the test origin is not on, so the email
+  // cannot show it. The spy still calls the real client.
+  const updateUser = vi.spyOn(supabase.auth, 'updateUser');
+  const newEmail = unusedEmail();
+
+  // When they request a new email
+  enterNewEmail(newEmail);
+  fireEvent.click(changeEmailButton());
+
+  // Then they are asked to confirm from both inboxes, landing back here
+  expect(await screen.findByRole('status')).toHaveTextContent(
+    `Check both inboxes to confirm the change to ${newEmail}`,
+  );
+  expect(updateUser).toHaveBeenCalledWith(
+    { email: newEmail },
+    { emailRedirectTo: `${window.location.origin}/account/email` },
+  );
+});
+
+it('still shows a pending change when they come back', async () => {
+  // Given a user who requested a change earlier
+  const user = await createTestUser();
+  await user.signIn();
+  const newEmail = unusedEmail();
+  const { error } = await supabase.auth.updateUser({ email: newEmail });
+  if (error) throw error;
+
+  // When they open their change email page
+  await renderSettledAt('/account/email');
+
+  // Then the change is still waiting on both inboxes
+  expect(await screen.findByRole('status')).toHaveTextContent(
+    `Check both inboxes to confirm the change to ${newEmail}`,
+  );
+});
+
+it('says when the new email already has an account', async () => {
+  // Given a signed-in user on their change email page
+  const taken = await createTestUser();
+  await changeEmailPageAsNewUser();
+
+  // When they ask for an email another account uses
+  enterNewEmail(taken.credentials.email);
+  fireEvent.click(changeEmailButton());
+
+  // Then they are told it is taken
+  expect(await screen.findByRole('alert')).toHaveTextContent(
+    'That email is already in use',
+  );
+});
+
+it('disables the button until the attempt finishes', async () => {
+  // Given a signed-in user on their change email page
+  const taken = await createTestUser();
+  await changeEmailPageAsNewUser();
+
+  // When they submit a change the server refuses
+  enterNewEmail(taken.credentials.email);
+  fireEvent.click(changeEmailButton());
+
+  // Then the button is disabled until the error shows
+  expect(changeEmailButton()).toBeDisabled();
+  await screen.findByRole('alert');
+  expect(changeEmailButton()).toBeEnabled();
+});
+
+it('keeps the browser from submitting the form itself', async () => {
+  // Given a signed-in user on their change email page with a taken email entered
+  const taken = await createTestUser();
+  await changeEmailPageAsNewUser();
+  enterNewEmail(taken.credentials.email);
+
+  // When the form is submitted
+  const submitted = fireEvent.submit(changeEmailButton().closest('form')!);
+
+  // Then the browser's own submission is cancelled
+  expect(submitted).toBe(false);
+  await screen.findByRole('alert');
+});
+
+it('keeps change email disabled until the new email is valid', async () => {
+  // Given a signed-in user on their change email page
+  await changeEmailPageAsNewUser();
+
+  // When they type something that is not an email, then an email
+  enterNewEmail('not-an-email');
+  const disabledForInvalid = changeEmailButton().hasAttribute('disabled');
+  enterNewEmail(unusedEmail());
+
+  // Then the button only enables for the email
+  expect(disabledForInvalid).toBe(true);
+  expect(changeEmailButton()).toBeEnabled();
+});
+
+it('confirms the first link and clears it from the address', async () => {
+  // Given a signed-in user
+
+  // When they come back from the first of the two email links
+  const { memoryRouter } = await changeEmailPageAsNewUser(
+    '#message=Confirmation+link+accepted',
+  );
+
+  // Then they are told to open the other link, and the hash is gone
+  expect(screen.getByRole('status')).toHaveTextContent(
+    'Confirmed, now open the link sent to your other email',
+  );
+  expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  expect(memoryRouter.state.location.hash).toBe('');
+});
+
+it('confirms the change once the last link is opened', async () => {
+  // Given the hash Supabase adds after the last link, carrying the new session
+  const hash = `#type=email_change&access_token=${crypto.randomUUID()}`;
+
+  // When their change email page opens with it
+  const { memoryRouter } = await changeEmailPageAsNewUser(hash);
+
+  // Then the change is confirmed, and the session hash is left for Supabase
+  expect(screen.getByRole('status')).toHaveTextContent('Email changed');
+  expect(memoryRouter.state.location.hash).toBe(hash);
+});
+
+it('reports a link that failed and clears it from the address', async () => {
+  // Given a signed-in user
+
+  // When they come back from an expired email link
+  const { memoryRouter } = await changeEmailPageAsNewUser(
+    '#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired',
+  );
+
+  // Then they are told to ask for fresh links, and the hash is gone
+  expect(screen.getByRole('alert')).toHaveTextContent(
+    'That link has expired or was already used. Enter your new email again to get fresh links',
+  );
+  expect(memoryRouter.state.location.hash).toBe('');
+});
+
+it('leaves the spent email link out of history', async () => {
+  // Given a user who came back from an email link
+  const user = await createTestUser();
+  await user.signIn();
+  const memoryRouter = renderAt(
+    '/elsewhere',
+    '/account/email#error=access_denied&error_code=otp_expired',
+  );
+  await authSettled();
+
+  // When they go back
+  await act(() => memoryRouter.navigate(-1));
+
+  // Then they land where they were before it
+  expect(pathOf(memoryRouter)).toBe('/elsewhere');
+});
+
+it('leaves a hash that is not about an email link alone', async () => {
+  // Given a signed-in user
+
+  // When they open their change email page with an unrelated hash
+  const { memoryRouter } = await changeEmailPageAsNewUser('#section');
+
+  // Then the hash stays
+  expect(memoryRouter.state.location.hash).toBe('#section');
+});

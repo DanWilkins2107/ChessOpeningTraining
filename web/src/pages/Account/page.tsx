@@ -25,6 +25,9 @@ export function Account() {
   return (
     <section className="account-card">
       <h1 className="account-heading">Account</h1>
+      <Link to="/account/email" className="account-action">
+        Change email
+      </Link>
       <ProfileSettings />
       <Link to="/account/password" className="account-action">
         Change password
