@@ -1,7 +1,7 @@
 // fallow-ignore-file unused-file -- ef93ff81 2026-11-16 landed ahead of the folder page, its first consumer.
 import './PromotionPicker.css';
 import type { Color, PieceSymbol } from 'chess.ts';
-import { PIECES } from '../pieces/pieces.constants';
+import { PIECES } from '../../shared/pieces/pieces.constants';
 
 const CHOICES: { piece: PieceSymbol; name: string }[] = [
   { piece: 'q', name: 'queen' },

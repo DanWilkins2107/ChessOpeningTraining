@@ -5,6 +5,11 @@ exports[`DailyTestCard > matches snapshot 1`] = `
   <section
     class="daily-test-card"
   >
+    <img
+      alt=""
+      class="daily-test-card-icon"
+      src="/src/shared/pieces/bR.svg"
+    />
     <h2
       class="daily-test-card-heading"
     >

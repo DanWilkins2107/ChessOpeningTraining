@@ -7,3 +7,16 @@
 .repertoire-empty {
   color: var(--ink-muted);
 }
+
+.repertoire-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gap-md);
+  margin-bottom: var(--gap-md);
+}
+
+@media (max-width: 40rem) {
+  .repertoire-cards {
+    grid-template-columns: 1fr;
+  }
+}

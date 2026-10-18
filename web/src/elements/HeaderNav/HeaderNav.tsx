@@ -2,7 +2,7 @@ import { Link, useMatches } from 'react-router-dom';
 import {
   ACCOUNT_ROUTE_PATH,
   PROTECTED_ROUTE_HANDLE,
-} from '../routes/routes.constants';
+} from '../../shared/routes/routes.constants';
 import { REPERTOIRE_ROUTE_PATH } from '../../pages/repertoire/router.constants';
 import './HeaderNav.css';
 

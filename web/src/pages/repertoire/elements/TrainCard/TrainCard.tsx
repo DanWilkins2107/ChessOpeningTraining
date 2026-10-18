@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { TRAIN_ROUTE_PATH } from '../routes/routes.constants';
+import knight from '../../../../shared/pieces/bN.svg';
+import { TRAIN_ROUTE_PATH } from '../../../../shared/routes/routes.constants';
 import './TrainCard.css';
 
 type TrainCardProps = {
@@ -20,6 +21,7 @@ export function TrainCard({
 }: TrainCardProps) {
   return (
     <section className="train-card" aria-labelledby="train-card-heading">
+      <img src={knight} alt="" className="train-card-icon" />
       <h2 id="train-card-heading" className="train-card-heading">
         Train
       </h2>

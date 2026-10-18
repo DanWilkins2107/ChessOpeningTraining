@@ -2,7 +2,7 @@ import { fireEvent, render, screen, within } from '@testing-library/react';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { ROOK_ON_H5, ROOKS_HOME } from '../../tests-shared/rookPositions';
 import { Board } from './Board';
-import { PIECES } from '../pieces/pieces.constants';
+import { PIECES } from '../../shared/pieces/pieces.constants';
 
 const EMPTY = '8/8/8/8/8/8/8/8';
 const START = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';

@@ -6,6 +6,11 @@ exports[`TrainCard > matches snapshot 1`] = `
     aria-labelledby="train-card-heading"
     class="train-card"
   >
+    <img
+      alt=""
+      class="train-card-icon"
+      src="/src/shared/pieces/bN.svg"
+    />
     <h2
       class="train-card-heading"
       id="train-card-heading"
