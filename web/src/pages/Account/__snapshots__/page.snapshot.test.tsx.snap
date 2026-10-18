@@ -10,10 +10,17 @@ exports[`Account > matches snapshot 1`] = `
     >
       Account
     </h1>
+    <a
+      class="account-action"
+      data-discover="true"
+      href="/account/email"
+    >
+      Change email
+    </a>
     <div
       class="animate-pieces"
     >
-      <div
+      <label
         class="animate-pieces-row"
       >
         Animate pieces
@@ -22,7 +29,7 @@ exports[`Account > matches snapshot 1`] = `
           class="animate-pieces-placeholder"
           role="status"
         />
-      </div>
+      </label>
     </div>
     <a
       class="account-action"

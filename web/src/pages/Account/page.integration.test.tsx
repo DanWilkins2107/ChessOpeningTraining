@@ -1,13 +1,11 @@
-import { createClient } from '@supabase/supabase-js';
 import { fireEvent, screen } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
 import { submitCredentials } from '../../tests-shared/credentialsForm';
 import { pathOf, renderSettledAt } from '../../tests-shared/renderAt';
 import { registerTestUser } from '../../tests-shared/testUser';
-import { env } from '../../env';
 import { supabase } from '../../supabase';
 
-const { credentials, signIn } = registerTestUser();
+const { credentials, signIn, signedInClient } = registerTestUser();
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -43,12 +41,7 @@ function failTheLogoutRequest() {
 
 it('signs out this device only', async () => {
   // Given the user signed in here and on another device
-  const otherDevice = createClient(
-    env.VITE_SUPABASE_URL,
-    env.VITE_SUPABASE_ANON_KEY,
-    { auth: { persistSession: false, autoRefreshToken: false } },
-  );
-  await signIn(otherDevice);
+  const otherDevice = await signedInClient();
   await accountPage();
 
   // When they sign out here
@@ -140,6 +133,17 @@ it('leaves no way back to the sign-out notice once they sign back in', async () 
 
   // Then the stale notice is not in their history
   expect(pathOf(memoryRouter)).toBe('/');
+});
+
+it('takes them to change their email', async () => {
+  // Given a signed-in user on their account page
+  const memoryRouter = await accountPage();
+
+  // When they choose to change their email
+  fireEvent.click(screen.getByRole('link', { name: 'Change email' }));
+
+  // Then they are on the change email page
+  expect(pathOf(memoryRouter)).toBe('/account/email');
 });
 
 it('leads to the delete account page', async () => {

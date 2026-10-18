@@ -1,0 +1,18 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CurrentEmail > matches snapshot 1`] = `
+<div>
+  <p
+    class="current-email"
+  >
+    Current email: 
+    old@example.test
+  </p>
+  <p
+    class="success-message"
+    role="status"
+  >
+    Check both inboxes to confirm the change to new@example.test
+  </p>
+</div>
+`;

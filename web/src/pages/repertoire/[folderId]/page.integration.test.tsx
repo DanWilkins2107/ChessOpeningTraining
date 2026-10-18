@@ -1,21 +1,14 @@
-import { createClient } from '@supabase/supabase-js';
 import { act, screen, within } from '@testing-library/react';
 import { afterEach, beforeAll, expect, it, vi } from 'vitest';
 import { renderAt } from '../../../tests-shared/renderAt';
 import { registerTestUser } from '../../../tests-shared/testUser';
-import { env } from '../../../env';
 
 const owner = registerTestUser();
 const stranger = registerTestUser();
 const folderIds = { london: '', caroKann: '' };
 
 beforeAll(async () => {
-  const client = createClient(
-    env.VITE_SUPABASE_URL,
-    env.VITE_SUPABASE_ANON_KEY,
-    { auth: { persistSession: false, autoRefreshToken: false } },
-  );
-  await owner.signIn(client);
+  const client = await owner.signedInClient();
   const { data, error } = await client
     .from('folders')
     .insert([{ name: 'London' }, { name: 'Caro-Kann' }])
@@ -199,7 +192,9 @@ it("shows loading, not the previous user's folder, when the user changes", async
   await act(() => stranger.signIn());
 
   // Then it shows loading in place of the owner's folder
-  expect(loadingFolder()).toBeInTheDocument();
+  expect(
+    await screen.findByRole('status', { name: 'Loading folder' }),
+  ).toBeInTheDocument();
   expect(screen.queryByRole('heading', { level: 1 })).not.toBeInTheDocument();
 });
 
