@@ -31,9 +31,11 @@ async function reachCodeScreen(password: string) {
   await screen.findByText(CODE_SENT_MESSAGE, {}, SERVER);
 }
 
+const confirmButton = () => screen.getByRole('button', { name: 'Confirm' });
+
 function confirmWithCode(code: string) {
   fireEvent.change(screen.getByLabelText('Code'), { target: { value: code } });
-  fireEvent.click(screen.getByRole('button', { name: 'Confirm' }));
+  return fireEvent.submit(confirmButton().closest('form')!);
 }
 
 it('changes the password with the emailed code', async () => {
@@ -63,14 +65,18 @@ it('explains a wrong code and lets them try again', async () => {
   await reachCodeScreen(`Aa1!${crypto.randomUUID()}`);
 
   // When they confirm with a wrong code
-  confirmWithCode('000000');
+  const submitted = confirmWithCode('000000');
 
-  // Then they are told, and can enter it again
+  // Then the browser's own submission is cancelled and Confirm waits for the server
+  expect(submitted).toBe(false);
+  expect(confirmButton()).toBeDisabled();
+
+  // And they are told, and can enter it again
   expect(await screen.findByRole('alert', {}, SERVER)).toHaveTextContent(
     WRONG_CODE_MESSAGE,
   );
   expect(screen.getByLabelText('Code')).toBeVisible();
-  expect(screen.getByRole('button', { name: 'Confirm' })).toBeEnabled();
+  expect(confirmButton()).toBeEnabled();
 });
 
 it('sends them to the password form when opened without a new password', async () => {
