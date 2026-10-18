@@ -35,6 +35,9 @@ afterEach(() => {
 const toggle = () =>
   screen.getByRole<HTMLInputElement>('switch', { name: 'Animate pieces' });
 
+const hintsToggle = () =>
+  screen.getByRole<HTMLInputElement>('switch', { name: 'Show move hints' });
+
 const loadedToggle = () =>
   screen.findByRole<HTMLInputElement>('switch', { name: 'Animate pieces' });
 
@@ -312,9 +315,10 @@ it('shows a saved choice straight away on coming back', async () => {
   const request = holdFirstRequest(isProfilesRequest);
   await act(() => memoryRouter.navigate('/account'));
 
-  // Then it shows off before the setting reloads
+  // Then it shows off before the setting reloads, with move hints still on
   await request.sent();
   expect(toggle()).not.toBeChecked();
+  expect(hintsToggle()).toBeChecked();
   await request.answer();
 });
 

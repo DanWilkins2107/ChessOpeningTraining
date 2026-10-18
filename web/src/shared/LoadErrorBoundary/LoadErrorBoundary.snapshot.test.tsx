@@ -1,12 +1,7 @@
 import { render } from '@testing-library/react';
-import type { ReactNode } from 'react';
 import { describe, expect, it } from 'vitest';
 import { LoadErrorBoundary } from './LoadErrorBoundary';
-import { LoadError } from '../../tests-shared/loadStates';
-
-function Broken(): ReactNode {
-  throw new Error('Server down');
-}
+import { Broken, LoadError } from '../../tests-shared/loadStates';
 
 describe('LoadErrorBoundary', () => {
   it('matches snapshot', () => {

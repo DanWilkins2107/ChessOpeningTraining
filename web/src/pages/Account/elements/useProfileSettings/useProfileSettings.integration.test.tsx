@@ -84,6 +84,23 @@ it('hides hints for a user who turned move hints off', async () => {
   expect(screen.getByText('animate')).toBeInTheDocument();
 });
 
+it('asks for the settings columns only', async () => {
+  // Given a signed-in user
+  await animating.signIn();
+  // mock-reason: the requests sent are the assertion. Every call is real.
+  const fetchSpy = vi.spyOn(window, 'fetch');
+
+  // When the settings load
+  renderSettingTestingHarness();
+  await screen.findByText('animate');
+
+  // Then the request selects only the settings
+  const [input] = fetchSpy.mock.calls.find(([url]) => isProfilesRequest(url))!;
+  expect(new URL(String(input)).searchParams.get('select')).toBe(
+    'animate_pieces,show_move_hints',
+  );
+});
+
 it('shows loading, not the previous setting, while the next user loads', async () => {
   // Given a user who turned animation off, with their setting shown
   await still.signIn();
