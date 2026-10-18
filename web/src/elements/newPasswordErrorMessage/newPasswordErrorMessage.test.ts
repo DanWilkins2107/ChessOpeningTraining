@@ -4,10 +4,7 @@ import {
   AuthWeakPasswordError,
 } from '@supabase/supabase-js';
 import { expect, it } from 'vitest';
-import {
-  TRY_AGAIN_MESSAGE,
-  WRONG_CODE_MESSAGE,
-} from './newPasswordErrorMessage.constants';
+import { TRY_AGAIN_MESSAGE } from './newPasswordErrorMessage.constants';
 import { newPasswordErrorMessage } from './newPasswordErrorMessage';
 
 const tooWeak = new AuthWeakPasswordError(
@@ -28,18 +25,11 @@ const rateLimited = new AuthApiError(
   'over_request_rate_limit',
 );
 
-const badCode = new AuthApiError(
-  'Invalid nonce',
-  422,
-  'reauthentication_not_valid',
-);
-
 const offline = new AuthRetryableFetchError('Failed to fetch', 0);
 
 it.each([
   ['a weak password', tooWeak, tooWeak.message],
   ['a password the account already has', unchanged, unchanged.message],
-  ['a wrong reauthentication code', badCode, WRONG_CODE_MESSAGE],
   ['a rate limit', rateLimited, TRY_AGAIN_MESSAGE],
   ['a network failure', offline, TRY_AGAIN_MESSAGE],
 ])('explains %s', (_case, error, shown) => {

@@ -1,19 +1,11 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { newPasswordErrorMessage } from '../../shared/newPasswordErrorMessage/newPasswordErrorMessage';
 import { NewPasswordForm } from '../../shared/NewPasswordForm/NewPasswordForm';
 import { useUser } from '../../shared/useUser/useUser';
-import { supabase } from '../../supabase';
 import './page.css';
 
 export function SetNewPassword() {
   const user = useUser();
   const navigate = useNavigate();
-
-  async function save(password: string) {
-    const { error } = await supabase.auth.updateUser({ password });
-    if (error) return newPasswordErrorMessage(error);
-    await navigate('/', { replace: true });
-  }
 
   return (
     <section className="set-new-password-card">
@@ -27,7 +19,9 @@ export function SetNewPassword() {
           </Link>
         </>
       )}
-      {user && <NewPasswordForm save={save} />}
+      {user && (
+        <NewPasswordForm onSaved={() => navigate('/', { replace: true })} />
+      )}
     </section>
   );
 }

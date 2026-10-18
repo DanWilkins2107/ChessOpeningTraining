@@ -11,7 +11,7 @@ function enter(label: string, value: string) {
 
 it('keeps save disabled while the confirmation differs', () => {
   // Given the form with a password meeting every rule
-  render(<NewPasswordForm save={async () => undefined} />);
+  render(<NewPasswordForm onSaved={() => {}} />);
   enter('New password', password);
 
   // When the confirmation does not match it
@@ -24,7 +24,7 @@ it('keeps save disabled while the confirmation differs', () => {
 
 it('enables save once the confirmation matches', () => {
   // Given the form with a password meeting every rule
-  render(<NewPasswordForm save={async () => undefined} />);
+  render(<NewPasswordForm onSaved={() => {}} />);
   enter('New password', password);
 
   // When the confirmation matches it
@@ -37,7 +37,7 @@ it('enables save once the confirmation matches', () => {
 
 it('says nothing about a match before a confirmation is typed', () => {
   // Given the form
-  render(<NewPasswordForm save={async () => undefined} />);
+  render(<NewPasswordForm onSaved={() => {}} />);
 
   // When only the password is entered
   enter('New password', password);

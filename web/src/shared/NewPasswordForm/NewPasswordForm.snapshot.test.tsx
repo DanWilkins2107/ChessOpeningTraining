@@ -4,9 +4,7 @@ import { NewPasswordForm } from './NewPasswordForm';
 
 describe('NewPasswordForm', () => {
   it('matches snapshot', () => {
-    const { container } = render(
-      <NewPasswordForm save={async () => undefined} />,
-    );
+    const { container } = render(<NewPasswordForm onSaved={() => {}} />);
     expect(container).toMatchSnapshot();
   });
 });
