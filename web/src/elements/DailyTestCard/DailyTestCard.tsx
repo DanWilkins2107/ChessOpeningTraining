@@ -1,6 +1,7 @@
 // fallow-ignore-file unused-file -- 57b95f1c 2026-11-15 landed ahead of the repertoire page, its first consumer.
 import { Link } from 'react-router-dom';
-import { DAILY_TEST_ROUTE_PATH } from '../routes/routes.constants';
+import rook from '../../shared/pieces/bR.svg';
+import { DAILY_TEST_ROUTE_PATH } from '../../shared/routes/routes.constants';
 import './DailyTestCard.css';
 
 type DailyTestCardProps =
@@ -21,6 +22,7 @@ const ACTION_TEXT = {
 export function DailyTestCard(props: DailyTestCardProps) {
   return (
     <section className="daily-test-card">
+      <img src={rook} alt="" className="daily-test-card-icon" />
       <h2 className="daily-test-card-heading">Daily test</h2>
       <p className="daily-test-card-status">
         {STATUS_TEXT[props.status]}

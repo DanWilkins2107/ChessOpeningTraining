@@ -1,33 +1,71 @@
 /* fallow-ignore-file unused-file -- 57b95f1c 2026-11-15 landed ahead of the repertoire page, its first consumer. */
 .daily-test-card {
+  position: relative;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   gap: var(--gap-sm);
-  padding: var(--gap-md);
-  background: var(--surface-raised);
-  border: 1px solid var(--border);
+  min-height: 160px;
+  padding: 24px;
+  background: var(--ink);
+  color: var(--surface-raised);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow);
 }
 
+.daily-test-card > :not(.daily-test-card-icon) {
+  position: relative;
+}
+
+.daily-test-card-icon {
+  position: absolute;
+  top: -10px;
+  right: 4px;
+  width: 150px;
+  height: 150px;
+  filter: brightness(0) invert(1);
+  opacity: 0.15;
+}
+
 .daily-test-card-heading {
-  font-size: var(--text-lg);
+  font-size: var(--text-xl);
+  line-height: 1.1;
 }
 
 .daily-test-card-status {
-  color: var(--ink-muted);
+  opacity: 0.85;
 }
 
 .daily-test-card-action {
   align-self: flex-start;
-  padding: var(--gap-sm) var(--gap-md);
+  margin-top: auto;
+  padding: 9px 18px;
   border-radius: var(--radius-sm);
-  background: var(--accent);
-  color: var(--surface-raised);
-  font-weight: 600;
+  background: var(--highlight);
+  color: var(--ink);
+  font-weight: 700;
   text-decoration: none;
 }
 
 .daily-test-card-action:hover {
-  background: var(--accent-hover);
+  color: var(--ink);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 40rem) {
+  .daily-test-card {
+    min-height: 0;
+    padding: 20px;
+  }
+
+  .daily-test-card-heading {
+    font-size: var(--text-lg);
+  }
+
+  .daily-test-card-icon {
+    top: -8px;
+    right: 0;
+    width: 112px;
+    height: 112px;
+  }
 }

@@ -7,7 +7,7 @@ import {
   DELETE_ACCOUNT_ROUTE_PATH,
   PROTECTED_ROUTE_HANDLE,
   ROOT_ROUTE_PATH,
-} from '../routes/routes.constants';
+} from '../../shared/routes/routes.constants';
 import {
   REPERTOIRE_ROUTE_PATH,
   FOLDER_ROUTE_PATH,
