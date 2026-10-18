@@ -8,12 +8,10 @@ import {
   savePassword,
 } from '../../tests-shared/newPasswordForm';
 import { pathOf, renderAt, renderSettledAt } from '../../tests-shared/renderAt';
-import { createTestUser, registerTestUser } from '../../tests-shared/testUser';
+import { createTestUser } from '../../tests-shared/testUser';
 import { supabase } from '../../supabase';
 
 const currentPassword = `Aa1!${crypto.randomUUID()}`;
-
-const rejecting = registerTestUser({ password: currentPassword });
 
 const spentNotice = () =>
   screen.findByText('That reset link is invalid or has expired', {}, SERVER);
@@ -103,7 +101,8 @@ it('sends a visitor with no session back for a fresh link', async () => {
 
 it('shows the password rules to a user with a session', async () => {
   // Given a user whose recovery link signed them in
-  await rejecting.signIn();
+  const user = await createTestUser();
+  await user.signIn();
 
   // When they open set new password
   await renderSettledAt('/set-new-password');
@@ -114,7 +113,8 @@ it('shows the password rules to a user with a session', async () => {
 
 it('tells a user with a session nothing about a spent link', async () => {
   // Given a user whose recovery link signed them in
-  await rejecting.signIn();
+  const user = await createTestUser();
+  await user.signIn();
 
   // When they open set new password
   await renderSettledAt('/set-new-password');
@@ -128,7 +128,8 @@ it('tells a user with a session nothing about a spent link', async () => {
 
 it('opens the form with every rule still to meet', async () => {
   // Given a user whose recovery link signed them in
-  await rejecting.signIn();
+  const user = await createTestUser();
+  await user.signIn();
 
   // When they open set new password
   await renderSettledAt('/set-new-password');
@@ -139,7 +140,8 @@ it('opens the form with every rule still to meet', async () => {
 
 it('keeps save disabled while the password misses a rule', async () => {
   // Given a user on set new password
-  await rejecting.signIn();
+  const user = await createTestUser();
+  await user.signIn();
   await renderSettledAt('/set-new-password');
 
   // When they enter a password missing a rule
@@ -151,7 +153,8 @@ it('keeps save disabled while the password misses a rule', async () => {
 
 it('enables save once the password meets every rule', async () => {
   // Given a user on set new password
-  await rejecting.signIn();
+  const user = await createTestUser();
+  await user.signIn();
   await renderSettledAt('/set-new-password');
 
   // When they enter a password meeting every rule
@@ -214,7 +217,8 @@ it('leaves the spent reset link out of history', async () => {
 
 it('shows the server message for a password the account already has', async () => {
   // Given a user on set new password
-  await rejecting.signIn();
+  const user = await createTestUser({ password: currentPassword });
+  await user.signIn();
   await renderSettledAt('/set-new-password');
 
   // When they save the password they already have
@@ -226,7 +230,8 @@ it('shows the server message for a password the account already has', async () =
 
 it('disables the button until the attempt finishes', async () => {
   // Given a user on set new password
-  await rejecting.signIn();
+  const user = await createTestUser({ password: currentPassword });
+  await user.signIn();
   await renderSettledAt('/set-new-password');
 
   // When they save the password they already have
@@ -240,7 +245,8 @@ it('disables the button until the attempt finishes', async () => {
 
 it('gives an error without the browser submitting the form', async () => {
   // Given a user on set new password
-  await rejecting.signIn();
+  const user = await createTestUser();
+  await user.signIn();
   await renderSettledAt('/set-new-password');
 
   // When the empty form is submitted
@@ -251,11 +257,10 @@ it('gives an error without the browser submitting the form', async () => {
   await rejection();
 });
 
-// Last of this user's tests: the server accepting the password would leave them
-// with a different one than the rest expect.
 it('shows the server message for a password missing a rule', async () => {
   // Given a user on set new password
-  await rejecting.signIn();
+  const user = await createTestUser();
+  await user.signIn();
   await renderSettledAt('/set-new-password');
 
   // When a password the checklist rejects is submitted anyway, as it would be
