@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Board > matches snapshot 1`] = `
+exports[`LoadedBoard > matches snapshot 1`] = `
 <div>
   <div
     class="board"

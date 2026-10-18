@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { ROOK_ON_H5, ROOKS_HOME } from '../../tests-shared/rookPositions';
-import { Board } from './Board';
+import { LoadedBoard } from './LoadedBoard';
 import { PIECES } from '../pieces/pieces.constants';
 
 const EMPTY = '8/8/8/8/8/8/8/8';
@@ -61,7 +61,12 @@ it('lays out rank 8 at the top from white', () => {
 
   // When it renders
   render(
-    <Board position={EMPTY} orientation="white" animatePieces showMoveHints />,
+    <LoadedBoard
+      position={EMPTY}
+      orientation="white"
+      animatePieces
+      showMoveHints
+    />,
   );
 
   // Then rank 8 is the top row and the a-file is on the left
@@ -82,7 +87,12 @@ it('lays out rank 1 at the top from black', () => {
 
   // When it renders
   render(
-    <Board position={EMPTY} orientation="black" animatePieces showMoveHints />,
+    <LoadedBoard
+      position={EMPTY}
+      orientation="black"
+      animatePieces
+      showMoveHints
+    />,
   );
 
   // Then rank 1 is the top row and the h-file is on the left
@@ -105,7 +115,7 @@ it.each(['white', 'black'] as const)(
 
     // When it renders
     render(
-      <Board
+      <LoadedBoard
         position={EMPTY}
         orientation={orientation}
         animatePieces
@@ -128,7 +138,12 @@ it('labels ranks on the left edge and files on the bottom edge from white', () =
 
   // When it renders
   render(
-    <Board position={EMPTY} orientation="white" animatePieces showMoveHints />,
+    <LoadedBoard
+      position={EMPTY}
+      orientation="white"
+      animatePieces
+      showMoveHints
+    />,
   );
 
   // Then only the left column shows ranks and only the bottom row shows files
@@ -143,7 +158,12 @@ it('labels ranks on the left edge and files on the bottom edge from black', () =
 
   // When it renders
   render(
-    <Board position={EMPTY} orientation="black" animatePieces showMoveHints />,
+    <LoadedBoard
+      position={EMPTY}
+      orientation="black"
+      animatePieces
+      showMoveHints
+    />,
   );
 
   // Then the h-file carries the ranks and rank 8 carries the files
@@ -156,7 +176,12 @@ it('labels ranks on the left edge and files on the bottom edge from black', () =
 it('keeps edge labels out of the accessibility tree', () => {
   // Given a rendered board
   render(
-    <Board position={EMPTY} orientation="white" animatePieces showMoveHints />,
+    <LoadedBoard
+      position={EMPTY}
+      orientation="white"
+      animatePieces
+      showMoveHints
+    />,
   );
 
   // When its labels are read
@@ -173,7 +198,12 @@ it('announces the piece standing on a square', () => {
 
   // When it renders
   render(
-    <Board position={START} orientation="white" animatePieces showMoveHints />,
+    <LoadedBoard
+      position={START}
+      orientation="white"
+      animatePieces
+      showMoveHints
+    />,
   );
 
   // Then e1 names the king on it
@@ -185,7 +215,12 @@ it('announces an empty square by name alone', () => {
 
   // When it renders
   render(
-    <Board position={START} orientation="white" animatePieces showMoveHints />,
+    <LoadedBoard
+      position={START}
+      orientation="white"
+      animatePieces
+      showMoveHints
+    />,
   );
 
   // Then e4 names no piece
@@ -197,7 +232,7 @@ it('shows each piece its own image', () => {
 
   // When it renders
   render(
-    <Board
+    <LoadedBoard
       position={KING_ON_E1}
       orientation="white"
       animatePieces
@@ -217,7 +252,12 @@ it('shows one image per piece and no more', () => {
 
   // When it renders
   render(
-    <Board position={START} orientation="white" animatePieces showMoveHints />,
+    <LoadedBoard
+      position={START}
+      orientation="white"
+      animatePieces
+      showMoveHints
+    />,
   );
 
   // Then the 32 men are all that is drawn
@@ -229,7 +269,12 @@ it('keeps piece images out of the accessibility tree', () => {
 
   // When it renders
   render(
-    <Board position={START} orientation="white" animatePieces showMoveHints />,
+    <LoadedBoard
+      position={START}
+      orientation="white"
+      animatePieces
+      showMoveHints
+    />,
   );
 
   // Then the images add nothing for a screen reader to read
@@ -241,7 +286,7 @@ it('offsets a piece to its square from white', () => {
 
   // When a king on e1 renders
   render(
-    <Board
+    <LoadedBoard
       position={KING_ON_E1}
       orientation="white"
       animatePieces
@@ -258,7 +303,7 @@ it('offsets a piece to its square from black', () => {
 
   // When a king on e1 renders
   render(
-    <Board
+    <LoadedBoard
       position={KING_ON_E1}
       orientation="black"
       animatePieces
@@ -273,7 +318,7 @@ it('offsets a piece to its square from black', () => {
 it('moves a piece by its offset, so it slides rather than jumps', () => {
   // Given a king on e1
   const { rerender } = render(
-    <Board
+    <LoadedBoard
       position={KING_ON_E1}
       orientation="white"
       animatePieces
@@ -284,7 +329,7 @@ it('moves a piece by its offset, so it slides rather than jumps', () => {
 
   // When it steps up to e2
   rerender(
-    <Board
+    <LoadedBoard
       position={KING_ON_E2}
       orientation="white"
       animatePieces
@@ -299,7 +344,7 @@ it('moves a piece by its offset, so it slides rather than jumps', () => {
 it('offsets a moved piece to the square it arrived on', () => {
   // Given a king on e1
   const { rerender } = render(
-    <Board
+    <LoadedBoard
       position={KING_ON_E1}
       orientation="white"
       animatePieces
@@ -309,7 +354,7 @@ it('offsets a moved piece to the square it arrived on', () => {
 
   // When it steps up to e2
   rerender(
-    <Board
+    <LoadedBoard
       position={KING_ON_E2}
       orientation="white"
       animatePieces
@@ -324,7 +369,7 @@ it('offsets a moved piece to the square it arrived on', () => {
 it('keeps a piece its own image across a run of moves', () => {
   // Given a rook on a1 and another on h1
   const { rerender } = render(
-    <Board
+    <LoadedBoard
       position={ROOKS_HOME}
       orientation="white"
       animatePieces
@@ -335,7 +380,7 @@ it('keeps a piece its own image across a run of moves', () => {
 
   // When the h1 rook goes to h5 and the a1 rook then follows it onto h1
   rerender(
-    <Board
+    <LoadedBoard
       position={ROOK_ON_H5}
       orientation="white"
       animatePieces
@@ -343,7 +388,7 @@ it('keeps a piece its own image across a run of moves', () => {
     />,
   );
   rerender(
-    <Board
+    <LoadedBoard
       position={ROOKS_ON_THE_H_FILE}
       orientation="white"
       animatePieces
@@ -358,7 +403,7 @@ it('keeps a piece its own image across a run of moves', () => {
 it('announces the square a piece moved to', () => {
   // Given a king on e1
   const { rerender } = render(
-    <Board
+    <LoadedBoard
       position={KING_ON_E1}
       orientation="white"
       animatePieces
@@ -368,7 +413,7 @@ it('announces the square a piece moved to', () => {
 
   // When it steps up to e2
   rerender(
-    <Board
+    <LoadedBoard
       position={KING_ON_E2}
       orientation="white"
       animatePieces
@@ -385,7 +430,12 @@ it('keeps pieces on their own squares from black', () => {
 
   // When it renders facing black
   render(
-    <Board position={START} orientation="black" animatePieces showMoveHints />,
+    <LoadedBoard
+      position={START}
+      orientation="black"
+      animatePieces
+      showMoveHints
+    />,
   );
 
   // Then the white king is still announced on e1
@@ -396,7 +446,7 @@ it('plays a clicked piece to a clicked legal square', () => {
   // Given the starting position with a move handler
   const onMove = vi.fn();
   render(
-    <Board
+    <LoadedBoard
       position={START}
       animatePieces
       showMoveHints
@@ -416,7 +466,7 @@ it('lets the side to move be black', () => {
   // Given black to move
   const onMove = vi.fn();
   render(
-    <Board
+    <LoadedBoard
       position={AFTER_E4}
       animatePieces
       showMoveHints
@@ -436,7 +486,7 @@ it('plays nothing when a target is clicked with no piece selected', () => {
   // Given the starting position with a move handler
   const onMove = vi.fn();
   render(
-    <Board
+    <LoadedBoard
       position={START}
       animatePieces
       showMoveHints
@@ -456,7 +506,7 @@ it('does not select a piece of the side not to move', () => {
   // Given white to move
   const onMove = vi.fn();
   render(
-    <Board
+    <LoadedBoard
       position={START}
       animatePieces
       showMoveHints
@@ -476,7 +526,7 @@ it('switches the selection to another clicked piece', () => {
   // Given the e2 pawn is selected
   const onMove = vi.fn();
   render(
-    <Board
+    <LoadedBoard
       position={START}
       animatePieces
       showMoveHints
@@ -497,7 +547,7 @@ it('deselects on a click that is not a legal target', () => {
   // Given the e2 pawn is selected
   const onMove = vi.fn();
   render(
-    <Board
+    <LoadedBoard
       position={START}
       animatePieces
       showMoveHints
@@ -518,7 +568,7 @@ it('clears the selection once a move is played', () => {
   // Given e2-e4 has just been played, with the position not yet updated
   const onMove = vi.fn();
   render(
-    <Board
+    <LoadedBoard
       position={START}
       animatePieces
       showMoveHints
@@ -539,7 +589,7 @@ it('clears the selection when the position changes', () => {
   // Given the e2 pawn is selected
   const onMove = vi.fn();
   const { rerender } = render(
-    <Board
+    <LoadedBoard
       position={START}
       animatePieces
       showMoveHints
@@ -551,7 +601,7 @@ it('clears the selection when the position changes', () => {
 
   // When a new position arrives with white to move
   rerender(
-    <Board
+    <LoadedBoard
       position={AFTER_KNIGHTS_OUT}
       animatePieces
       showMoveHints
@@ -570,7 +620,12 @@ it('clears the selection when the position changes', () => {
 it('ignores clicks without a move handler', () => {
   // Given a board with no move handler
   render(
-    <Board position={START} animatePieces showMoveHints orientation="white" />,
+    <LoadedBoard
+      position={START}
+      animatePieces
+      showMoveHints
+      orientation="white"
+    />,
   );
 
   // When e2 is clicked, then e4
@@ -583,7 +638,7 @@ it('ignores clicks without a move handler', () => {
 it('tints the square of a selected piece', () => {
   // Given the starting position with a move handler
   render(
-    <Board
+    <LoadedBoard
       position={START}
       animatePieces
       showMoveHints
@@ -602,7 +657,7 @@ it('tints the square of a selected piece', () => {
 it('tints a selected piece that has no legal moves', () => {
   // Given the starting position with a move handler
   render(
-    <Board
+    <LoadedBoard
       position={START}
       animatePieces
       showMoveHints
@@ -622,7 +677,7 @@ it('tints a selected piece that has no legal moves', () => {
 it.each(['e4', 'e7'])('shows no hints after clicking %s', (name) => {
   // Given white to move
   render(
-    <Board
+    <LoadedBoard
       position={START}
       animatePieces
       showMoveHints
@@ -642,7 +697,7 @@ it.each(['e4', 'e7'])('shows no hints after clicking %s', (name) => {
 it('dots the empty squares a selected piece can move to', () => {
   // Given the starting position with a move handler
   render(
-    <Board
+    <LoadedBoard
       position={START}
       animatePieces
       showMoveHints
@@ -661,7 +716,7 @@ it('dots the empty squares a selected piece can move to', () => {
 it('rings a piece that can be captured, and dots the rest', () => {
   // Given a white pawn on e4 facing a black pawn on d5
   render(
-    <Board
+    <LoadedBoard
       position={PAWNS_FACE_OFF}
       animatePieces
       showMoveHints
@@ -681,7 +736,7 @@ it('rings a piece that can be captured, and dots the rest', () => {
 it('dots an en passant capture, since its square is empty', () => {
   // Given a white pawn on e5 that can take f5 en passant
   render(
-    <Board
+    <LoadedBoard
       position={EN_PASSANT_ON_F6}
       animatePieces
       showMoveHints
@@ -701,7 +756,7 @@ it('dots an en passant capture, since its square is empty', () => {
 it('clears hints once a move is played', () => {
   // Given the e2 pawn is selected
   render(
-    <Board
+    <LoadedBoard
       position={START}
       animatePieces
       showMoveHints
@@ -722,7 +777,7 @@ it('clears hints once a move is played', () => {
 it('clears hints on a deselecting click', () => {
   // Given the e2 pawn is selected
   render(
-    <Board
+    <LoadedBoard
       position={START}
       animatePieces
       showMoveHints
@@ -745,7 +800,12 @@ it('gives a square without hints only its colour classes', () => {
 
   // When it renders
   render(
-    <Board position={START} animatePieces showMoveHints orientation="white" />,
+    <LoadedBoard
+      position={START}
+      animatePieces
+      showMoveHints
+      orientation="white"
+    />,
   );
 
   // Then e4 carries nothing but its base and colour classes
@@ -771,7 +831,12 @@ it('leaves a board without a move handler out of the tab order', () => {
 
   // When it renders
   render(
-    <Board position={EMPTY} orientation="white" animatePieces showMoveHints />,
+    <LoadedBoard
+      position={EMPTY}
+      orientation="white"
+      animatePieces
+      showMoveHints
+    />,
   );
 
   // Then no square can be focused or selected
@@ -786,7 +851,7 @@ it('makes the top-left square the one tab stop', () => {
 
   // When it renders facing black
   render(
-    <Board
+    <LoadedBoard
       position={EMPTY}
       orientation="black"
       animatePieces
@@ -807,7 +872,7 @@ it.each([
 ])('moves focus with %s from white', (key, target) => {
   // Given the board faces white
   render(
-    <Board
+    <LoadedBoard
       position={EMPTY}
       orientation="white"
       animatePieces
@@ -826,7 +891,7 @@ it.each([
 it('moves focus as the board faces, from black', () => {
   // Given the board faces black
   render(
-    <Board
+    <LoadedBoard
       position={EMPTY}
       orientation="black"
       animatePieces
@@ -851,7 +916,7 @@ it.each([
 ])('keeps focus on %s when %s runs off the board', (name, key) => {
   // Given the board faces white
   render(
-    <Board
+    <LoadedBoard
       position={EMPTY}
       orientation="white"
       animatePieces
@@ -870,7 +935,7 @@ it.each([
 it('moves the tab stop to the focused square', () => {
   // Given a board with a move handler
   render(
-    <Board
+    <LoadedBoard
       position={EMPTY}
       orientation="white"
       animatePieces
@@ -889,7 +954,7 @@ it('moves the tab stop to the focused square', () => {
 it('stops arrow keys scrolling the page', () => {
   // Given a board with a move handler
   render(
-    <Board
+    <LoadedBoard
       position={EMPTY}
       orientation="white"
       animatePieces
@@ -908,7 +973,7 @@ it('stops arrow keys scrolling the page', () => {
 it('leaves other keys alone', () => {
   // Given a board with a move handler
   render(
-    <Board
+    <LoadedBoard
       position={EMPTY}
       orientation="white"
       animatePieces
@@ -928,7 +993,7 @@ it.each(['Enter', ' '])('plays a move with %j', (key) => {
   // Given the starting position with a move handler
   const onMove = vi.fn();
   render(
-    <Board
+    <LoadedBoard
       position={START}
       orientation="white"
       animatePieces
@@ -949,7 +1014,7 @@ it.each(['Enter', ' '])('plays a move with %j', (key) => {
 it('shows hints for a piece picked with the keyboard', () => {
   // Given the starting position with a move handler
   render(
-    <Board
+    <LoadedBoard
       position={START}
       orientation="white"
       animatePieces
@@ -969,7 +1034,7 @@ it('shows hints for a piece picked with the keyboard', () => {
 it('marks the selected square selected and no other', () => {
   // Given the starting position with a move handler
   render(
-    <Board
+    <LoadedBoard
       position={START}
       orientation="white"
       animatePieces
@@ -994,7 +1059,7 @@ it('slides pieces when animation is on', () => {
 
   // When a king renders
   render(
-    <Board
+    <LoadedBoard
       position={KING_ON_E1}
       orientation="white"
       animatePieces
@@ -1011,7 +1076,7 @@ it('keeps pieces still when animation is off', () => {
 
   // When a king renders
   render(
-    <Board
+    <LoadedBoard
       position={KING_ON_E1}
       orientation="white"
       animatePieces={false}
@@ -1077,7 +1142,7 @@ const draggedPieces = () =>
 
 const renderPlayable = (onMove = vi.fn()) =>
   render(
-    <Board
+    <LoadedBoard
       position={START}
       orientation="white"
       animatePieces
@@ -1102,7 +1167,7 @@ it('reads drop squares as the board faces, from black', () => {
   // Given black to move on a board facing black
   const onMove = vi.fn();
   render(
-    <Board
+    <LoadedBoard
       position={AFTER_E4}
       orientation="black"
       animatePieces
@@ -1323,7 +1388,12 @@ it('ignores a pointer moving over the board without a press', () => {
 it('ignores dragging without a move handler', () => {
   // Given a board with no move handler
   render(
-    <Board position={START} animatePieces showMoveHints orientation="white" />,
+    <LoadedBoard
+      position={START}
+      animatePieces
+      showMoveHints
+      orientation="white"
+    />,
   );
 
   // When the e2 pawn is dragged
@@ -1350,7 +1420,12 @@ it('lets touches scroll past a board that takes no moves', () => {
 
   // When it renders
   render(
-    <Board position={START} animatePieces showMoveHints orientation="white" />,
+    <LoadedBoard
+      position={START}
+      animatePieces
+      showMoveHints
+      orientation="white"
+    />,
   );
 
   // Then touches are left to the page
@@ -1362,7 +1437,7 @@ it('gives a resting, sliding piece only its base class', () => {
 
   // When a king renders, not being dragged
   render(
-    <Board
+    <LoadedBoard
       position={KING_ON_E1}
       orientation="white"
       animatePieces
@@ -1377,7 +1452,7 @@ it('gives a resting, sliding piece only its base class', () => {
 it('tints, dots and rings nothing when hints are off', () => {
   // Given hints are off, with a white pawn on e4 facing a black pawn on d5
   render(
-    <Board
+    <LoadedBoard
       position={PAWNS_FACE_OFF}
       animatePieces
       showMoveHints={false}
@@ -1399,7 +1474,7 @@ it('still selects and plays moves when hints are off', () => {
   // Given hints are off
   const onMove = vi.fn();
   render(
-    <Board
+    <LoadedBoard
       position={START}
       animatePieces
       showMoveHints={false}
@@ -1430,7 +1505,7 @@ const renderPromotion = (
   orientation: 'white' | 'black' = 'white',
 ) =>
   render(
-    <Board
+    <LoadedBoard
       position={PAWN_ABOUT_TO_PROMOTE}
       orientation={orientation}
       animatePieces
@@ -1494,7 +1569,7 @@ it('shows white choices for a white pawn', () => {
 it('shows black choices for a black pawn', () => {
   // Given a black pawn on a2
   render(
-    <Board
+    <LoadedBoard
       position={BLACK_PAWN_ABOUT_TO_PROMOTE}
       orientation="white"
       animatePieces
@@ -1592,7 +1667,7 @@ it('cancels the promotion when the position changes', () => {
 
   // When a new position arrives
   rerender(
-    <Board
+    <LoadedBoard
       position={START}
       orientation="white"
       animatePieces
