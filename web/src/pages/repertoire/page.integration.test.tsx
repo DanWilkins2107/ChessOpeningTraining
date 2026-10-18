@@ -2,11 +2,9 @@ import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeAll, expect, it, vi } from 'vitest';
 import { supabase } from '../../supabase';
 import { renderSettledAt } from '../../tests-shared/renderAt';
-import { registerTestUser } from '../../tests-shared/testUser';
+import { createTestUser, registerTestUser } from '../../tests-shared/testUser';
 
 const withRepertoire = registerTestUser();
-const empty = registerTestUser();
-const creating = registerTestUser();
 
 type Client = Awaited<ReturnType<typeof withRepertoire.signedInClient>>;
 
@@ -53,7 +51,7 @@ const isRepertoireRequest = (input: RequestInfo | URL) =>
 const listedRows = async () =>
   (await screen.findAllByRole('listitem')).map((row) => row.textContent);
 
-it('lists top-level folders, then top-level move trees with their side, newest first', async () => {
+it('lists top-level folders, then top-level move trees with a pawn for their side, newest first', async () => {
   // Given a user with two top-level folders and move trees, and one of each inside a folder
   await withRepertoire.signIn();
 
@@ -64,14 +62,18 @@ it('lists top-level folders, then top-level move trees with their side, newest f
   expect(await listedRows()).toEqual([
     'London',
     'Caro-Kann',
-    'Sicilianblack',
-    'Scotchwhite',
+    'Sicilian',
+    'Scotch',
   ]);
+  expect(
+    (await screen.findAllByRole('img')).map((pawn) => pawn.getAttribute('alt')),
+  ).toEqual(['black pawn', 'white pawn']);
   expect(screen.queryByRole('status')).not.toBeInTheDocument();
 });
 
 it('says so when the user has no folders or move trees', async () => {
   // Given a user with nothing yet
+  const empty = await createTestUser();
   await empty.signIn();
 
   // When the page renders
@@ -112,6 +114,7 @@ it('loads the repertoire again when the user tries again', async () => {
 
 it('creates a folder from the page', async () => {
   // Given a signed-in user on the page
+  const creating = await createTestUser();
   await creating.signIn();
   await renderSettledAt('/repertoire');
 
