@@ -2,15 +2,10 @@ import { act, render, screen } from '@testing-library/react';
 import { expect, it } from 'vitest';
 import { PASSWORDS_DIFFER_MESSAGE } from '../../../../elements/ConfirmPasswordInput/ConfirmPasswordInput.constants';
 import { SERVER, savePassword } from '../../../../tests-shared/newPasswordForm';
-import { registerTestUser } from '../../../../tests-shared/testUser';
+import { createTestUser } from '../../../../tests-shared/testUser';
 import { supabase } from '../../../../supabase';
 import { ChangePasswordForm } from './ChangePasswordForm';
 import { PASSWORD_CHANGED_MESSAGE } from './ChangePasswordForm.constants';
-
-const changing = registerTestUser();
-const clearing = registerTestUser();
-const unchangedPassword = `Aa1!${crypto.randomUUID()}`;
-const retrying = registerTestUser({ password: unchangedPassword });
 
 const newPassword = () => `Aa1!${crypto.randomUUID()}`;
 
@@ -20,6 +15,7 @@ const changedNotice = () => screen.findByRole('status', {}, SERVER);
 
 it('changes the account password to the one submitted', async () => {
   // Given a signed-in user on the change password form
+  const changing = await createTestUser();
   await changing.signIn();
   render(<ChangePasswordForm />);
   const password = newPassword();
@@ -40,6 +36,7 @@ it('changes the account password to the one submitted', async () => {
 
 it('confirms the change and clears the fields', async () => {
   // Given a signed-in user on the change password form
+  const clearing = await createTestUser();
   await clearing.signIn();
   render(<ChangePasswordForm />);
 
@@ -56,6 +53,8 @@ it('confirms the change and clears the fields', async () => {
 
 it('drops an earlier error once the change goes through', async () => {
   // Given a user whose first attempt was refused
+  const unchangedPassword = newPassword();
+  const retrying = await createTestUser({ password: unchangedPassword });
   await retrying.signIn();
   render(<ChangePasswordForm />);
   await savePassword(unchangedPassword);
