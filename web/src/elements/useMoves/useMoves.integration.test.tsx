@@ -11,12 +11,11 @@ import {
 } from '../../tests-shared/loadStates';
 import { move } from '../../tests-shared/moveNode';
 import { isMoveTreesRequest } from '../../tests-shared/moveTreesRequests';
-import { registerTestUser } from '../../tests-shared/testUser';
+import { createTestUser, registerTestUser } from '../../tests-shared/testUser';
 import { useMoves } from './useMoves';
 import { MOVES_QUERY_KEY } from './useMoves.constants';
 
 const treeOwner = registerTestUser();
-const nonOwner = registerTestUser();
 const moves = [move('e4', move('c6', move('d4'), move('Nc3')))];
 let moveTreeId = '';
 
@@ -39,11 +38,7 @@ function Moves() {
   return JSON.stringify(useMoves(moveTreeId));
 }
 
-const movesQueryKey = (user: ReturnType<typeof registerTestUser>) => [
-  MOVES_QUERY_KEY,
-  user.user.id,
-  moveTreeId,
-];
+const movesQueryKey = (userId: string) => [MOVES_QUERY_KEY, userId, moveTreeId];
 
 function renderMovesTestingHarness(client = createQueryClient()) {
   render(
@@ -82,7 +77,7 @@ it('shows moves already in the moves query', async () => {
   await treeOwner.signIn();
   const client = createQueryClient();
   const cached = [move('c4')];
-  client.setQueryData(movesQueryKey(treeOwner), cached);
+  client.setQueryData(movesQueryKey(treeOwner.user.id), cached);
 
   // When the moves load
   renderMovesTestingHarness(client);
@@ -108,6 +103,7 @@ it('asks for the moves column only', async () => {
 
 it("fails for someone else's tree", async () => {
   // Given a signed-in user who does not own the tree
+  const nonOwner = await createTestUser();
   await nonOwner.signIn();
 
   // When the moves load
@@ -115,7 +111,9 @@ it("fails for someone else's tree", async () => {
 
   // Then loading fails with the database's no-row error
   expect(await screen.findByText(ERROR)).toBeInTheDocument();
-  expect(client.getQueryState(movesQueryKey(nonOwner))?.error).toMatchObject({
+  expect(
+    client.getQueryState(movesQueryKey(nonOwner.user.id))?.error,
+  ).toMatchObject({
     code: 'PGRST116',
   });
 });

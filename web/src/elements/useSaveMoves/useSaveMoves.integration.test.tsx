@@ -10,11 +10,10 @@ import { MOVES_QUERY_KEY } from '../useMoves/useMoves.constants';
 import { isMovesCapError } from '../isMovesCapError/isMovesCapError';
 import { leaves, move } from '../../tests-shared/moveNode';
 import { isMoveTreesRequest } from '../../tests-shared/moveTreesRequests';
-import { registerTestUser } from '../../tests-shared/testUser';
+import { createTestUser, registerTestUser } from '../../tests-shared/testUser';
 import { useSaveMoves } from './useSaveMoves';
 
 const saver = registerTestUser();
-const bystander = registerTestUser();
 const moveTree = { id: '' };
 
 beforeAll(async () => {
@@ -134,6 +133,7 @@ it('fails as a cap error with the database message over a cap', async () => {
 
 it("fails, but not as a cap error, on someone else's tree", async () => {
   // Given a signed-in user who does not own the tree
+  const bystander = await createTestUser();
   await bystander.signIn();
   const { save } = await renderSaveMovesTestingHarness();
   const before = await storedTree();
