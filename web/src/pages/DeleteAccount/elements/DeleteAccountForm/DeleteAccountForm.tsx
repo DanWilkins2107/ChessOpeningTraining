@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { SIGN_IN_ROUTE_PATH } from '../../../(auth)/router.constants';
 import { Button } from '../../../../shared/Button/Button';
 import { ErrorMessage } from '../../../../shared/ErrorMessage/ErrorMessage';
 import {
@@ -39,7 +40,7 @@ export function DeleteAccountForm() {
 
     // Leaving first, as Sign out does, so ProtectedLayout's redirect can't win.
     await navigate(
-      `/sign-in?${SIGNED_OUT_PARAM}=${SIGNED_OUT_ACCOUNT_DELETED}`,
+      `${SIGN_IN_ROUTE_PATH}?${SIGNED_OUT_PARAM}=${SIGNED_OUT_ACCOUNT_DELETED}`,
       { replace: true },
     );
     // The account's sessions went with it, so no scope is needed, unlike Sign out.
