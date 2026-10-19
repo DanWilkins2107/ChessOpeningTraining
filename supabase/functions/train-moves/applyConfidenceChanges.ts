@@ -25,7 +25,7 @@ function trainedConfidence(
 }
 
 // Undefined when the path is not in the moves.
-export function trainedMoves(
+export function applyConfidenceChanges(
   moves: TrainedMove[],
   side: Side,
   path: string[],
@@ -38,7 +38,7 @@ export function trainedMoves(
   if (index === -1) return undefined;
 
   const move = moves[index];
-  const children = trainedMoves(
+  const children = applyConfidenceChanges(
     move.children,
     side,
     path,

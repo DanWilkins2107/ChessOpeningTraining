@@ -5,5 +5,6 @@ export const env = z
     SUPABASE_URL: z.url(),
     SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
     SUPABASE_DB_URL: z.string().min(1),
+    ALLOWED_ORIGIN: z.url(),
   })
   .parse(Deno.env.toObject());

@@ -4,11 +4,11 @@ import type {
 } from 'https://deno.land/x/postgresjs@v3.4.7/mod.js';
 import type { TrainingRequest } from './trainingRequest.ts';
 import {
-  trainedMoves,
+  applyConfidenceChanges,
   userMoveCount,
   type Side,
   type TrainedMove,
-} from './trainedMoves.ts';
+} from './applyConfidenceChanges.ts';
 
 type MoveTree = { id: string; side: Side; moves: TrainedMove[] };
 
@@ -58,7 +58,7 @@ export function trainMoves(
     const skippedTreeIds: string[] = [];
 
     for (const tree of trees) {
-      const moves = trainedMoves(
+      const moves = applyConfidenceChanges(
         tree.moves,
         side,
         training.path,

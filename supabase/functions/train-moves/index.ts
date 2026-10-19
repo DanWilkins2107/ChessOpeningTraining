@@ -1,7 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.116.0';
 // Not npm:postgres: its Node DNS lookup rejects the local stack's db hostname, which has underscores.
 import postgres from 'https://deno.land/x/postgresjs@v3.4.7/mod.js';
-import { corsHeaders } from '../_shared/cors.ts';
 import { env } from './env.ts';
 import { signedInUserId } from './signedInUserId.ts';
 import { RejectedTraining, trainMoves } from './trainMoves.ts';
@@ -14,6 +13,13 @@ const admin = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
   auth: { persistSession: false, autoRefreshToken: false },
 });
 const sql = postgres(env.SUPABASE_DB_URL);
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': env.ALLOWED_ORIGIN,
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST',
+};
 
 const respond = (body: object, status = 200) =>
   Response.json(body, { status, headers: corsHeaders });

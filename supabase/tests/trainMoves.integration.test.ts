@@ -13,7 +13,7 @@ afterAll(() => sql.end());
 
 const CARO_KANN = [move('e4', move('c6', move('d4'), move('Nc3'))), move('d4')];
 
-const today = () => new Date().toISOString().slice(0, 10);
+const todayUtc = () => new Date().toISOString().slice(0, 10);
 
 async function ownedMoveTree(
   ownerId: string,
@@ -50,7 +50,7 @@ const training = (treeIds: string[], path = ['e4', 'c6']) => ({
   treeIds,
   path,
   confidenceChanges: path.map(() => 1),
-  day: today(),
+  day: todayUtc(),
 });
 
 it('trains the trees that have the path and skips the rest, untouched', async () => {
@@ -72,7 +72,9 @@ it('adds the user moves on the path to the day, once however many trees', async 
   await trainMoves(sql, id, line);
   await trainMoves(sql, id, line);
 
-  expect(await movesTrained(id)).toEqual([{ day: today(), moves_trained: 4 }]);
+  expect(await movesTrained(id)).toEqual([
+    { day: todayUtc(), moves_trained: 4 },
+  ]);
 });
 
 it('rejects move trees the user does not own with 403, writing nothing', async () => {

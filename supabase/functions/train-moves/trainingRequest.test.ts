@@ -4,7 +4,7 @@ import { trainingRequestSchema } from './trainingRequest';
 const daysFromToday = (days: number) =>
   new Date(Date.now() + days * 86_400_000).toISOString().slice(0, 10);
 
-const training = {
+const validRequest = {
   treeIds: [crypto.randomUUID()],
   path: ['e4'],
   confidenceChanges: [1],
@@ -13,8 +13,10 @@ const training = {
 
 it.each([-1, 0, 1])('accepts a day %i from today', (days) => {
   expect(
-    trainingRequestSchema.safeParse({ ...training, day: daysFromToday(days) })
-      .success,
+    trainingRequestSchema.safeParse({
+      ...validRequest,
+      day: daysFromToday(days),
+    }).success,
   ).toBe(true);
 });
 
@@ -29,6 +31,6 @@ it.each([
   ['a day after tomorrow', { day: daysFromToday(2) }],
 ])('rejects %s', (_, invalid) => {
   expect(
-    trainingRequestSchema.safeParse({ ...training, ...invalid }).success,
+    trainingRequestSchema.safeParse({ ...validRequest, ...invalid }).success,
   ).toBe(false);
 });
