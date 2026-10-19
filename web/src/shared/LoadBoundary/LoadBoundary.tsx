@@ -1,10 +1,11 @@
-// fallow-ignore-file unused-file -- 61043e76 2026-11-16 Account moved to LoadErrorBoundary; the move tree page (PR 116) is its next consumer.
+import { useQueryErrorResetBoundary } from '@tanstack/react-query';
 import { Suspense } from 'react';
 import type { ComponentType, ReactNode } from 'react';
-import { LoadErrorBoundary } from '../LoadErrorBoundary/LoadErrorBoundary';
+import { ErrorBoundary } from 'react-error-boundary';
 
 type LoadBoundaryProps = {
-  Loading: ComponentType;
+  // null when the content handles its own loading.
+  Loading: ComponentType | null;
   LoadError: ComponentType<{ retry: () => void }>;
   children: ReactNode;
 };
@@ -14,9 +15,16 @@ export function LoadBoundary({
   LoadError,
   children,
 }: LoadBoundaryProps) {
+  const { reset } = useQueryErrorResetBoundary();
+
   return (
-    <LoadErrorBoundary LoadError={LoadError}>
-      <Suspense fallback={<Loading />}>{children}</Suspense>
-    </LoadErrorBoundary>
+    <ErrorBoundary
+      onReset={reset}
+      fallbackRender={({ resetErrorBoundary }) => (
+        <LoadError retry={resetErrorBoundary} />
+      )}
+    >
+      <Suspense fallback={Loading && <Loading />}>{children}</Suspense>
+    </ErrorBoundary>
   );
 }

@@ -327,12 +327,13 @@ it('says so when the setting fails to load', async () => {
   // When the toggle renders
   await renderFor(failing);
 
-  // Then one message says so under the labels, with no switch
+  // Then one message says so in place of the settings
   const alerts = await screen.findAllByRole('alert');
   expect(alerts.map((alert) => alert.textContent)).toEqual([
     "Couldn't load your settings, try again",
   ]);
-  expectBothLabels();
+  expect(screen.queryByText('Animate pieces')).not.toBeInTheDocument();
+  expect(screen.queryByText('Show move hints')).not.toBeInTheDocument();
   expect(screen.queryByRole('switch')).not.toBeInTheDocument();
   expect(screen.queryByRole('status')).not.toBeInTheDocument();
 });

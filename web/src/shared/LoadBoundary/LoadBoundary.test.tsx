@@ -15,10 +15,13 @@ function Things({ load }: { load: () => Promise<string> }) {
   return <p>{data}</p>;
 }
 
-const renderBoundary = (load: () => Promise<string>) =>
+const renderBoundary = (
+  load: () => Promise<string>,
+  loading: typeof Loading | null = Loading,
+) =>
   render(
     <QueryClientProvider client={createQueryClient()}>
-      <LoadBoundary Loading={Loading} LoadError={LoadError}>
+      <LoadBoundary Loading={loading} LoadError={LoadError}>
         <Things load={load} />
       </LoadBoundary>
     </QueryClientProvider>,
@@ -41,6 +44,16 @@ it('shows the loading component while its content loads', () => {
 
   // Then the loading component shows
   expect(screen.getByText(LOADING)).toBeInTheDocument();
+});
+
+it('shows nothing while its content loads when given no loading component', () => {
+  // Given content that never arrives
+
+  // When a boundary with no loading component renders it
+  const { container } = renderBoundary(() => new Promise(() => {}), null);
+
+  // Then nothing shows
+  expect(container).toBeEmptyDOMElement();
 });
 
 it('shows its content once loaded', async () => {

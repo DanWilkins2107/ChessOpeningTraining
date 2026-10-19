@@ -1,3 +1,67 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Account > matches snapshot 1`] = `<div />`;
+exports[`Account > matches snapshot 1`] = `
+<div>
+  <section
+    class="account-card"
+  >
+    <h1
+      class="account-heading"
+    >
+      Account
+    </h1>
+    <a
+      class="account-action"
+      data-discover="true"
+      href="/account/email"
+    >
+      Change email
+    </a>
+    <div
+      class="profile-settings"
+    >
+      <label
+        class="setting-row"
+      >
+        Animate pieces
+        <input
+          checked=""
+          class="setting-switch"
+          role="switch"
+          type="checkbox"
+        />
+      </label>
+      <label
+        class="setting-row"
+      >
+        Show move hints
+        <input
+          class="setting-switch"
+          role="switch"
+          type="checkbox"
+        />
+      </label>
+    </div>
+    <a
+      class="account-action"
+      data-discover="true"
+      href="/account/password"
+    >
+      Change password
+    </a>
+    <button
+      class="account-action"
+      type="button"
+    >
+      Sign out
+    </button>
+    <a
+      class="account-action account-action-danger"
+      data-discover="true"
+      href="/account/delete"
+    >
+      Delete account
+    </a>
+  </section>
+</div>
+`;
