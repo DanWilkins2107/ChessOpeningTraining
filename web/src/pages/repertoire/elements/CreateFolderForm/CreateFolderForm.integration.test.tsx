@@ -1,22 +1,8 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { beforeAll, expect, it } from 'vitest';
+import { expect, it } from 'vitest';
 import { supabase } from '../../../../supabase';
-import { registerTestUser } from '../../../../tests-shared/testUser';
+import { createTestUser } from '../../../../tests-shared/testUser';
 import { CreateFolderForm } from './CreateFolderForm';
-
-const author = registerTestUser();
-const atTheCap = registerTestUser();
-
-beforeAll(async () => {
-  await atTheCap.signIn();
-  const { error } = await supabase.from('folders').insert(
-    Array.from({ length: 100 }, (_, index) => ({
-      name: `Filler ${index}`,
-    })),
-  );
-  if (error) throw error;
-  await supabase.auth.signOut({ scope: 'local' });
-});
 
 const createButton = () =>
   screen.getByRole('button', { name: 'Create folder' });
@@ -30,6 +16,7 @@ function renderForm() {
 }
 
 async function signedInForm() {
+  const author = await createTestUser();
   await author.signIn();
   return renderForm();
 }
@@ -100,6 +87,7 @@ it('disables create again once the folder is created', async () => {
 
 it('clears an earlier failure once a folder is created', async () => {
   // Given a failed create on the form
+  const author = await createTestUser();
   const creations = renderForm();
   submitFolder('Dutch');
   await screen.findByRole('alert');
@@ -173,6 +161,14 @@ it('disables create until the attempt finishes', async () => {
 
 it('explains the 100-folder cap', async () => {
   // Given a signed-in user who already has 100 folders
+  const atTheCap = await createTestUser();
+  const client = await atTheCap.signedInClient();
+  const { error } = await client.from('folders').insert(
+    Array.from({ length: 100 }, (_, index) => ({
+      name: `Filler ${index}`,
+    })),
+  );
+  if (error) throw error;
   await atTheCap.signIn();
   renderForm();
 

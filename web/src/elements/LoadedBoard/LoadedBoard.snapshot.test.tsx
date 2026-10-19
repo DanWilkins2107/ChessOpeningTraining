@@ -1,11 +1,11 @@
 import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { Board } from './Board';
+import { LoadedBoard } from './LoadedBoard';
 
-describe('Board', () => {
+describe('LoadedBoard', () => {
   it('matches snapshot', () => {
     const { container } = render(
-      <Board
+      <LoadedBoard
         position="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
         orientation="white"
         animatePieces

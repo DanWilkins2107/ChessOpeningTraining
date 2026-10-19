@@ -1,0 +1,86 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ReauthenticationCodeForm > matches snapshot 1`] = `
+<div>
+  <form
+    class="reauthentication-code-form"
+  >
+    <p>
+      We've emailed you a code to confirm it's you
+    </p>
+    <div
+      class="text-input"
+    >
+      <label
+        for="_r_0_"
+      >
+        Code
+      </label>
+      <div
+        class="text-input-control"
+      >
+        <input
+          autocomplete="one-time-code"
+          class="text-input-field"
+          id="_r_0_"
+          name="code"
+          required=""
+          type="text"
+        />
+      </div>
+    </div>
+    <button
+      class="button"
+      type="submit"
+    >
+      Confirm
+    </button>
+  </form>
+</div>
+`;
+
+exports[`ReauthenticationCodeForm > matches snapshot with an error while pending 1`] = `
+<div>
+  <form
+    class="reauthentication-code-form"
+  >
+    <p>
+      We've emailed you a code to confirm it's you
+    </p>
+    <div
+      class="text-input"
+    >
+      <label
+        for="_r_1_"
+      >
+        Code
+      </label>
+      <div
+        class="text-input-control"
+      >
+        <input
+          autocomplete="one-time-code"
+          class="text-input-field"
+          id="_r_1_"
+          name="code"
+          required=""
+          type="text"
+        />
+      </div>
+    </div>
+    <p
+      class="error-message"
+      role="alert"
+    >
+      That code is wrong or has expired
+    </p>
+    <button
+      class="button"
+      disabled=""
+      type="submit"
+    >
+      Confirm
+    </button>
+  </form>
+</div>
+`;
