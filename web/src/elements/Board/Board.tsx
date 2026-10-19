@@ -4,7 +4,6 @@ import { LoadBoundary } from '../../shared/LoadBoundary/LoadBoundary';
 import { BoardLoading } from '../BoardLoading/BoardLoading';
 import { LoadedBoard } from '../LoadedBoard/LoadedBoard';
 
-// A failed position keeps the board loading; the caller shows the error.
 export function Board(props: ComponentProps<typeof LoadedBoard>) {
   return (
     <LoadBoundary Loading={BoardLoading} LoadError={BoardLoading}>
