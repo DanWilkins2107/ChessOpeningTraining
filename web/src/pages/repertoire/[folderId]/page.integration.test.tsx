@@ -71,14 +71,14 @@ it("shows the folder's name as the page heading", async () => {
   expect(loadingFolder()).not.toBeInTheDocument();
 });
 
-it("lists the folder's move trees, oldest first", async () => {
+it("lists the folder's move trees in position order", async () => {
   // Given a signed-in owner of a folder with move trees
   await owner.signIn();
 
   // When their folder page renders
   renderAt(`/repertoire/${folderIds.london}`);
 
-  // Then it lists the move tree names in the order they were created
+  // Then it lists the move tree names in position order
   await folderHeading('London');
   expect(
     within(moveTreeList()!)
@@ -111,13 +111,13 @@ it('requests the folder once, only once the user has loaded', async () => {
   renderAt(`/repertoire/${folderIds.london}`);
   await folderHeading('London');
 
-  // Then it requested the folder once, with move tree names oldest first but
+  // Then it requested the folder once, with move tree names in position order but
   // never their moves
   const requests = fetch.mock.calls.filter(([input]) => isFolderRequest(input));
   expect(requests).toHaveLength(1);
   const { searchParams } = new URL(String(requests[0][0]));
   expect(searchParams.get('select')).toBe('name,move_trees(id,name)');
-  expect(searchParams.get('move_trees.order')).toBe('created_at.asc,id.asc');
+  expect(searchParams.get('move_trees.order')).toBe('position.asc');
 });
 
 it.each([

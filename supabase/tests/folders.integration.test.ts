@@ -41,14 +41,15 @@ async function nestedFolders(client: SupabaseClient, depth: number) {
   return chain;
 }
 
-const moveFolder = (
-  client: SupabaseClient,
-  id: string,
-  parentId: string | null,
-) =>
-  client
+const MOVED_POSITION = 100;
+
+// Clients can't move folders any more (see 'refuses changing a folder's parent_id'). These move tests now cover the
+// database triggers (owner match, no cycles, depth cap, concurrency) that the reorder RPC's moves will rely on, so
+// they move as the server does. They move onto the RPC once it exists. The position is past any sibling's.
+const serverMoveFolder = (id: string, parentId: string | null) =>
+  admin
     .from('folders')
-    .update({ parent_id: parentId })
+    .update({ parent_id: parentId, position: MOVED_POSITION })
     .eq('id', id)
     .select()
     .single();
@@ -82,6 +83,7 @@ it('creates a folder owned by the signed-in user', async () => {
     id: expect.any(String),
     owner_id: id,
     parent_id: null,
+    position: 0,
     created_at: expect.any(String),
     ...FOLDER,
   });
@@ -120,6 +122,11 @@ it.each([
   ['id', async () => crypto.randomUUID()],
   ['created_at', async () => randomTimestamp()],
   ['owner_id', async () => (await signedInUser()).id],
+  [
+    'parent_id',
+    async (client: SupabaseClient) => (await existingFolder(client)).id,
+  ],
+  ['position', async () => 5],
 ])('refuses changing a folderâ€™s %s', async (column, newValue) => {
   // Given a user with a folder
   const { client } = await signedInUser();
@@ -128,7 +135,7 @@ it.each([
   // When they change the column
   const { error } = await client
     .from('folders')
-    .update({ [column]: await newValue() })
+    .update({ [column]: await newValue(client) })
     .eq('id', folder.id);
 
   // Then it is refused, and the folder is untouched
@@ -302,7 +309,7 @@ it("deletes a user's folders with their account", async () => {
   expect(await storedFolder(folder.id)).toBeNull();
 });
 
-it('creates a folder inside the owner’s folder', async () => {
+it('creates a folder inside the ownerâ€™s folder', async () => {
   // Given a user with a folder
   const { client } = await signedInUser();
   const parent = await existingFolder(client);
@@ -318,7 +325,7 @@ it('creates a folder inside the owner’s folder', async () => {
   expect(data).toMatchObject({ parent_id: parent.id });
 });
 
-it('refuses a folder inside another user’s folder', async () => {
+it('refuses a folder inside another userâ€™s folder', async () => {
   // Given a folder, and a different signed-in user
   const owner = await signedInUser();
   const parent = await existingFolder(owner.client);
@@ -338,30 +345,34 @@ it('refuses a folder inside another user’s folder', async () => {
 it.each([
   ['into another folder', true],
   ['out to the root', false],
-])('lets the owner move a folder %s', async (_, intoFolder) => {
+])('lets the server move a folder %s', async (_, intoFolder) => {
   // Given a user with a folder inside another, and a root folder
   const { client } = await signedInUser();
   const [, folder] = await nestedFolders(client, 2);
   const root = await existingFolder(client);
   const parentId = intoFolder ? root.id : null;
 
-  // When they move the folder
-  const { data, error } = await moveFolder(client, folder.id, parentId);
+  // When the folder is moved
+  const { data, error } = await serverMoveFolder(folder.id, parentId);
 
   // Then it is moved
   expect(error).toBeNull();
-  expect(data).toEqual({ ...folder, parent_id: parentId });
+  expect(data).toEqual({
+    ...folder,
+    parent_id: parentId,
+    position: MOVED_POSITION,
+  });
 });
 
-it('refuses moving a folder into another user’s folder', async () => {
-  // Given a user with a folder, and another user’s folder
+it('refuses a server move into another userâ€™s folder', async () => {
+  // Given a user with a folder, and another userâ€™s folder
   const { client } = await signedInUser();
   const folder = await existingFolder(client);
   const other = await signedInUser();
   const otherFolder = await existingFolder(other.client);
 
-  // When they move their folder into the other user’s
-  const { error } = await moveFolder(client, folder.id, otherFolder.id);
+  // When they move their folder into the other userâ€™s
+  const { error } = await serverMoveFolder(folder.id, otherFolder.id);
 
   // Then it is refused, and the folder is untouched
   expect(error?.code).toBe(FOREIGN_KEY_VIOLATION);
@@ -377,8 +388,8 @@ it.each([
   const { client } = await signedInUser();
   const chain = await nestedFolders(client, 3);
 
-  // When they move the outermost into one of its own descendants (or itself)
-  const { error } = await moveFolder(client, chain[0].id, chain[levelsDown].id);
+  // When the outermost is moved into one of its own descendants (or itself)
+  const { error } = await serverMoveFolder(chain[0].id, chain[levelsDown].id);
 
   // Then it is refused, and the folder is untouched
   expect(error?.code).toBe(CHECK_VIOLATION);
@@ -420,15 +431,15 @@ it.each([
   ['refuses', 9, CHECK_VIOLATION],
   ['accepts', 8, undefined],
 ])(
-  '%s a move that nests the moved folder’s subfolders too deep',
+  '%s a move that nests the moved folderâ€™s subfolders too deep',
   async (_, targetDepth, code) => {
     // Given a user with a folder that has a subfolder, and a separate chain of nested folders
     const { client } = await signedInUser();
     const [folder] = await nestedFolders(client, 2);
     const chain = await nestedFolders(client, targetDepth);
 
-    // When they move the folder into the innermost of the chain
-    const { error } = await moveFolder(client, folder.id, chain.at(-1).id);
+    // When the folder is moved into the innermost of the chain
+    const { error } = await serverMoveFolder(folder.id, chain.at(-1).id);
 
     // Then the subfolder ends up past 10 deep only if refused
     expect(error?.code).toBe(code);
@@ -441,17 +452,17 @@ it('holds against concurrent moves forming a cycle', async () => {
   const first = await existingFolder(client);
   const second = await existingFolder(client);
 
-  // When they move each into the other at once
+  // When each is moved into the other at once
   const results = await Promise.all([
-    moveFolder(client, first.id, second.id),
-    moveFolder(client, second.id, first.id),
+    serverMoveFolder(first.id, second.id),
+    serverMoveFolder(second.id, first.id),
   ]);
 
   // Then only one move happens
   expect(results.filter(({ error }) => error === null)).toHaveLength(1);
 });
 
-it('deletes a folder’s subfolders and their move trees with it', async () => {
+it('deletes a folderâ€™s subfolders and their move trees with it', async () => {
   // Given a user with a folder, a subfolder, and a move tree in the subfolder
   const { client } = await signedInUser();
   const [folder, subfolder] = await nestedFolders(client, 2);
