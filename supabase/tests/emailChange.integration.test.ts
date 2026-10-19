@@ -1,23 +1,12 @@
-import { env } from 'node:process';
-import { expect, it, vi } from 'vitest';
+import { expect, it } from 'vitest';
+import { latestMailTo } from './tests-shared/mailpit';
 import { admin, signedInUser } from './tests-shared/testUsers';
 
 const storedEmail = async (id: string) =>
   (await admin.auth.admin.getUserById(id)).data.user?.email;
 
-async function linkMailedTo(address: string) {
-  const search = new URL('/api/v1/search', env.MAILPIT_URL);
-  search.searchParams.set('query', `to:"${address}"`);
-  const { messages } = await vi.waitFor(async () => {
-    const found = await (await fetch(search)).json();
-    if (found.messages.length === 0) throw new Error(`No mail to ${address}`);
-    return found;
-  });
-  const message = await (
-    await fetch(new URL(`/api/v1/message/${messages[0].ID}`, env.MAILPIT_URL))
-  ).json();
-  return message.Text.match(/\( (\S+\/verify\?\S+) \)/)[1];
-}
+const linkMailedTo = async (address: string) =>
+  (await latestMailTo(address)).match(/\( (\S+\/verify\?\S+) \)/)![1];
 
 const follow = (link: string) => fetch(link, { redirect: 'manual' });
 
