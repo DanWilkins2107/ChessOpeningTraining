@@ -4,41 +4,35 @@ import { Button } from '../Button/Button';
 import { ConfirmPasswordInput } from '../../elements/ConfirmPasswordInput/ConfirmPasswordInput';
 import { ErrorMessage } from '../ErrorMessage/ErrorMessage';
 import { meetsEveryRule } from '../meetsEveryRule/meetsEveryRule';
-import { newPasswordErrorMessage } from '../../elements/newPasswordErrorMessage/newPasswordErrorMessage';
 import { PasswordChecklist } from '../PasswordChecklist/PasswordChecklist';
 import { TextInput } from '../TextInput/TextInput';
-import { supabase } from '../../supabase';
 import './NewPasswordForm.css';
 
 type NewPasswordFormProps = {
-  onSaved: () => unknown;
+  save: (password: string) => Promise<string | undefined>;
 };
 
-export function NewPasswordForm({ onSaved }: NewPasswordFormProps) {
+export function NewPasswordForm({ save }: NewPasswordFormProps) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string>();
   const [password, setPassword] = useState('');
   const [confirmation, setConfirmation] = useState('');
 
-  async function save(event: FormEvent<HTMLFormElement>) {
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     setPending(true);
-    const { error } = await supabase.auth.updateUser({ password });
+    const error = await save(password);
     setPending(false);
-    if (error) {
-      setError(newPasswordErrorMessage(error));
-      return;
-    }
+    setError(error);
+    if (error) return;
     form.reset();
     setPassword('');
     setConfirmation('');
-    setError(undefined);
-    await onSaved();
   }
 
   return (
-    <form className="new-password-form" onSubmit={save}>
+    <form className="new-password-form" onSubmit={submit}>
       <TextInput
         label="New password"
         name="password"
