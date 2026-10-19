@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Repertoire list, prototype 2 (folder opens, empty)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* Tokens copied verbatim from home prototype 9 (web/src/theme.css) */
+  :root {
+    --surface-page: #f7f9fc; --surface-raised: #ffffff; --border: #d9e0ea;
+    --ink: #4f3824; --ink-muted: #6b655f;
+    --accent: #2f7a57; --accent-hover: #256247; --accent-surface: #eef6f2;
+    --highlight: #ffbf1f;
+    --gap-sm: .5rem; --gap-md: 1rem; --gap-lg: 2rem;
+    --radius-sm: 6px; --radius-md: 10px; --radius-pill: 999px;
+    --text-sm: .75rem; --text-base: 1rem; --text-lg: 1.375rem; --text-xl: 2rem;
+    --shadow: 0 1px 3px rgb(31 41 55 / 8%), 0 4px 12px rgb(31 41 55 / 6%);
+    --content-width: 64rem;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--surface-page); color: var(--ink); font-family: 'Plus Jakarta Sans', sans-serif; line-height: 1.5; }
+  h1, h2, p { margin: 0; }
+  button { font: inherit; }
+
+  .header { display: flex; justify-content: space-between; align-items: center; padding: var(--gap-md); background: var(--surface-raised); border-bottom: 1px solid var(--border); gap: var(--gap-md); }
+  .wordmark { display: flex; align-items: center; gap: 8px; white-space: nowrap; color: var(--ink); font-weight: 700; text-decoration: none; }
+  .wordmark svg { width: 24px; height: 24px; color: var(--accent); }
+  .nav { display: flex; gap: var(--gap-md); }
+  .nav a { color: var(--ink); text-decoration: none; }
+  .nav a.on { font-weight: 700; }
+
+  main { max-width: var(--content-width); margin-inline: auto; padding: var(--gap-lg) var(--gap-md); display: flex; flex-direction: column; gap: var(--gap-md); }
+  .page-head { display: flex; justify-content: space-between; align-items: center; gap: var(--gap-md); }
+  .page-head h1 { font-size: var(--text-lg); }
+
+  .tree { background: var(--surface-raised); border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow); padding: 10px; }
+  .tree ul { list-style: none; margin: 0; padding: 0; }
+  .row { display: flex; align-items: center; gap: 12px; padding: 9px 12px; border-radius: var(--radius-md); transition: background .2s, transform .2s; animation: rise .5s cubic-bezier(.2,.8,.2,1) both; cursor: pointer; }
+  .row:hover { background: var(--accent-surface); transform: translateX(4px); }
+  .name { font-weight: 600; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .count { color: var(--ink-muted); font-size: .85rem; }
+  .side { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; flex: none; box-shadow: inset 0 0 0 2px var(--ink); }
+  .side svg { width: 16px; height: 16px; }
+  .side.w { background: var(--surface-raised); color: var(--ink); }
+  .side.b { background: var(--ink); color: var(--surface-raised); }
+  .divider { height: 1px; background: var(--border); margin: 8px 12px; }
+  @keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+  .go { font-weight: 700; padding: 9px 18px; border: 0; border-radius: var(--radius-sm); background: var(--highlight); color: var(--ink); cursor: pointer; transition: transform .15s; display: inline-flex; align-items: center; gap: 8px; }
+  .go:hover { transform: translateY(-1px); }
+  .go svg { width: 16px; height: 16px; }
+  .ghost { font-weight: 600; padding: 8px 16px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface-raised); color: var(--ink); cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+  .ghost svg { width: 16px; height: 16px; color: var(--accent); }
+
+  @media (max-width: 760px) {
+    main { padding: var(--gap-md); }
+    .row { padding: 8px; gap: 10px; }
+    .wordmark span { display: none; }
+    .wordmark svg { width: 28px; height: 28px; }
+  }
+
+  /* V2: the folder glyph itself is the expand affordance (closed / open), icon button in the card's toolbar */
+  .tree { padding: 0; overflow: hidden; }
+  .toolbar { display: flex; align-items: center; justify-content: space-between; gap: var(--gap-sm); padding: 10px 12px 10px 22px; border-bottom: 1px solid var(--border); }
+  .toolbar .meta { color: var(--ink-muted); font-size: .9rem; }
+  .icon-btn { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface-raised); color: var(--accent); cursor: pointer; position: relative; }
+  .icon-btn svg { width: 20px; height: 20px; }
+  .icon-btn:hover { border-color: var(--accent); background: var(--accent-surface); }
+  .tip { position: absolute; right: calc(100% + 10px); top: 50%; transform: translateY(-50%); white-space: nowrap; background: var(--ink); color: var(--surface-raised); font-size: .8rem; font-weight: 600; padding: 4px 10px; border-radius: var(--radius-sm); }
+  .tip::before { content: ''; position: absolute; right: -4px; top: calc(50% - 4px); width: 8px; height: 8px; background: inherit; transform: rotate(45deg); }
+  .list { padding: 10px; }
+  .tree ul ul { margin: 2px 0 4px 21px; padding-left: 16px; border-left: 2px solid var(--accent-surface); }
+  .fold { width: 30px; height: 30px; display: grid; place-items: center; flex: none; color: var(--accent); }
+  .fold svg { width: 26px; height: 26px; }
+  .fold .o { display: none; }
+  .open > .row .fold .o { display: block; }
+  .open > .row .fold .c { display: none; }
+  .badge { font-size: .8rem; font-weight: 700; color: var(--accent); background: var(--accent-surface); border-radius: var(--radius-pill); padding: 2px 10px; }
+  li:not(.open) > .row .badge { color: var(--ink-muted); background: var(--surface-page); }
+  .side { margin-left: 1px; }
+  .empty { padding: 28px 22px 32px; display: grid; gap: 12px; }
+  .empty h2 { font-size: 1.1rem; }
+  .empty > p { color: var(--ink-muted); }
+  .slot { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: 2px dashed var(--border); border-radius: var(--radius-md); cursor: pointer; transition: border-color .2s, background .2s; }
+  .slot:hover { border-color: var(--accent); background: var(--accent-surface); }
+  .slot .fold { color: var(--accent); }
+  .slot b { display: block; }
+  .slot small { color: var(--ink-muted); font-size: .85rem; }
+  .slot .side { opacity: .9; }
+  .slot.primary { border-color: var(--accent); background: var(--accent-surface); }
+  @media (max-width: 760px) {
+    .toolbar { padding-left: 14px; }
+    .tree ul ul { margin-left: 14px; padding-left: 10px; }
+  }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <symbol id="pawn" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3a3.2 3.2 0 0 0-2 5.7c-1 .6-1.6 1.6-1.6 2.8h7.2c0-1.2-.6-2.2-1.6-2.8A3.2 3.2 0 0 0 12 3Zm-2.6 9.6c-.2 2.4-1.2 4.2-2.6 5.4h10.4c-1.4-1.2-2.4-3-2.6-5.4ZM6 19h12v2H6z"/></symbol>
+    <symbol id="folder" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A2.5 2.5 0 0 1 5.5 4h4l2 2.2h7A2.5 2.5 0 0 1 21 8.7v8.8a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5Z"/></symbol>
+    <symbol id="folder-open" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6.5A2.5 2.5 0 0 1 5.5 4h4l2 2.2h7A2.5 2.5 0 0 1 21 8.7V10H7.6a2.5 2.5 0 0 0-2.4 1.8L3 19.2V6.5Zm4.6 5h13.6a1.3 1.3 0 0 1 1.2 1.7l-1.8 5.6a2.5 2.5 0 0 1-2.4 1.7H4.4l2-7.2a1.3 1.3 0 0 1 1.2-1.8Z"/></symbol>
+    <symbol id="folder-line" viewBox="0 0 24 24"><path style="fill: var(--fill, none)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M3.5 6.8A2 2 0 0 1 5.5 4.8h3.8l2 2.2h7.2a2 2 0 0 1 2 2v8.2a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2Z"/></symbol>
+    <symbol id="folder-plus" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 6.8A2 2 0 0 1 5.5 4.8h3.8l2 2.2h7.2a2 2 0 0 1 2 2v8.2a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2Z"/><path d="M12 10.5v5M9.5 13h5"/></g></symbol>
+    <symbol id="chev" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" d="m9 5 7 7-7 7"/></symbol>
+    <symbol id="plus" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="knight" viewBox="0 0 45 45"><path fill="currentColor" d="M22 10c10.5 1 16.5 8 16 29H15c0-9 10-6.5 8-21M24 18c.38 2.91-5.55 7.37-8 9-3 2-2.82 4.34-5 4-1.04-.94 1.41-3.04 0-3-1 0 .19 1.23-1 2-1 0-4 1-4-4 0-2 6-12 6-12s1.89-1.9 2-3.5c-.73-1-.5-2-.5-3 1-1 3 2.5 3 2.5h2s.78-1.99 2.5-3c1 0 1 3 1 3"/></symbol>
+    <symbol id="rook" viewBox="0 0 45 45"><path fill="currentColor" d="M9 39h27v-3H9v3Zm3-3v-4h21v4H12Zm-1-22V9h4v2h5V9h5v2h5V9h4v5H11Zm3 3 1.5-3h14l1.5 3H14Zm0 0v12.5h17V17H14Zm-2.5 15L14 29.5h17l2.5 2.5h-22Z"/></symbol>
+  </defs>
+</svg>
+
+<header class="header">
+  <a class="wordmark" href="#"><svg><use href="#knight"/></svg><span>Chess Opening Training</span></a>
+  <nav class="nav"><a class="on" href="#">Repertoire</a><a href="#">Account</a></nav>
+</header>
+<main>
+  <div class="page-head"><h1>Repertoire</h1></div>
+  <div class="tree">
+    <div class="toolbar"><span class="meta">Empty</span><button class="icon-btn" aria-label="Create folder"><svg><use href="#folder-plus"/></svg></button></div>
+    <div class="empty">
+      <h2>Start your repertoire</h2>
+      <p>Your folders and move trees will show up here.</p>
+      <div class="slot primary"><span class="fold"><svg><use href="#folder-plus"/></svg></span><div><b>Create your first folder</b><small>e.g. "White repertoire" or "Black vs 1.e4"</small></div></div>
+      <div class="slot"><span class="side w"><svg><use href="#pawn"/></svg></span><div><b>Or start a move tree</b><small>Add lines straight away and sort them later</small></div></div>
+    </div>
+  </div>
+</main>
+</body>
+</html>
