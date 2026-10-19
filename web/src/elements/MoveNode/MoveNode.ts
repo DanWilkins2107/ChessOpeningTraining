@@ -2,4 +2,6 @@
 export type MoveNode = {
   san: string;
   children: MoveNode[];
+  // Missing counts as 0.
+  confidence?: number;
 };

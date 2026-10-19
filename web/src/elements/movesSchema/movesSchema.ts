@@ -3,14 +3,15 @@ import { z } from '../../z';
 import { mapMovesToLineArray } from '../mapMovesToLineArray/mapMovesToLineArray';
 import type { MoveNode } from '../MoveNode/MoveNode';
 
-// move_trees.moves is checked against this shape by validate_move_tree_moves (supabase/migrations/0003_move_trees.sql).
-// Once 0003 has run in production, changing the shape needs a new migration that replaces that check, not an edit to 0003.
+// move_trees.moves is checked against this shape by validate_move_tree_moves (supabase/migrations/0010_move_confidence.sql).
+// Changing the shape needs a new migration that replaces that check, not an edit to an applied one.
 // movesSchema mirrors that check exactly, so moves the database accepted always load.
 const MAX_PLIES_PER_LINE = 600;
 const MAX_LINES = 1000;
 
 const moveNodeSchema: z.ZodType<MoveNode> = z.strictObject({
   san: z.string(),
+  confidence: z.int().min(0).max(5).optional(),
   get children() {
     return z.array(moveNodeSchema);
   },
