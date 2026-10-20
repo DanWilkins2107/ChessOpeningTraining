@@ -110,8 +110,12 @@ it('shows a move tree page to a signed-in user', async () => {
 it('sends a signed-out visitor from a move tree page to sign in', async () => {
   // Given a signed-out visitor
 
-  // When they open a move tree page
-  const memoryRouter = renderAt('/tree/ab12');
+  // When they open a move tree page. Its board suspends for good, so the
+  // redirect only flushes once act is awaited.
+  let memoryRouter!: ReturnType<typeof renderAt>;
+  await act(async () => {
+    memoryRouter = renderAt('/tree/ab12');
+  });
   await authSettled();
 
   // Then they are at sign in, carrying the move tree path

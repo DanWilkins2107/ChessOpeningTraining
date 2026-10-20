@@ -21,7 +21,9 @@ exports[`MoveTreeLayout > matches snapshot 1`] = `
     </div>
     <div
       class="move-tree-layout-panel"
-    />
+    >
+      Panel
+    </div>
   </section>
 </div>
 `;

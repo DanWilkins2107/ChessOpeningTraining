@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
-import { useUser } from '../../../../shared/useUser/useUser';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import { useAuthenticatedUser } from '../../../../shared/useAuthenticatedUser/useAuthenticatedUser';
 import { supabase } from '../../../../supabase';
 import { MOVE_TREE_QUERY_KEY } from './useMoveTree.constants';
 
@@ -14,10 +14,9 @@ async function fetchMoveTree(moveTreeId: string) {
 }
 
 export function useMoveTree(moveTreeId: string) {
-  const userId = useUser()?.id;
-  return useQuery({
+  const userId = useAuthenticatedUser().id;
+  return useSuspenseQuery({
     queryKey: [MOVE_TREE_QUERY_KEY, userId, moveTreeId],
     queryFn: () => fetchMoveTree(moveTreeId),
-    enabled: userId !== undefined,
-  });
+  }).data;
 }

@@ -4,7 +4,7 @@ import { MoveTreeLayout } from './MoveTreeLayout';
 
 describe('MoveTreeLayout', () => {
   it('matches snapshot', () => {
-    const { container } = render(<MoveTreeLayout />);
+    const { container } = render(<MoveTreeLayout>Panel</MoveTreeLayout>);
     expect(container).toMatchSnapshot();
   });
 });

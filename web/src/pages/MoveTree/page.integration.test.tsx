@@ -37,6 +37,14 @@ const moveTreeLayout = () =>
 const placeholderBoard = () =>
   screen.queryByRole('status', { name: 'Loading board' });
 
+async function expectAlertBesideBoard(message: string) {
+  await vi.waitFor(() =>
+    expect(screen.getByRole('alert')).toHaveTextContent(message),
+  );
+  expect(moveTreeLayout()).toBeInTheDocument();
+  expect(placeholderBoard()).toBeInTheDocument();
+}
+
 // The board suspends for good, so effects only flush once act is awaited.
 async function renderPageAt(path: string) {
   let memoryRouter!: ReturnType<typeof renderAt>;
@@ -143,12 +151,9 @@ it.each([
   // When they open it
   await renderPageAt(`/tree/${moveTreeId()}`);
 
-  // Then it shows not found in place of the layout, after a single request
-  // for the name and side
-  await vi.waitFor(() =>
-    expect(screen.getByRole('alert')).toHaveTextContent('Move tree not found'),
-  );
-  expect(moveTreeLayout()).not.toBeInTheDocument();
+  // Then it shows not found beside the placeholder board, after a single
+  // request for the name and side
+  await expectAlertBesideBoard('Move tree not found');
   expect(
     moveTreeRequests
       .requests()
@@ -164,13 +169,8 @@ it('shows a load error when the request fails', async () => {
   // When their move tree page renders
   await renderPageAt(`/tree/${mainLineId}`);
 
-  // Then it shows the load error in place of the layout
-  await vi.waitFor(() =>
-    expect(screen.getByRole('alert')).toHaveTextContent(
-      "Couldn't load this move tree, try again",
-    ),
-  );
-  expect(moveTreeLayout()).not.toBeInTheDocument();
+  // Then it shows the load error beside the placeholder board
+  await expectAlertBesideBoard("Couldn't load this move tree, try again");
 });
 
 it("shows not found, without asking, for an id that isn't a move tree id", async () => {
@@ -181,10 +181,9 @@ it("shows not found, without asking, for an id that isn't a move tree id", async
   // When they open a malformed move tree id
   await renderPageAt('/tree/ab12');
 
-  // Then it shows not found, without requesting the move tree
-  await vi.waitFor(() =>
-    expect(screen.getByRole('alert')).toHaveTextContent('Move tree not found'),
-  );
+  // Then it shows not found beside the placeholder board, without requesting
+  // the move tree
+  await expectAlertBesideBoard('Move tree not found');
   expect(moveTreeRequests.requests()).toEqual([]);
 });
 
