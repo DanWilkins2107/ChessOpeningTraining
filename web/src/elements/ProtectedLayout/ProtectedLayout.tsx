@@ -1,5 +1,5 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { SIGN_IN_ROUTE_PATH } from '../../pages/SignIn/router.constants';
+import { SIGN_IN_ROUTE_PATH } from '../../pages/(auth)/sign-in/router.constants';
 import { useUser } from '../../shared/useUser/useUser';
 
 export function ProtectedLayout() {
