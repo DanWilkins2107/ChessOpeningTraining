@@ -61,6 +61,7 @@ it('explains a wrong code and lets them try again', async () => {
   await mistyping.signIn();
   answerRequests(once(askForReauthentication), rejectCode);
   await reachCodeScreen(`Aa1!${crypto.randomUUID()}`);
+  expect(confirmButton()).toBeEnabled();
 
   // When they confirm with a wrong code
   const submitted = confirmWithCode('000000');
