@@ -11,6 +11,8 @@
   --accent: #2f7a57;
   --accent-hover: #256247;
   --accent-surface: #eef6f2;
+  /* Behind a piece shown as an icon, so both sides' pawns read on it. */
+  --surface-muted: #eef1f5;
   --highlight: #ffbf1f;
   --danger: #b42318;
   --danger-hover: #912018;

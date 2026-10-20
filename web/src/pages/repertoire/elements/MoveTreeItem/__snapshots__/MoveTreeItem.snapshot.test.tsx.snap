@@ -6,11 +6,15 @@ exports[`MoveTreeItem > matches snapshot 1`] = `
     <li
       class="move-tree-item"
     >
-      <img
-        alt="black pawn"
-        class="move-tree-item-icon"
-        src="/src/shared/pieces/bP.svg"
-      />
+      <span
+        class="pawn-tile"
+      >
+        <img
+          alt="black pawn"
+          class="pawn-tile-icon"
+          src="/src/shared/pieces/bP.svg"
+        />
+      </span>
       <span
         class="move-tree-item-name"
       >

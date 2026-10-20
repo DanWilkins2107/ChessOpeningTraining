@@ -5,46 +5,11 @@ exports[`Repertoire > matches snapshot 1`] = `
   <section
     class="repertoire"
   >
-    <h1>
+    <h1
+      class="repertoire-title"
+    >
       Repertoire
     </h1>
-    <form
-      class="create-folder-form"
-    >
-      <div
-        class="create-folder-fields"
-      >
-        <div
-          class="text-input"
-        >
-          <label
-            for="_r_0_"
-          >
-            Folder name
-          </label>
-          <div
-            class="text-input-control"
-          >
-            <input
-              autocomplete="off"
-              class="text-input-field"
-              id="_r_0_"
-              maxlength="100"
-              name="name"
-              required=""
-              type="text"
-            />
-          </div>
-        </div>
-        <button
-          class="button"
-          disabled=""
-          type="submit"
-        >
-          Create folder
-        </button>
-      </div>
-    </form>
     <div
       aria-label="Loading repertoire"
       class="spinner"

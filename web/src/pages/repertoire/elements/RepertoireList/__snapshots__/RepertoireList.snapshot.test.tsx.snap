@@ -2,21 +2,40 @@
 
 exports[`RepertoireList > matches snapshot 1`] = `
 <div>
+  <button
+    aria-expanded="false"
+    class="repertoire-list-new-folder"
+    type="button"
+  >
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+    >
+      <path
+        d="M12 5v14M5 12h14"
+      />
+    </svg>
+    New folder
+  </button>
   <ul
     class="repertoire-list"
   >
     <li
       class="folder-item"
     >
-      <svg
-        aria-hidden="true"
-        class="folder-item-icon"
-        viewBox="0 0 24 24"
+      <span
+        class="folder-tile"
       >
-        <path
-          d="M3 6a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"
-        />
-      </svg>
+        <svg
+          aria-hidden="true"
+          class="folder-tile-icon"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M3 6.5A2.5 2.5 0 0 1 5.5 4h4l2 2.2h7A2.5 2.5 0 0 1 21 8.7v8.8a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5Z"
+          />
+        </svg>
+      </span>
       <span
         class="folder-item-name"
       >
@@ -26,11 +45,15 @@ exports[`RepertoireList > matches snapshot 1`] = `
     <li
       class="move-tree-item"
     >
-      <img
-        alt="white pawn"
-        class="move-tree-item-icon"
-        src="/src/shared/pieces/wP.svg"
-      />
+      <span
+        class="pawn-tile"
+      >
+        <img
+          alt="white pawn"
+          class="pawn-tile-icon"
+          src="/src/shared/pieces/wP.svg"
+        />
+      </span>
       <span
         class="move-tree-item-name"
       >
@@ -40,11 +63,15 @@ exports[`RepertoireList > matches snapshot 1`] = `
     <li
       class="move-tree-item"
     >
-      <img
-        alt="black pawn"
-        class="move-tree-item-icon"
-        src="/src/shared/pieces/bP.svg"
-      />
+      <span
+        class="pawn-tile"
+      >
+        <img
+          alt="black pawn"
+          class="pawn-tile-icon"
+          src="/src/shared/pieces/bP.svg"
+        />
+      </span>
       <span
         class="move-tree-item-name"
       >

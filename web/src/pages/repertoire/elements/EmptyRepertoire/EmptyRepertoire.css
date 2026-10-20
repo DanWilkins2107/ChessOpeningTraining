@@ -1,0 +1,35 @@
+.empty-repertoire {
+  display: grid;
+  justify-items: center;
+  gap: var(--gap-md);
+  padding: 3rem var(--gap-md);
+  text-align: center;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
+}
+
+.empty-repertoire-tiles {
+  display: flex;
+  gap: 0.625rem;
+}
+
+.empty-repertoire-tiles > span {
+  width: 3.25rem;
+  height: 3.25rem;
+}
+
+.empty-repertoire-tiles svg {
+  width: 1.625rem;
+  height: 1.625rem;
+}
+
+.empty-repertoire-tiles img {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.empty-repertoire-title {
+  font-size: var(--text-lg);
+}

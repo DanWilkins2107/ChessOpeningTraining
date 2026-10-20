@@ -1,0 +1,15 @@
+.folder-tile {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.125rem;
+  height: 2.125rem;
+  border-radius: var(--radius-md);
+  background: var(--accent-surface);
+}
+
+.folder-tile-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  fill: var(--accent);
+}

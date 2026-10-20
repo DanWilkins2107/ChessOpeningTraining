@@ -1,12 +1,43 @@
-.repertoire-list-empty {
-  color: var(--ink-muted);
+/* Sits beside the page's heading: page.css lays the heading out in row 1. */
+.repertoire-list-new-folder {
+  display: inline-flex;
+  grid-row: 1;
+  grid-column: 2;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--surface-raised);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.repertoire-list-new-folder:hover {
+  border-color: var(--accent);
+}
+
+.repertoire-list-new-folder svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.8;
+  stroke-linecap: round;
 }
 
 .repertoire-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
   margin: 0;
-  padding: var(--gap-sm);
+  padding: 0.625rem;
   list-style: none;
   background: var(--surface-raised);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
 }

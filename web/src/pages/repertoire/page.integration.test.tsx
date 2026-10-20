@@ -51,23 +51,23 @@ const isRepertoireRequest = (input: RequestInfo | URL) =>
 const listedRows = async () =>
   (await screen.findAllByRole('listitem')).map((row) => row.textContent);
 
-it('lists top-level folders, then top-level move trees with a pawn for their side, newest first', async () => {
+it('lists top-level folders, then top-level move trees with a pawn for their side, in the order they were added', async () => {
   // Given a user with two top-level folders and move trees, and one of each inside a folder
   await withRepertoire.signIn();
 
   // When the page renders
   await renderSettledAt('/repertoire');
 
-  // Then folders come first, then move trees, each newest first
+  // Then folders come first, then move trees, each in the order they were added
   expect(await listedRows()).toEqual([
-    'London',
     'Caro-Kann',
-    'Sicilian',
+    'London',
     'Scotch',
+    'Sicilian',
   ]);
   expect(
     (await screen.findAllByRole('img')).map((pawn) => pawn.getAttribute('alt')),
-  ).toEqual(['black pawn', 'white pawn']);
+  ).toEqual(['white pawn', 'black pawn']);
   expect(screen.queryByRole('status')).not.toBeInTheDocument();
 });
 
@@ -79,10 +79,13 @@ it('says so when the user has no folders or move trees', async () => {
   // When the page renders
   await renderSettledAt('/repertoire');
 
-  // Then it shows the empty state
+  // Then it shows the empty state, without the list's New folder button
   expect(
-    await screen.findByText('No folders or move trees yet'),
+    await screen.findByRole('heading', { name: 'Nothing here yet' }),
   ).toBeInTheDocument();
+  expect(
+    screen.queryByRole('button', { name: 'New folder' }),
+  ).not.toBeInTheDocument();
 });
 
 it('loads the repertoire again when the user tries again', async () => {
@@ -112,22 +115,63 @@ it('loads the repertoire again when the user tries again', async () => {
   expect(await listedRows()).toHaveLength(4);
 });
 
-it('creates a folder from the page', async () => {
-  // Given a signed-in user on the page
+async function submitFolderNamed(name: string) {
+  fireEvent.change(await screen.findByLabelText('Folder name'), {
+    target: { value: name },
+  });
+  fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+}
+
+it('creates a first folder from the empty state and lists it', async () => {
+  // Given a signed-in user with nothing yet
   const creating = await createTestUser();
   await creating.signIn();
   await renderSettledAt('/repertoire');
 
-  // When they create a folder
-  fireEvent.change(await screen.findByLabelText('Folder name'), {
-    target: { value: 'Najdorf' },
-  });
-  fireEvent.click(screen.getByRole('button', { name: 'Create folder' }));
+  // When they create a folder from the empty state
+  fireEvent.click(await screen.findByRole('button', { name: 'Create folder' }));
+  expect(await screen.findByLabelText('Folder name')).toHaveFocus();
+  await submitFolderNamed('Najdorf');
 
-  // Then the field clears and the folder is saved
+  // Then the naming row closes, the folder is listed and it is saved
   await waitFor(() =>
-    expect(screen.getByLabelText('Folder name')).toHaveValue(''),
+    expect(screen.queryByLabelText('Folder name')).not.toBeInTheDocument(),
   );
+  expect(await listedRows()).toEqual(['Najdorf']);
   const { data } = await supabase.from('folders').select('name');
   expect(data).toEqual([{ name: 'Najdorf' }]);
+});
+
+it('creates a folder with New folder, after the existing ones', async () => {
+  // Given a signed-in user who already has a folder
+  const creating = await createTestUser();
+  const client = await creating.signedInClient();
+  const { error } = await client.from('folders').insert({ name: 'Slav' });
+  if (error) throw error;
+  await creating.signIn();
+  await renderSettledAt('/repertoire');
+
+  // When they open New folder and name one
+  fireEvent.click(await screen.findByRole('button', { name: 'New folder' }));
+  await submitFolderNamed('Dutch');
+
+  // Then the new folder is listed after the existing one
+  expect(await screen.findByText('Dutch')).toBeInTheDocument();
+  expect(await listedRows()).toEqual(['Slav', 'Dutch']);
+});
+
+it('closes the naming row when New folder is pressed again', async () => {
+  // Given a user with a folder and the naming row open
+  await withRepertoire.signIn();
+  await renderSettledAt('/repertoire');
+  const newFolder = await screen.findByRole('button', { name: 'New folder' });
+  fireEvent.click(newFolder);
+  expect(newFolder).toHaveAttribute('aria-expanded', 'true');
+
+  // When they press New folder again
+  fireEvent.click(newFolder);
+
+  // Then the naming row is gone
+  expect(screen.queryByLabelText('Folder name')).not.toBeInTheDocument();
+  expect(newFolder).toHaveAttribute('aria-expanded', 'false');
 });
