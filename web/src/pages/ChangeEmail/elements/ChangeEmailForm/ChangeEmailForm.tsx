@@ -7,6 +7,7 @@ import { TextInput } from '../../../../shared/TextInput/TextInput';
 import { supabase } from '../../../../supabase';
 import { changeEmailErrorMessage } from '../changeEmailErrorMessage/changeEmailErrorMessage';
 import { CurrentEmail } from '../CurrentEmail/CurrentEmail';
+import { EmailLinkMessage } from '../EmailLinkMessage/EmailLinkMessage';
 import './ChangeEmailForm.css';
 
 export function ChangeEmailForm() {
@@ -36,6 +37,7 @@ export function ChangeEmailForm() {
       onChange={(event) => setFieldsValid(event.currentTarget.checkValidity())}
     >
       {user && <CurrentEmail user={user} />}
+      <EmailLinkMessage />
       <TextInput
         label="New email"
         name="email"
