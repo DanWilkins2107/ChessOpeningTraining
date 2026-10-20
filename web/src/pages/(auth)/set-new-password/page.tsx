@@ -1,9 +1,9 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { FORGOT_PASSWORD_ROUTE_PATH } from '../ForgotPassword/router.constants';
-import { newPasswordErrorMessage } from '../../shared/newPasswordErrorMessage/newPasswordErrorMessage';
-import { NewPasswordForm } from '../../shared/NewPasswordForm/NewPasswordForm';
-import { useUser } from '../../shared/useUser/useUser';
-import { supabase } from '../../supabase';
+import { FORGOT_PASSWORD_ROUTE_PATH } from '../forgot-password/router.constants';
+import { newPasswordErrorMessage } from '../../../shared/newPasswordErrorMessage/newPasswordErrorMessage';
+import { NewPasswordForm } from '../../../shared/NewPasswordForm/NewPasswordForm';
+import { useUser } from '../../../shared/useUser/useUser';
+import { supabase } from '../../../supabase';
 import './page.css';
 
 export function SetNewPassword() {
