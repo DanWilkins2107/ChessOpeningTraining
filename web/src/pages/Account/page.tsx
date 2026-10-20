@@ -5,7 +5,7 @@ import {
   SIGNED_OUT_PENDING,
 } from '../../shared/signOut/signOut.constants';
 import { supabase } from '../../supabase';
-import { AnimatePiecesSetting } from './elements/AnimatePiecesSetting/AnimatePiecesSetting';
+import { ProfileSettings } from './elements/ProfileSettings/ProfileSettings';
 import './page.css';
 
 export function Account() {
@@ -28,7 +28,7 @@ export function Account() {
       <Link to="/account/email" className="account-action">
         Change email
       </Link>
-      <AnimatePiecesSetting />
+      <ProfileSettings />
       <Link to="/account/password" className="account-action">
         Change password
       </Link>

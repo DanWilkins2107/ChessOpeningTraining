@@ -1,0 +1,16 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SettingToggle > matches snapshot 1`] = `
+<div>
+  <label
+    class="setting-row"
+  >
+    Show move hints
+    <input
+      class="setting-switch"
+      role="switch"
+      type="checkbox"
+    />
+  </label>
+</div>
+`;

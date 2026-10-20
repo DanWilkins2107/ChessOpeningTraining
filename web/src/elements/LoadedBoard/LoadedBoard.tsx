@@ -1,6 +1,7 @@
 // fallow-ignore-file unused-file -- ef93ff81 2026-11-16 landed ahead of the folder page, its first consumer.
 import './LoadedBoard.css';
 import type { Move, PartialMove } from 'chess.ts';
+import { use } from 'react';
 import { BoardPieces } from '../BoardPieces/BoardPieces';
 import { BoardSquares } from '../BoardSquares/BoardSquares';
 import { PromotionPicker } from '../PromotionPicker/PromotionPicker';
@@ -22,7 +23,7 @@ const axesFor = (orientation: 'white' | 'black') =>
     : { files: [...FILES].reverse(), ranks: [...RANKS].reverse() };
 
 type LoadedBoardProps = {
-  position: string;
+  position: Promise<string>;
   orientation: 'white' | 'black';
   animatePieces: boolean;
   showMoveHints: boolean;
@@ -36,10 +37,11 @@ export function LoadedBoard({
   showMoveHints,
   onMove,
 }: LoadedBoardProps) {
+  const fen = use(position);
   const { files, ranks } = axesFor(orientation);
   const { selected, choose, pickUp, promoting, promote, cancelPromotion } =
-    useMoveSelection(position, onMove);
-  const pieces = useTrackedPieces(promoting?.shown ?? position);
+    useMoveSelection(fen, onMove);
+  const pieces = useTrackedPieces(promoting?.shown ?? fen);
   // A drop is a click on the square it lands on.
   const { dragged, pointerProps } = usePieceDrag({
     files,
