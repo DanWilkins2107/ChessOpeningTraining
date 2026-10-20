@@ -340,6 +340,36 @@ it.each([
     CHECK_VIOLATION,
   ],
   [
+    'a confidence below 0',
+    { moves: [{ ...move('e4'), confidence: -1 }] },
+    CHECK_VIOLATION,
+  ],
+  [
+    'a confidence above 5',
+    { moves: [{ ...move('e4'), confidence: 6 }] },
+    CHECK_VIOLATION,
+  ],
+  [
+    'a fractional confidence',
+    { moves: [{ ...move('e4'), confidence: 2.5 }] },
+    CHECK_VIOLATION,
+  ],
+  [
+    'a null confidence',
+    { moves: [{ ...move('e4'), confidence: null }] },
+    CHECK_VIOLATION,
+  ],
+  [
+    'a confidence that is not a number',
+    { moves: [{ ...move('e4'), confidence: '3' }] },
+    CHECK_VIOLATION,
+  ],
+  [
+    'an invalid confidence deep in a sideline',
+    { moves: [move('e4', move('c6', { ...move('d4'), confidence: 6 }))] },
+    CHECK_VIOLATION,
+  ],
+  [
     'an invalid move deep in a sideline',
     // as-reason: the move deliberately lacks the children MoveNode requires,
     // to prove a malformed move deep in the tree is refused.
@@ -376,6 +406,14 @@ it.each([
     { moves: [...leaves(600), move('d4', ...leaves(400))] },
   ],
   ['moves of exactly 512 KB', { moves: movesOfTextLength(MAX_MOVES_BYTES) }],
+  [
+    'confidences from 0 to 5',
+    {
+      moves: [
+        { ...move('e4', { ...move('c6'), confidence: 5 }), confidence: 0 },
+      ],
+    },
+  ],
 ])('accepts a move tree with %s', async (_, change) => {
   // Given a user with a folder
   const { client, folderId } = await folderOwner();
