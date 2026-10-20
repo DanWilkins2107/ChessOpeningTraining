@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { Button } from '../../../../shared/Button/Button';
-import { ErrorMessage } from '../../../../shared/ErrorMessage/ErrorMessage';
-import { meetsEveryRule } from '../../../../shared/meetsEveryRule/meetsEveryRule';
-import { PasswordChecklist } from '../../../../shared/PasswordChecklist/PasswordChecklist';
-import { TextInput } from '../../../../shared/TextInput/TextInput';
-import { supabase } from '../../../../supabase';
+import { Button } from '../../../../../shared/Button/Button';
+import { ErrorMessage } from '../../../../../shared/ErrorMessage/ErrorMessage';
+import { meetsEveryRule } from '../../../../../shared/meetsEveryRule/meetsEveryRule';
+import { PasswordChecklist } from '../../../../../shared/PasswordChecklist/PasswordChecklist';
+import { TextInput } from '../../../../../shared/TextInput/TextInput';
+import { supabase } from '../../../../../supabase';
 import { signUpErrorMessage } from '../signUpErrorMessage/signUpErrorMessage';
 import './SignUpForm.css';
 

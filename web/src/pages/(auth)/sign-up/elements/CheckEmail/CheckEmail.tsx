@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { Button } from '../../../../shared/Button/Button';
-import { ErrorMessage } from '../../../../shared/ErrorMessage/ErrorMessage';
-import { SuccessMessage } from '../../../../shared/SuccessMessage/SuccessMessage';
-import { supabase } from '../../../../supabase';
+import { Button } from '../../../../../shared/Button/Button';
+import { ErrorMessage } from '../../../../../shared/ErrorMessage/ErrorMessage';
+import { SuccessMessage } from '../../../../../shared/SuccessMessage/SuccessMessage';
+import { supabase } from '../../../../../supabase';
 import './CheckEmail.css';
 
 type CheckEmailProps = {
