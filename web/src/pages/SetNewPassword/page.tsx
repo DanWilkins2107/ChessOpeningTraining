@@ -1,4 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
+import { FORGOT_PASSWORD_ROUTE_PATH } from '../ForgotPassword/router.constants';
 import { newPasswordErrorMessage } from '../../shared/newPasswordErrorMessage/newPasswordErrorMessage';
 import { NewPasswordForm } from '../../shared/NewPasswordForm/NewPasswordForm';
 import { useUser } from '../../shared/useUser/useUser';
@@ -22,7 +23,10 @@ export function SetNewPassword() {
       {user === null && (
         <>
           <p>That reset link is invalid or has expired</p>
-          <Link to="/forgot-password" className="set-new-password-link">
+          <Link
+            to={FORGOT_PASSWORD_ROUTE_PATH}
+            className="set-new-password-link"
+          >
             Request a new link
           </Link>
         </>

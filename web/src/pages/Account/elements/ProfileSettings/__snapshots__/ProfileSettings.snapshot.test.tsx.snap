@@ -1,0 +1,31 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ProfileSettings > matches snapshot 1`] = `
+<div>
+  <div
+    class="profile-settings"
+  >
+    <label
+      class="setting-row"
+    >
+      Animate pieces
+      <input
+        checked=""
+        class="setting-switch"
+        role="switch"
+        type="checkbox"
+      />
+    </label>
+    <label
+      class="setting-row"
+    >
+      Show move hints
+      <input
+        class="setting-switch"
+        role="switch"
+        type="checkbox"
+      />
+    </label>
+  </div>
+</div>
+`;

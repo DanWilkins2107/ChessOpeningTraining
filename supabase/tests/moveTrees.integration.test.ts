@@ -3,6 +3,7 @@ import { env } from 'node:process';
 import { expect, it } from 'vitest';
 import type { MoveNode } from '../../web/src/elements/MoveNode/MoveNode';
 import { leaves, move } from '../../web/src/tests-shared/moveNode';
+import { existingFolderId } from './tests-shared/existingFolderId';
 import {
   admin,
   anonClient,
@@ -21,16 +22,6 @@ import { SERVER_FILLED_COLUMNS } from './tests-shared/serverFilledColumns';
 const MAX_MOVES_BYTES = 512 * 1024;
 
 const MOVES = [move('e4', move('c6', move('d4'), move('Nc3')))];
-
-async function existingFolderId(client: SupabaseClient): Promise<string> {
-  const { data, error } = await client
-    .from('folders')
-    .insert({ name: 'Caro-Kann' })
-    .select()
-    .single();
-  if (error) throw error;
-  return data.id;
-}
 
 async function folderOwner() {
   const { id, client } = await signedInUser();
@@ -124,6 +115,7 @@ it('creates a move tree with no moves in the owner’s folder', async () => {
     name: 'Main line',
     side: 'black',
     moves: [],
+    position: 0,
     created_at: expect.any(String),
   });
 });
@@ -179,6 +171,7 @@ it.each([
   ['created_at', async () => randomTimestamp()],
   ['folder_id', existingFolderId],
   ['owner_id', async () => (await signedInUser()).id],
+  ['position', async () => 5],
 ])('refuses changing a move tree’s %s', async (column, newValue) => {
   // Given a user with a move tree
   const { client, folderId } = await folderOwner();
@@ -347,6 +340,36 @@ it.each([
     CHECK_VIOLATION,
   ],
   [
+    'a confidence below 0',
+    { moves: [{ ...move('e4'), confidence: -1 }] },
+    CHECK_VIOLATION,
+  ],
+  [
+    'a confidence above 5',
+    { moves: [{ ...move('e4'), confidence: 6 }] },
+    CHECK_VIOLATION,
+  ],
+  [
+    'a fractional confidence',
+    { moves: [{ ...move('e4'), confidence: 2.5 }] },
+    CHECK_VIOLATION,
+  ],
+  [
+    'a null confidence',
+    { moves: [{ ...move('e4'), confidence: null }] },
+    CHECK_VIOLATION,
+  ],
+  [
+    'a confidence that is not a number',
+    { moves: [{ ...move('e4'), confidence: '3' }] },
+    CHECK_VIOLATION,
+  ],
+  [
+    'an invalid confidence deep in a sideline',
+    { moves: [move('e4', move('c6', { ...move('d4'), confidence: 6 }))] },
+    CHECK_VIOLATION,
+  ],
+  [
     'an invalid move deep in a sideline',
     // as-reason: the move deliberately lacks the children MoveNode requires,
     // to prove a malformed move deep in the tree is refused.
@@ -383,6 +406,14 @@ it.each([
     { moves: [...leaves(600), move('d4', ...leaves(400))] },
   ],
   ['moves of exactly 512 KB', { moves: movesOfTextLength(MAX_MOVES_BYTES) }],
+  [
+    'confidences from 0 to 5',
+    {
+      moves: [
+        { ...move('e4', { ...move('c6'), confidence: 5 }), confidence: 0 },
+      ],
+    },
+  ],
 ])('accepts a move tree with %s', async (_, change) => {
   // Given a user with a folder
   const { client, folderId } = await folderOwner();

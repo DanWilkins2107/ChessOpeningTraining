@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
+import { SIGN_IN_ROUTE_PATH } from '../SignIn/router.constants';
 import { useUser } from '../../shared/useUser/useUser';
 import { CheckEmail } from './elements/CheckEmail/CheckEmail';
 import { SignUpForm } from './elements/SignUpForm/SignUpForm';
@@ -17,7 +18,7 @@ export function SignUp() {
       <h1 className="sign-up-heading">Sign up</h1>
       <SignUpForm onSignedUp={setSignedUpEmail} />
       <p className="sign-up-switch">
-        Have an account? <Link to="/sign-in">Sign in</Link>
+        Have an account? <Link to={SIGN_IN_ROUTE_PATH}>Sign in</Link>
       </p>
     </section>
   );
