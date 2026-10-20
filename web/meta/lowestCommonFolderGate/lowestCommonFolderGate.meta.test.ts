@@ -19,12 +19,6 @@ const ROOT_EXCEPTIONS = [
 // until its expiry.
 const TEMPORARY_EXCLUDES: TemporaryExclude[] = [
   {
-    path: 'src/shared/LoadBoundary',
-    expiry: '2026-11-12',
-    reason:
-      'Account is its only consumer until the studies list (94afaf5e) and study header (692f17d4) move onto it.',
-  },
-  {
     path: 'src/elements/Board',
     expiry: '2026-11-17',
     reason:

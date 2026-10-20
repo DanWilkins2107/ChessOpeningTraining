@@ -4,7 +4,8 @@ import type { ComponentType, ReactNode } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 type LoadBoundaryProps = {
-  Loading: ComponentType;
+  // null when the content handles its own loading.
+  Loading: ComponentType | null;
   LoadError: ComponentType<{ retry: () => void }>;
   children: ReactNode;
 };
@@ -23,7 +24,7 @@ export function LoadBoundary({
         <LoadError retry={resetErrorBoundary} />
       )}
     >
-      <Suspense fallback={<Loading />}>{children}</Suspense>
+      <Suspense fallback={Loading && <Loading />}>{children}</Suspense>
     </ErrorBoundary>
   );
 }

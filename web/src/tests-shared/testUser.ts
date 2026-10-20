@@ -56,10 +56,12 @@ const signedInClientAs = (credentials: Credentials) =>
     return client;
   };
 
+type TestUserOptions = { emailConfirmed?: boolean; password?: string };
+
 export function registerTestUser({
   emailConfirmed = true,
   password,
-}: { emailConfirmed?: boolean; password?: string } = {}) {
+}: TestUserOptions = {}) {
   const credentials = newCredentials(password);
   const user = { id: '' };
 
@@ -79,17 +81,25 @@ export function registerTestUser({
   };
 }
 
-// A user for one test only, for tests that leave the account changed.
-export async function createTestUser() {
-  const credentials = newCredentials();
-  const id = await createUser(credentials, true);
+// A user for one test only, created in that test's given.
+export async function createTestUser({
+  emailConfirmed = true,
+  password,
+}: TestUserOptions = {}) {
+  const credentials = newCredentials(password);
+  const user = { id: await createUser(credentials, emailConfirmed) };
 
   onTestFinished(async () => {
     await signOut();
-    await removeUser(id);
+    await removeUser(user.id);
   });
 
-  return { credentials, signIn: signInAs(credentials) };
+  return {
+    user,
+    credentials,
+    signIn: signInAs(credentials),
+    signedInClient: signedInClientAs(credentials),
+  };
 }
 
 // An email for the app to sign up itself. Generating a link returns the

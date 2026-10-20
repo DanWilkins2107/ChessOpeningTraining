@@ -62,3 +62,25 @@ it('stays loading when the position fails', async () => {
   expect(chessBoard()).not.toBeInTheDocument();
   expect(screen.queryByRole('alert')).not.toBeInTheDocument();
 });
+
+it('keeps the position drawn when the board re-renders', async () => {
+  // Given a board that has drawn its position
+  const position = Promise.resolve(LONE_WHITE_KING);
+  const { rerender } = await act(async () => renderBoard(position));
+
+  // When it re-renders with a new orientation
+  act(() => {
+    rerender(
+      <Board
+        position={position}
+        orientation="black"
+        animatePieces={false}
+        showMoveHints={false}
+      />,
+    );
+  });
+
+  // Then it does not flash back to the loading board
+  expect(chessBoard()).toBeInTheDocument();
+  expect(loadingBoard()).not.toBeInTheDocument();
+});

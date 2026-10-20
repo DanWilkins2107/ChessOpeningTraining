@@ -1,20 +1,12 @@
-import { Suspense, useMemo } from 'react';
 import type { ComponentProps } from 'react';
-import { AwaitedBoard } from '../AwaitedBoard/AwaitedBoard';
+import { LoadBoundary } from '../../shared/LoadBoundary/LoadBoundary';
 import { BoardLoading } from '../BoardLoading/BoardLoading';
+import { LoadedBoard } from '../LoadedBoard/LoadedBoard';
 
-const NEVER = new Promise<never>(() => {});
-
-export function Board({
-  position,
-  ...props
-}: ComponentProps<typeof AwaitedBoard>) {
-  // A failed position keeps the board loading; the caller shows the error.
-  const settled = useMemo(() => position.catch(() => NEVER), [position]);
-
+export function Board(props: ComponentProps<typeof LoadedBoard>) {
   return (
-    <Suspense fallback={<BoardLoading />}>
-      <AwaitedBoard position={settled} {...props} />
-    </Suspense>
+    <LoadBoundary Loading={BoardLoading} LoadError={BoardLoading}>
+      <LoadedBoard {...props} />
+    </LoadBoundary>
   );
 }
