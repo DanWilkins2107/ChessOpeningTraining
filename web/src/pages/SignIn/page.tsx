@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link, Navigate, useSearchParams } from 'react-router-dom';
+import { FORGOT_PASSWORD_ROUTE_PATH } from '../ForgotPassword/router.constants';
+import { SIGN_UP_ROUTE_PATH } from '../SignUp/router.constants';
 import { Button } from '../../shared/Button/Button';
 import { ErrorMessage } from '../../shared/ErrorMessage/ErrorMessage';
 import { useUser } from '../../shared/useUser/useUser';
@@ -79,11 +81,11 @@ export function SignIn() {
         {error && <ErrorMessage>{error}</ErrorMessage>}
         <Button disabled={cannotSubmit(pending, fieldsValid)}>Sign in</Button>
       </form>
-      <Link to="/forgot-password" className="sign-in-link">
+      <Link to={FORGOT_PASSWORD_ROUTE_PATH} className="sign-in-link">
         Forgot password?
       </Link>
       <p className="sign-in-switch">
-        No account? <Link to="/sign-up">Sign up</Link>
+        No account? <Link to={SIGN_UP_ROUTE_PATH}>Sign up</Link>
       </p>
     </section>
   );

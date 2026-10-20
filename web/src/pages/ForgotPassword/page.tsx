@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link } from 'react-router-dom';
+import { SET_NEW_PASSWORD_ROUTE_PATH } from '../SetNewPassword/router.constants';
+import { SIGN_IN_ROUTE_PATH } from '../SignIn/router.constants';
 import { Button } from '../../shared/Button/Button';
 import { ErrorMessage } from '../../shared/ErrorMessage/ErrorMessage';
 import { TextInput } from '../../shared/TextInput/TextInput';
@@ -19,7 +21,7 @@ export function ForgotPassword() {
     setPending(true);
     const { error } = await supabase.auth.resetPasswordForEmail(
       String(form.get('email')),
-      { redirectTo: `${window.location.origin}/set-new-password` },
+      { redirectTo: `${window.location.origin}${SET_NEW_PASSWORD_ROUTE_PATH}` },
     );
     setPending(false);
     setOutcome(resetOutcome(error));
@@ -44,7 +46,7 @@ export function ForgotPassword() {
           <Button disabled={pending}>Send reset link</Button>
         </form>
       )}
-      <Link to="/sign-in" className="forgot-password-link">
+      <Link to={SIGN_IN_ROUTE_PATH} className="forgot-password-link">
         Back to sign in
       </Link>
     </section>

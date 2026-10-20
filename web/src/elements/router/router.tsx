@@ -15,6 +15,10 @@ import {
 import { MOVE_TREE_ROUTE_PATH } from '../../pages/MoveTree/router.constants';
 import { RootLayout } from '../RootLayout/RootLayout';
 import { Account } from '../../pages/Account/page';
+import { FORGOT_PASSWORD_ROUTE_PATH } from '../../pages/ForgotPassword/router.constants';
+import { SET_NEW_PASSWORD_ROUTE_PATH } from '../../pages/SetNewPassword/router.constants';
+import { SIGN_IN_ROUTE_PATH } from '../../pages/SignIn/router.constants';
+import { SIGN_UP_ROUTE_PATH } from '../../pages/SignUp/router.constants';
 import { ChangeEmail } from '../../pages/ChangeEmail/page';
 import { ChangePassword } from '../../pages/ChangePassword/page';
 import { ChangePasswordConfirmation } from '../../pages/ChangePassword/confirmation/page';
@@ -58,10 +62,10 @@ export const router = createBrowserRouter([
           { path: MOVE_TREE_ROUTE_PATH, element: <MoveTree /> },
         ],
       },
-      { path: 'sign-in', element: <SignIn /> },
-      { path: 'sign-up', element: <SignUp /> },
-      { path: 'forgot-password', element: <ForgotPassword /> },
-      { path: 'set-new-password', element: <SetNewPassword /> },
+      { path: SIGN_IN_ROUTE_PATH, element: <SignIn /> },
+      { path: SIGN_UP_ROUTE_PATH, element: <SignUp /> },
+      { path: FORGOT_PASSWORD_ROUTE_PATH, element: <ForgotPassword /> },
+      { path: SET_NEW_PASSWORD_ROUTE_PATH, element: <SetNewPassword /> },
       { path: '*', element: <NotFound /> },
     ],
   },
