@@ -1,8 +1,8 @@
 import { fireEvent, screen } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
-import { authSettled } from '../../tests-shared/authSettled';
-import { pathOf, renderAt } from '../../tests-shared/renderAt';
-import { supabase } from '../../supabase';
+import { authSettled } from '../../../tests-shared/authSettled';
+import { pathOf, renderAt } from '../../../tests-shared/renderAt';
+import { supabase } from '../../../supabase';
 
 afterEach(() => vi.restoreAllMocks());
 
