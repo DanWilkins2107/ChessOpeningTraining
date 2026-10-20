@@ -1,16 +1,20 @@
 import { act, fireEvent, screen, within } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
-import { authSettled } from '../../tests-shared/authSettled';
+import { authSettled } from '../../../tests-shared/authSettled';
 import {
   fillCredentials,
   submitCredentials,
-} from '../../tests-shared/credentialsForm';
-import { pathOf, renderAt, renderSettledAt } from '../../tests-shared/renderAt';
+} from '../../../tests-shared/credentialsForm';
+import {
+  pathOf,
+  renderAt,
+  renderSettledAt,
+} from '../../../tests-shared/renderAt';
 import {
   registerSignUpEmail,
   registerTestUser,
-} from '../../tests-shared/testUser';
-import { supabase } from '../../supabase';
+} from '../../../tests-shared/testUser';
+import { supabase } from '../../../supabase';
 
 const existing = registerTestUser();
 const newEmail = registerSignUpEmail();

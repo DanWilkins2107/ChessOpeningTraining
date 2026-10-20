@@ -11,6 +11,7 @@ const MAX_LINES = 1000;
 
 const moveNodeSchema: z.ZodType<MoveNode> = z.strictObject({
   san: z.string(),
+  confidence: z.int().min(0).max(5).optional(),
   get children() {
     return z.array(moveNodeSchema);
   },
