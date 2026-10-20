@@ -51,6 +51,7 @@ export default defineConfig({
         'meta/**/*.ts',
         'web/meta/**/*.ts',
         'supabase/meta/**/*.ts',
+        'supabase/emailTemplates/emailTemplates.ts',
         'web/src/**/*.{ts,tsx}',
       ],
       exclude: ['**/*.test.{ts,tsx}', '**/tests-shared/**'],
