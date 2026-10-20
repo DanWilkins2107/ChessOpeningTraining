@@ -1,0 +1,14 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SettingRow > matches snapshot 1`] = `
+<div>
+  <label
+    class="setting-row"
+  >
+    Show move hints
+    <input
+      type="checkbox"
+    />
+  </label>
+</div>
+`;
