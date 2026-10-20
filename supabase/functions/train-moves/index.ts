@@ -1,5 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.116.0';
-// Not npm:postgres: its Node DNS lookup rejects the local stack's db hostname, which has underscores.
+// Deno's own build of postgres.js, not npm:postgres. The npm build looks the host up through Deno's Node DNS
+// shim, which rejects hostnames with underscores, and locally the database is at supabase_db_<project_id>.
 import postgres from 'https://deno.land/x/postgresjs@v3.4.7/mod.js';
 import { env } from './env.ts';
 import { signedInUserId } from './signedInUserId.ts';
