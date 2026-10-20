@@ -1,15 +1,19 @@
 import { act, fireEvent, screen, within } from '@testing-library/react';
 import { expect, it } from 'vitest';
-import { authSettled } from '../../tests-shared/authSettled';
+import { authSettled } from '../../../tests-shared/authSettled';
 import {
   SERVER,
   enterNewPassword,
   saveButton,
   savePassword,
-} from '../../tests-shared/newPasswordForm';
-import { pathOf, renderAt, renderSettledAt } from '../../tests-shared/renderAt';
-import { createTestUser } from '../../tests-shared/testUser';
-import { supabase } from '../../supabase';
+} from '../../../tests-shared/newPasswordForm';
+import {
+  pathOf,
+  renderAt,
+  renderSettledAt,
+} from '../../../tests-shared/renderAt';
+import { createTestUser } from '../../../tests-shared/testUser';
+import { supabase } from '../../../supabase';
 
 const currentPassword = `Aa1!${crypto.randomUUID()}`;
 

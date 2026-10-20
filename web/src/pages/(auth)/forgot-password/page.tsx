@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { SET_NEW_PASSWORD_ROUTE_PATH } from '../SetNewPassword/router.constants';
-import { SIGN_IN_ROUTE_PATH } from '../SignIn/router.constants';
-import { Button } from '../../shared/Button/Button';
-import { ErrorMessage } from '../../shared/ErrorMessage/ErrorMessage';
-import { TextInput } from '../../shared/TextInput/TextInput';
-import { supabase } from '../../supabase';
+import { SET_NEW_PASSWORD_ROUTE_PATH } from '../set-new-password/router.constants';
+import { SIGN_IN_ROUTE_PATH } from '../../SignIn/router.constants';
+import { Button } from '../../../shared/Button/Button';
+import { ErrorMessage } from '../../../shared/ErrorMessage/ErrorMessage';
+import { TextInput } from '../../../shared/TextInput/TextInput';
+import { supabase } from '../../../supabase';
 import { resetOutcome } from './elements/resetOutcome/resetOutcome';
 import type { ResetOutcome } from './elements/resetOutcome/resetOutcome';
 import './page.css';

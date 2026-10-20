@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link, Navigate, useSearchParams } from 'react-router-dom';
-import { FORGOT_PASSWORD_ROUTE_PATH } from '../ForgotPassword/router.constants';
+import { FORGOT_PASSWORD_ROUTE_PATH } from '../(auth)/forgot-password/router.constants';
 import { SIGN_UP_ROUTE_PATH } from '../SignUp/router.constants';
 import { Button } from '../../shared/Button/Button';
 import { ErrorMessage } from '../../shared/ErrorMessage/ErrorMessage';
