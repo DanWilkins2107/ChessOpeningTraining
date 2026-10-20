@@ -1,12 +1,19 @@
 import { act, fireEvent, screen } from '@testing-library/react';
 import { expect, it } from 'vitest';
-import { authSettled } from '../../tests-shared/authSettled';
+import { authSettled } from '../../../tests-shared/authSettled';
 import {
   fillCredentials,
   submitCredentials,
-} from '../../tests-shared/credentialsForm';
-import { pathOf, renderAt, renderSettledAt } from '../../tests-shared/renderAt';
-import { createTestUser, registerTestUser } from '../../tests-shared/testUser';
+} from '../../../tests-shared/credentialsForm';
+import {
+  pathOf,
+  renderAt,
+  renderSettledAt,
+} from '../../../tests-shared/renderAt';
+import {
+  createTestUser,
+  registerTestUser,
+} from '../../../tests-shared/testUser';
 
 const confirmed = registerTestUser();
 

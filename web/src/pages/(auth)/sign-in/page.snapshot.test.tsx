@@ -1,15 +1,15 @@
 import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
-import { SetNewPassword } from './page';
-import { withQueryClient } from '../../tests-shared/withQueryClient';
+import { SignIn } from './page';
+import { withQueryClient } from '../../../tests-shared/withQueryClient';
 
-describe('SetNewPassword', () => {
+describe('SignIn', () => {
   it('matches snapshot', () => {
     const { container } = render(
       withQueryClient(
         <MemoryRouter>
-          <SetNewPassword />
+          <SignIn />
         </MemoryRouter>,
       ),
     );
