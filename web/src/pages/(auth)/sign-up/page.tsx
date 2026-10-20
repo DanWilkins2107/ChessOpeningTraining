@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
-import { SIGN_IN_ROUTE_PATH } from '../SignIn/router.constants';
-import { useUser } from '../../shared/useUser/useUser';
+import { SIGN_IN_ROUTE_PATH } from '../sign-in/router.constants';
+import { useUser } from '../../../shared/useUser/useUser';
 import { CheckEmail } from './elements/CheckEmail/CheckEmail';
 import { SignUpForm } from './elements/SignUpForm/SignUpForm';
 import './page.css';

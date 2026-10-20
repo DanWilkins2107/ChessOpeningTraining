@@ -79,10 +79,13 @@ begin
     or jsonb_path_exists(new.moves, 'strict $.** ? (@.type() == "object")
       ? ((@.san.type() == "string" && @.children.type() == "array") is unknown
         || !(@.san.type() == "string" && @.children.type() == "array"))')
-    or jsonb_array_length(jsonb_path_query_array(new.moves, 'strict $.** ? (@.type() == "object").*.type()'))
-      <> 2 * jsonb_array_length(jsonb_path_query_array(new.moves, 'strict $.** ? (@.type() == "object").type()'))
+    or jsonb_path_exists(new.moves, 'strict $.** ? (@.type() == "object").keyvalue()
+      ? (@.key != "san" && @.key != "children" && @.key != "confidence")')
+    or jsonb_path_exists(new.moves, 'strict $.** ? (@.type() == "object" && exists(@.confidence)).confidence
+      ? ((@.type() == "number" && @.floor() == @ && @ >= 0 && @ <= 5) is unknown
+        || !(@.type() == "number" && @.floor() == @ && @ >= 0 && @ <= 5))')
   then
-    raise exception 'Every move must be exactly a string san and a children array'
+    raise exception 'Every move must be a string san, a children array and an optional whole-number confidence from 0 to 5'
       using errcode = 'check_violation';
   end if;
 

@@ -20,6 +20,10 @@ it.each([
     '1000 lines ending at different plies',
     [...leaves(600), move('d4', ...leaves(400))],
   ],
+  [
+    'confidences from 0 to 5',
+    [{ ...move('e4', { ...move('c6'), confidence: 5 }), confidence: 0 }],
+  ],
   ['an empty tree', []],
 ])('loads stored moves with %s', (_, stored) => {
   // Given a stored tree the database accepts
@@ -40,6 +44,11 @@ it.each([
   ['a move without children', [{ san: 'e4' }]],
   ['a move whose children are not an array', [{ san: 'e4', children: {} }]],
   ['a move with an extra key', [{ ...move('e4'), comment: 'Best by test' }]],
+  ['a confidence below 0', [{ ...move('e4'), confidence: -1 }]],
+  ['a confidence above 5', [{ ...move('e4'), confidence: 6 }]],
+  ['a fractional confidence', [{ ...move('e4'), confidence: 2.5 }]],
+  ['a null confidence', [{ ...move('e4'), confidence: null }]],
+  ['a confidence that is not a number', [{ ...move('e4'), confidence: '3' }]],
   [
     'an invalid move deep in a sideline',
     // as-reason: the move deliberately lacks the children MoveNode requires,
