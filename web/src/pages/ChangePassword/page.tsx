@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useOutlet } from 'react-router-dom';
+import { ACCOUNT_ROUTE_PATH } from '../account/router.constants';
 import { ChangePasswordForm } from './elements/ChangePasswordForm/ChangePasswordForm';
 import './page.css';
 
@@ -11,7 +12,7 @@ export function ChangePassword() {
     <section className="change-password-card">
       <h1 className="change-password-heading">Change password</h1>
       {confirmation ?? <ChangePasswordForm onCodeSent={setPendingPassword} />}
-      <Link to="/account" className="change-password-back">
+      <Link to={ACCOUNT_ROUTE_PATH} className="change-password-back">
         Back to account
       </Link>
     </section>

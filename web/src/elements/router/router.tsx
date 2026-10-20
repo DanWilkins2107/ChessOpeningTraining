@@ -2,7 +2,6 @@ import { createBrowserRouter } from 'react-router-dom';
 import { ProtectedLayout } from '../ProtectedLayout/ProtectedLayout';
 import {
   ACCOUNT_EMAIL_ROUTE_PATH,
-  ACCOUNT_ROUTE_PATH,
   CHANGE_PASSWORD_ROUTE_PATH,
   DELETE_ACCOUNT_ROUTE_PATH,
   PROTECTED_ROUTE_HANDLE,
@@ -12,8 +11,9 @@ import {
   REPERTOIRE_ROUTE_PATH,
   FOLDER_ROUTE_PATH,
 } from '../../pages/repertoire/router.constants';
+import { ACCOUNT_ROUTE_PATH } from '../../pages/account/router.constants';
 import { RootLayout } from '../RootLayout/RootLayout';
-import { Account } from '../../pages/Account/page';
+import { Account } from '../../pages/account/page';
 import { ChangeEmail } from '../../pages/ChangeEmail/page';
 import { ChangePassword } from '../../pages/ChangePassword/page';
 import { ChangePasswordConfirmation } from '../../pages/ChangePassword/confirmation/page';
