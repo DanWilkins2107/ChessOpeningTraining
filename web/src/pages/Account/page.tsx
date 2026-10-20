@@ -1,4 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
+import { SIGN_IN_ROUTE_PATH } from '../SignIn/router.constants';
 import {
   SIGNED_OUT_DONE,
   SIGNED_OUT_PARAM,
@@ -13,7 +14,9 @@ export function Account() {
 
   async function signOut() {
     const leaveWith = (outcome: string) =>
-      navigate(`/sign-in?${SIGNED_OUT_PARAM}=${outcome}`, { replace: true });
+      navigate(`${SIGN_IN_ROUTE_PATH}?${SIGNED_OUT_PARAM}=${outcome}`, {
+        replace: true,
+      });
 
     // Leaving first, while this page still owns the route: once the session
     // goes, ProtectedLayout redirects to its own sign-in URL and would win.
