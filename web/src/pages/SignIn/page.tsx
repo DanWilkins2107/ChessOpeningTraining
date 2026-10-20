@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link, Navigate, useSearchParams } from 'react-router-dom';
-import {
-  FORGOT_PASSWORD_ROUTE_PATH,
-  SIGN_UP_ROUTE_PATH,
-} from '../(auth)/router.constants';
+import { FORGOT_PASSWORD_ROUTE_PATH } from '../ForgotPassword/router.constants';
+import { SIGN_UP_ROUTE_PATH } from '../SignUp/router.constants';
 import { Button } from '../../shared/Button/Button';
 import { ErrorMessage } from '../../shared/ErrorMessage/ErrorMessage';
 import { useUser } from '../../shared/useUser/useUser';

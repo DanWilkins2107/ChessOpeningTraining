@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { SIGN_IN_ROUTE_PATH } from '../(auth)/router.constants';
+import { SIGN_IN_ROUTE_PATH } from '../SignIn/router.constants';
 import {
   SIGNED_OUT_DONE,
   SIGNED_OUT_PARAM,

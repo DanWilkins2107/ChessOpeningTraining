@@ -14,12 +14,10 @@ import {
 } from '../../pages/repertoire/router.constants';
 import { RootLayout } from '../RootLayout/RootLayout';
 import { Account } from '../../pages/Account/page';
-import {
-  FORGOT_PASSWORD_ROUTE_PATH,
-  SET_NEW_PASSWORD_ROUTE_PATH,
-  SIGN_IN_ROUTE_PATH,
-  SIGN_UP_ROUTE_PATH,
-} from '../../pages/(auth)/router.constants';
+import { FORGOT_PASSWORD_ROUTE_PATH } from '../../pages/ForgotPassword/router.constants';
+import { SET_NEW_PASSWORD_ROUTE_PATH } from '../../pages/SetNewPassword/router.constants';
+import { SIGN_IN_ROUTE_PATH } from '../../pages/SignIn/router.constants';
+import { SIGN_UP_ROUTE_PATH } from '../../pages/SignUp/router.constants';
 import { ChangeEmail } from '../../pages/ChangeEmail/page';
 import { ChangePassword } from '../../pages/ChangePassword/page';
 import { ChangePasswordConfirmation } from '../../pages/ChangePassword/confirmation/page';

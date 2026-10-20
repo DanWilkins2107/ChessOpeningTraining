@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { SIGN_IN_ROUTE_PATH } from '../../../(auth)/router.constants';
+import { SIGN_IN_ROUTE_PATH } from '../../../SignIn/router.constants';
 import { Button } from '../../../../shared/Button/Button';
 import { ErrorMessage } from '../../../../shared/ErrorMessage/ErrorMessage';
 import {
