@@ -1,6 +1,6 @@
 import { FILES } from '../files/files.constants';
-import { PIECES } from '../pieces/pieces.constants';
-import type { Piece } from '../pieces/pieces.constants';
+import { PIECES } from '../../shared/pieces/pieces.constants';
+import type { Piece } from '../../shared/pieces/pieces.constants';
 
 export function readPlacement(fen: string): Map<string, Piece> {
   const placement = new Map<string, Piece>();

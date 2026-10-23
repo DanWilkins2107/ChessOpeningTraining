@@ -5,25 +5,25 @@ exports[`BoardPieces > matches snapshot 1`] = `
   <img
     alt=""
     class="board-piece"
-    src="/src/elements/pieces/bK.svg"
+    src="/src/shared/pieces/bK.svg"
     style="transform: translate(400%, 0%);"
   />
   <img
     alt=""
     class="board-piece"
-    src="/src/elements/pieces/wR.svg"
+    src="/src/shared/pieces/wR.svg"
     style="transform: translate(0%, 700%);"
   />
   <img
     alt=""
     class="board-piece"
-    src="/src/elements/pieces/wK.svg"
+    src="/src/shared/pieces/wK.svg"
     style="transform: translate(400%, 700%);"
   />
   <img
     alt=""
     class="board-piece"
-    src="/src/elements/pieces/wR.svg"
+    src="/src/shared/pieces/wR.svg"
     style="transform: translate(700%, 700%);"
   />
 </div>

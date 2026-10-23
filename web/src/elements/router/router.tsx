@@ -1,9 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { ProtectedLayout } from '../ProtectedLayout/ProtectedLayout';
-import {
-  PROTECTED_ROUTE_HANDLE,
-  ROOT_ROUTE_PATH,
-} from '../routes/routes.constants';
+import { PROTECTED_ROUTE_HANDLE } from '../routes/routes.constants';
+import { ROOT_ROUTE_PATH } from '../../pages/router.constants';
 import {
   REPERTOIRE_ROUTE_PATH,
   FOLDER_ROUTE_PATH,
@@ -27,8 +25,8 @@ import {
 import { DeleteAccount } from '../../pages/account/delete/page';
 import { DELETE_ACCOUNT_ROUTE_PATH } from '../../pages/account/delete/router.constants';
 import { ForgotPassword } from '../../pages/(auth)/forgot-password/page';
-import { Home } from '../../pages/Home/page';
-import { NotFound } from '../../pages/NotFound/page';
+import { Home } from '../../pages/page';
+import { NotFound } from '../../pages/(not-found)/page';
 import { SetNewPassword } from '../../pages/(auth)/set-new-password/page';
 import { SignIn } from '../../pages/(auth)/sign-in/page';
 import { SignUp } from '../../pages/(auth)/sign-up/page';
