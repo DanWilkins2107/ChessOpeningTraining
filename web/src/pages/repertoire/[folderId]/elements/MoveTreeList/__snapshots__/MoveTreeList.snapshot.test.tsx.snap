@@ -6,10 +6,14 @@ exports[`MoveTreeList > matches snapshot with move trees 1`] = `
     aria-label="Move trees"
     class="move-tree-list"
   >
-    <li
-      class="move-tree-list-item"
-    >
-      Main line
+    <li>
+      <a
+        class="row-link"
+        data-discover="true"
+        href="/tree/7c3e1d2a-5b4f-4e6a-9c8d-1f2e3a4b5c6d"
+      >
+        Main line
+      </a>
     </li>
   </ul>
 </div>
