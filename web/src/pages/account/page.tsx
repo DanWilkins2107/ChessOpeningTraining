@@ -6,6 +6,7 @@ import {
   SIGNED_OUT_PENDING,
 } from '../../shared/signOut/signOut.constants';
 import { supabase } from '../../supabase';
+import { DELETE_ACCOUNT_ROUTE_PATH } from './delete/router.constants';
 import { ProfileSettings } from './elements/ProfileSettings/ProfileSettings';
 import './page.css';
 
@@ -39,7 +40,7 @@ export function Account() {
         Sign out
       </button>
       <Link
-        to="/account/delete"
+        to={DELETE_ACCOUNT_ROUTE_PATH}
         className="account-action account-action-danger"
       >
         Delete account
