@@ -11,7 +11,7 @@ it('merges the trees by SAN path in the order moves are first seen', () => {
   ];
 
   // When the trees are combined
-  const found = combineMoveTrees(trees, 'white');
+  const found = combineMoveTrees(trees).white;
 
   // Then each path appears once, holding every continuation
   expect(found).toEqual([
@@ -29,7 +29,7 @@ it('gives a shared move the lowest confidence across the trees', () => {
   ];
 
   // When the trees are combined
-  const found = combineMoveTrees(trees, 'white');
+  const found = combineMoveTrees(trees).white;
 
   // Then 1. e4 has the lowest rating
   expect(found).toEqual([rated(1, 'e4')]);
@@ -43,33 +43,36 @@ it('counts a move without a confidence as 0', () => {
   ];
 
   // When the trees are combined
-  const found = combineMoveTrees(trees, 'white');
+  const found = combineMoveTrees(trees).white;
 
   // Then 1. e4 has 0
   expect(found).toEqual([rated(0, 'e4')]);
 });
 
-it('leaves out the trees of the other side', () => {
+it('splits the trees into white and black', () => {
   // Given a white tree and a black tree
   const trees = [
     chosenTree('a', [rated(3, 'e4')]),
     chosenTree('b', [rated(1, 'e4'), rated(1, 'd4')], 'black'),
   ];
 
-  // When the white trees are combined
-  const found = combineMoveTrees(trees, 'white');
+  // When the trees are combined
+  const found = combineMoveTrees(trees);
 
-  // Then only the white tree's moves are there
-  expect(found).toEqual([rated(3, 'e4')]);
+  // Then each side holds only its own trees' moves
+  expect(found).toEqual({
+    white: [rated(3, 'e4')],
+    black: [rated(1, 'e4'), rated(1, 'd4')],
+  });
 });
 
-it('combines no trees into no moves', () => {
+it('combines no trees into no moves for either side', () => {
   // Given no chosen trees
   const trees: ChosenMoveTree[] = [];
 
   // When they are combined
-  const found = combineMoveTrees(trees, 'black');
+  const found = combineMoveTrees(trees);
 
-  // Then there are no moves
-  expect(found).toEqual([]);
+  // Then both sides have no moves
+  expect(found).toEqual({ white: [], black: [] });
 });

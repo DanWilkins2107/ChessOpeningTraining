@@ -4,6 +4,13 @@ import type { MoveNode } from '../MoveNode/MoveNode';
 
 export const combineMoveTrees = (
   trees: ChosenMoveTree[],
+): Record<ChosenMoveTree['side'], MoveNode[]> => ({
+  white: combineSide(trees, 'white'),
+  black: combineSide(trees, 'black'),
+});
+
+const combineSide = (
+  trees: ChosenMoveTree[],
   side: ChosenMoveTree['side'],
 ): MoveNode[] =>
   combineMoves(
