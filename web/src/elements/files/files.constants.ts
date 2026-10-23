@@ -1,2 +1,1 @@
-// fallow-ignore-file unused-file -- ef93ff81 2026-11-16 landed ahead of the folder page, its first consumer.
 export const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];

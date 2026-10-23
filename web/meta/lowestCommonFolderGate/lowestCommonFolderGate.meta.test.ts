@@ -17,7 +17,14 @@ const ROOT_EXCEPTIONS = [
 
 // Modules knowingly left above or below their lowest common folder, each only
 // until its expiry.
-const TEMPORARY_EXCLUDES: TemporaryExclude[] = [];
+const TEMPORARY_EXCLUDES: TemporaryExclude[] = [
+  {
+    path: 'src/elements/Board',
+    expiry: '2026-11-17',
+    reason:
+      'The move tree page is its only consumer until Training and Daily test (604a0091) reuse it.',
+  },
+];
 
 const sources = moduleSources();
 
