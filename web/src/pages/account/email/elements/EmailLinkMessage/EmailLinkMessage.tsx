@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { ErrorMessage } from '../../../../shared/ErrorMessage/ErrorMessage';
-import { SuccessMessage } from '../../../../shared/SuccessMessage/SuccessMessage';
+import { ErrorMessage } from '../../../../../shared/ErrorMessage/ErrorMessage';
+import { SuccessMessage } from '../../../../../shared/SuccessMessage/SuccessMessage';
 import { emailLinkNotice } from '../emailLinkNotice/emailLinkNotice';
 
 export function EmailLinkMessage() {
