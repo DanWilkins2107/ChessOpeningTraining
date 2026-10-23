@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useOutlet } from 'react-router-dom';
-import { ACCOUNT_ROUTE_PATH } from '../account/router.constants';
+import { ACCOUNT_ROUTE_PATH } from '../router.constants';
 import { ChangePasswordForm } from './elements/ChangePasswordForm/ChangePasswordForm';
 import './page.css';
 

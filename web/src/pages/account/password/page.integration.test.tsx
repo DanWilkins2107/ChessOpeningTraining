@@ -1,7 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react';
 import { expect, it } from 'vitest';
-import { pathOf, renderSettledAt } from '../../tests-shared/renderAt';
-import { registerTestUser } from '../../tests-shared/testUser';
+import { pathOf, renderSettledAt } from '../../../tests-shared/renderAt';
+import { registerTestUser } from '../../../tests-shared/testUser';
 
 const { signIn } = registerTestUser();
 
