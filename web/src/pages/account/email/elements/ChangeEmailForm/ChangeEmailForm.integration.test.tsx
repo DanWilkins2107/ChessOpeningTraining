@@ -1,13 +1,13 @@
 import { act, fireEvent, screen } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
-import { authSettled } from '../../../../tests-shared/authSettled';
+import { authSettled } from '../../../../../tests-shared/authSettled';
 import {
   pathOf,
   renderAt,
   renderSettledAt,
-} from '../../../../tests-shared/renderAt';
-import { createTestUser } from '../../../../tests-shared/testUser';
-import { supabase } from '../../../../supabase';
+} from '../../../../../tests-shared/renderAt';
+import { createTestUser } from '../../../../../tests-shared/testUser';
+import { supabase } from '../../../../../supabase';
 
 afterEach(() => {
   vi.restoreAllMocks();
