@@ -1,6 +1,6 @@
-import { supabase } from '../../../../supabase';
-import { TRY_AGAIN_MESSAGE } from '../../../../shared/newPasswordErrorMessage/newPasswordErrorMessage.constants';
-import { newPasswordErrorMessage } from '../../../../shared/newPasswordErrorMessage/newPasswordErrorMessage';
+import { supabase } from '../../../../../supabase';
+import { TRY_AGAIN_MESSAGE } from '../../../../../shared/newPasswordErrorMessage/newPasswordErrorMessage.constants';
+import { newPasswordErrorMessage } from '../../../../../shared/newPasswordErrorMessage/newPasswordErrorMessage';
 
 type SaveOutcome = { error?: string; codeSent?: boolean };
 

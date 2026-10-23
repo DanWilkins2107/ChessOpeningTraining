@@ -1,10 +1,10 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
-import { WRONG_CODE_MESSAGE } from '../../../shared/newPasswordErrorMessage/newPasswordErrorMessage.constants';
-import { CHANGE_PASSWORD_ROUTE_PATH } from '../../../elements/routes/routes.constants';
-import { SERVER, savePassword } from '../../../tests-shared/newPasswordForm';
-import { pathOf, renderSettledAt } from '../../../tests-shared/renderAt';
-import { createTestUser } from '../../../tests-shared/testUser';
+import { WRONG_CODE_MESSAGE } from '../../../../shared/newPasswordErrorMessage/newPasswordErrorMessage.constants';
+import { CHANGE_PASSWORD_ROUTE_PATH } from '../router.constants';
+import { SERVER, savePassword } from '../../../../tests-shared/newPasswordForm';
+import { pathOf, renderSettledAt } from '../../../../tests-shared/renderAt';
+import { createTestUser } from '../../../../tests-shared/testUser';
 import { CODE_SENT_MESSAGE } from './elements/ReauthenticationCodeInput/ReauthenticationCodeInput.constants';
 import {
   answerRequests,

@@ -8,6 +8,7 @@ import {
 import { supabase } from '../../supabase';
 import { DELETE_ACCOUNT_ROUTE_PATH } from './delete/router.constants';
 import { ACCOUNT_EMAIL_ROUTE_PATH } from './email/router.constants';
+import { CHANGE_PASSWORD_ROUTE_PATH } from './password/router.constants';
 import { ProfileSettings } from './elements/ProfileSettings/ProfileSettings';
 import './page.css';
 
@@ -34,7 +35,7 @@ export function Account() {
         Change email
       </Link>
       <ProfileSettings />
-      <Link to="/account/password" className="account-action">
+      <Link to={CHANGE_PASSWORD_ROUTE_PATH} className="account-action">
         Change password
       </Link>
       <button type="button" className="account-action" onClick={signOut}>

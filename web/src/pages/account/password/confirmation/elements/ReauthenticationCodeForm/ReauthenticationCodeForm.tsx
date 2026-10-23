@@ -1,6 +1,6 @@
 import type { FormEvent } from 'react';
-import { Button } from '../../../../../shared/Button/Button';
-import { ErrorMessage } from '../../../../../shared/ErrorMessage/ErrorMessage';
+import { Button } from '../../../../../../shared/Button/Button';
+import { ErrorMessage } from '../../../../../../shared/ErrorMessage/ErrorMessage';
 import { ReauthenticationCodeInput } from '../ReauthenticationCodeInput/ReauthenticationCodeInput';
 import './ReauthenticationCodeForm.css';
 
