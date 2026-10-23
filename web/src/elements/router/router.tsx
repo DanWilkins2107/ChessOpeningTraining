@@ -2,7 +2,6 @@ import { createBrowserRouter } from 'react-router-dom';
 import { ProtectedLayout } from '../ProtectedLayout/ProtectedLayout';
 import {
   ACCOUNT_EMAIL_ROUTE_PATH,
-  CHANGE_PASSWORD_ROUTE_PATH,
   DELETE_ACCOUNT_ROUTE_PATH,
   PROTECTED_ROUTE_HANDLE,
   ROOT_ROUTE_PATH,
@@ -19,9 +18,12 @@ import { SET_NEW_PASSWORD_ROUTE_PATH } from '../../pages/(auth)/set-new-password
 import { SIGN_IN_ROUTE_PATH } from '../../pages/(auth)/sign-in/router.constants';
 import { SIGN_UP_ROUTE_PATH } from '../../pages/(auth)/sign-up/router.constants';
 import { ChangeEmail } from '../../pages/ChangeEmail/page';
-import { ChangePassword } from '../../pages/ChangePassword/page';
-import { ChangePasswordConfirmation } from '../../pages/ChangePassword/confirmation/page';
-import { CHANGE_PASSWORD_CONFIRMATION_ROUTE_PATH } from '../../pages/ChangePassword/router.constants';
+import { ChangePassword } from '../../pages/account/password/page';
+import { ChangePasswordConfirmation } from '../../pages/account/password/confirmation/page';
+import {
+  CHANGE_PASSWORD_CONFIRMATION_ROUTE_PATH,
+  CHANGE_PASSWORD_ROUTE_PATH,
+} from '../../pages/account/password/router.constants';
 import { DeleteAccount } from '../../pages/DeleteAccount/page';
 import { ForgotPassword } from '../../pages/(auth)/forgot-password/page';
 import { Home } from '../../pages/Home/page';
