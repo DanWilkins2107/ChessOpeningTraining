@@ -125,7 +125,6 @@ describe('isPlaced', () => {
 
   it('rejects a router.constants.ts outside a route folder', () => {
     expect(isPlaced('router.constants.ts', EXCEPTIONS)).toBe(false);
-    expect(isPlaced('pages/router.constants.ts', EXCEPTIONS)).toBe(false);
     expect(
       isPlaced('pages/Alpha/elements/Widget/router.constants.ts', EXCEPTIONS),
     ).toBe(false);
@@ -164,8 +163,14 @@ describe('isPlaced', () => {
     );
   });
 
-  it('holds only route folders at the pages root', () => {
-    expect(isPlaced('pages/page.tsx', EXCEPTIONS)).toBe(false);
+  it('holds only route files and route folders at the pages root', () => {
+    expect(isPlaced('pages/page.tsx', EXCEPTIONS)).toBe(true);
+    expect(isPlaced('pages/page.test.tsx', EXCEPTIONS)).toBe(true);
+    expect(
+      isPlaced('pages/__snapshots__/page.snapshot.test.tsx.snap', EXCEPTIONS),
+    ).toBe(true);
+    expect(isPlaced('pages/router.constants.ts', EXCEPTIONS)).toBe(true);
+    expect(isPlaced('pages/stray.tsx', EXCEPTIONS)).toBe(false);
     expect(isPlaced('pages/elements/Widget/Widget.tsx', EXCEPTIONS)).toBe(
       false,
     );
