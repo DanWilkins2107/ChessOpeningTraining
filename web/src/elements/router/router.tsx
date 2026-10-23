@@ -1,7 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { ProtectedLayout } from '../ProtectedLayout/ProtectedLayout';
 import {
-  ACCOUNT_EMAIL_ROUTE_PATH,
   CHANGE_PASSWORD_ROUTE_PATH,
   DELETE_ACCOUNT_ROUTE_PATH,
   PROTECTED_ROUTE_HANDLE,
@@ -19,7 +18,8 @@ import { FORGOT_PASSWORD_ROUTE_PATH } from '../../pages/(auth)/forgot-password/r
 import { SET_NEW_PASSWORD_ROUTE_PATH } from '../../pages/(auth)/set-new-password/router.constants';
 import { SIGN_IN_ROUTE_PATH } from '../../pages/(auth)/sign-in/router.constants';
 import { SIGN_UP_ROUTE_PATH } from '../../pages/(auth)/sign-up/router.constants';
-import { ChangeEmail } from '../../pages/ChangeEmail/page';
+import { ACCOUNT_EMAIL_ROUTE_PATH } from '../../pages/account/email/router.constants';
+import { ChangeEmail } from '../../pages/account/email/page';
 import { ChangePassword } from '../../pages/ChangePassword/page';
 import { ChangePasswordConfirmation } from '../../pages/ChangePassword/confirmation/page';
 import { CHANGE_PASSWORD_CONFIRMATION_ROUTE_PATH } from '../../pages/ChangePassword/router.constants';

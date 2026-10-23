@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import { Button } from '../../../../shared/Button/Button';
-import { ErrorMessage } from '../../../../shared/ErrorMessage/ErrorMessage';
-import { useUser } from '../../../../shared/useUser/useUser';
-import { TextInput } from '../../../../shared/TextInput/TextInput';
-import { supabase } from '../../../../supabase';
+import { Button } from '../../../../../shared/Button/Button';
+import { ErrorMessage } from '../../../../../shared/ErrorMessage/ErrorMessage';
+import { useUser } from '../../../../../shared/useUser/useUser';
+import { TextInput } from '../../../../../shared/TextInput/TextInput';
+import { supabase } from '../../../../../supabase';
+import { ACCOUNT_EMAIL_ROUTE_PATH } from '../../router.constants';
 import { changeEmailErrorMessage } from '../changeEmailErrorMessage/changeEmailErrorMessage';
 import { CurrentEmail } from '../CurrentEmail/CurrentEmail';
 import { EmailLinkMessage } from '../EmailLinkMessage/EmailLinkMessage';
@@ -23,7 +24,7 @@ export function ChangeEmailForm() {
     const { error } = await supabase.auth.updateUser(
       { email: String(form.get('email')) },
       {
-        emailRedirectTo: `${window.location.origin}/account/email`,
+        emailRedirectTo: `${window.location.origin}${ACCOUNT_EMAIL_ROUTE_PATH}`,
       },
     );
     setPending(false);
