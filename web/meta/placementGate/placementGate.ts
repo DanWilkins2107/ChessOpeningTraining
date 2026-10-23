@@ -41,9 +41,9 @@ export const isPlaced = (path: string, rootExceptions: string[]) => {
     );
   }
   const parts = path.split('/');
-  return parts[0] === 'pages'
-    ? placedInRoute(parts.slice(1))
-    : placedInLevel(parts);
+  if (parts[0] !== 'pages') return placedInLevel(parts);
+  const route = parts.slice(1);
+  return isRouteFile(route.join('/')) || placedInRoute(route);
 };
 
 const routeFoldersOf = (path: string) => {
