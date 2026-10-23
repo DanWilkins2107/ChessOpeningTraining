@@ -10,9 +10,10 @@
       rel="stylesheet"
     />
     <!--
-      Shared layout for every auth email. Colours, radii and font are literals
-      copied from web/src/theme.css (emails can't use CSS variables), so update
-      both together. Each email's body fragment replaces the BODY marker below.
+      Shared layout for every auth email. npm run email:build wraps each
+      bodies/ fragment in it and writes built/ (gitignored), which config.toml
+      points at. Colours, radii and font are copied from web/src/theme.css, so
+      change both together.
 
       CTA button for fragments to copy:
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin: 24px 0;">
@@ -80,7 +81,7 @@
                   color: #4f3824;
                 "
               >
-                <!-- BODY -->
+                <!-- insert content here -->
               </td>
             </tr>
             <tr>
