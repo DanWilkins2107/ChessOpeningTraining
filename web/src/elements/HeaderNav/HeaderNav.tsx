@@ -1,8 +1,6 @@
 import { Link, useMatches } from 'react-router-dom';
-import {
-  ACCOUNT_ROUTE_PATH,
-  PROTECTED_ROUTE_HANDLE,
-} from '../routes/routes.constants';
+import { PROTECTED_ROUTE_HANDLE } from '../routes/routes.constants';
+import { ACCOUNT_ROUTE_PATH } from '../../pages/account/router.constants';
 import { REPERTOIRE_ROUTE_PATH } from '../../pages/repertoire/router.constants';
 import './HeaderNav.css';
 

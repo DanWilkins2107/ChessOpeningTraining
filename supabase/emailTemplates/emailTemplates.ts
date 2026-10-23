@@ -1,58 +1,35 @@
-import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import {
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
 import path from 'node:path';
 
-const BODY_SLOT = '<!-- BODY -->';
+const CONTENT_SLOT = '<!-- insert content here -->';
 const LAYOUT = 'layout.html';
 const BODIES = 'bodies';
+const BUILT = 'built';
 const HTML = /\.html$/;
 
 export function renderTemplate(layout: string, body: string): string {
-  const [before, after, ...extra] = layout.split(BODY_SLOT);
+  const [before, after, ...extra] = layout.split(CONTENT_SLOT);
   if (after === undefined || extra.length > 0) {
-    throw new Error(`${LAYOUT} must contain ${BODY_SLOT} exactly once`);
+    throw new Error(`${LAYOUT} must contain ${CONTENT_SLOT} exactly once`);
   }
   return before + body.trimEnd() + after;
 }
 
-function renderTemplates(templatesDir: string): Map<string, string> {
-  const bodiesDir = path.join(templatesDir, BODIES);
-  return new Map(
-    htmlFiles(bodiesDir).map((name) => [
-      name,
-      renderTemplate(
-        readFileSync(path.join(templatesDir, LAYOUT), 'utf8'),
-        readFileSync(path.join(bodiesDir, name), 'utf8'),
-      ),
-    ]),
-  );
-}
-
 export function writeTemplates(templatesDir: string): void {
-  for (const [name, html] of renderTemplates(templatesDir)) {
-    writeFileSync(path.join(templatesDir, name), html);
+  const bodiesDir = path.join(templatesDir, BODIES);
+  const builtDir = path.join(templatesDir, BUILT);
+  const layout = readFileSync(path.join(templatesDir, LAYOUT), 'utf8');
+
+  rmSync(builtDir, { recursive: true, force: true });
+  mkdirSync(builtDir);
+  for (const name of readdirSync(bodiesDir).filter((n) => HTML.test(n))) {
+    const body = readFileSync(path.join(bodiesDir, name), 'utf8');
+    writeFileSync(path.join(builtDir, name), renderTemplate(layout, body));
   }
-}
-
-export function templateProblems(templatesDir: string): string[] {
-  const expected = renderTemplates(templatesDir);
-  const written = htmlFiles(templatesDir).filter((name) => name !== LAYOUT);
-  const label = (name: string) => `${templatesDir}/${name}`;
-
-  const orphaned = written
-    .filter((name) => !expected.has(name))
-    .map((name) => `${label(name)}: orphaned, no ${BODIES}/${name} builds it`);
-  const outOfDate = [...expected].flatMap(([name, html]) => {
-    if (!written.includes(name)) {
-      return [`${label(name)}: missing, run npm run email:build`];
-    }
-    return readFileSync(path.join(templatesDir, name), 'utf8') === html
-      ? []
-      : [`${label(name)}: stale, run npm run email:build`];
-  });
-
-  return [...orphaned, ...outOfDate];
-}
-
-function htmlFiles(dir: string): string[] {
-  return readdirSync(dir).filter((name) => HTML.test(name));
 }

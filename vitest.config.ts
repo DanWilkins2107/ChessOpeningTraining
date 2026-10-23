@@ -34,6 +34,8 @@ export default defineConfig({
         test: {
           name: 'supabase',
           root: './supabase',
+          // Edge functions import npm packages as npm:<name>@<version>, which Deno resolves.
+          alias: [{ find: /^npm:(@?[^@]+)@.+$/, replacement: '$1' }],
           env: {
             SUPABASE_URL: testStack.API_URL,
             SUPABASE_ANON_KEY: testStack.ANON_KEY,
