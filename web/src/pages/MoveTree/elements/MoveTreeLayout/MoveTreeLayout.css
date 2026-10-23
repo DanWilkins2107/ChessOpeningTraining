@@ -1,0 +1,23 @@
+.move-tree-layout {
+  display: grid;
+  grid-template-areas: 'board panel';
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  align-items: start;
+  gap: var(--gap-lg);
+}
+
+.move-tree-layout-board {
+  grid-area: board;
+}
+
+.move-tree-layout-panel {
+  grid-area: panel;
+}
+
+@media (max-width: 40rem) {
+  .move-tree-layout {
+    grid-template-areas: 'board' 'panel';
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--gap-md);
+  }
+}

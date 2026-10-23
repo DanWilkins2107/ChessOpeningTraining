@@ -1,5 +1,3 @@
-/* fallow-ignore-file unused-file -- ef93ff81 2026-11-16 landed ahead of the folder page, its first consumer. */
-
 /* The squares of an empty board in greys, drawn as one gradient: each 2x2 tile
    is a light square top-left, as a8 is from white. */
 .board-loading {
