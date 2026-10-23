@@ -11,14 +11,11 @@ import {
   PERMISSION_DENIED,
   UNIQUE_VIOLATION,
 } from './tests-shared/pgErrorCodes';
+import { utcDay } from './tests-shared/utcDay';
 
-const dayOffset = (days: number) => {
-  const date = new Date();
-  date.setUTCDate(date.getUTCDate() + days);
-  return date.toISOString().slice(0, 10);
-};
-const today = dayOffset(0);
-const twoLines = [{ type: 'full' }, { type: 'split' }];
+const linesOf = (type: string) =>
+  Array.from({ length: 10 }, (_, i) => ({ type, i }));
+const tenLines = linesOf('full');
 
 const storedTests = async (ownerId: string) =>
   (
@@ -31,8 +28,8 @@ const storedTests = async (ownerId: string) =>
 
 const notStarted = (
   ownerId: string,
-  day = today,
-  lines: unknown = twoLines,
+  day = utcDay(),
+  lines: unknown = tenLines,
 ) => ({
   owner_id: ownerId,
   day,
@@ -47,7 +44,7 @@ async function userWithTest(progress: object = {}) {
   const user = await signedInUser();
   const { error } = await admin
     .from('daily_tests')
-    .insert({ owner_id: user.id, day: today, lines: twoLines, ...progress });
+    .insert({ owner_id: user.id, day: utcDay(), lines: tenLines, ...progress });
   if (error) throw error;
   return user;
 }
@@ -64,11 +61,11 @@ describe('starting a test', () => {
     // When they start a test for that day
     const { error } = await client
       .from('daily_tests')
-      .insert({ day: dayOffset(offset), lines: twoLines });
+      .insert({ day: utcDay(offset), lines: tenLines });
 
     // Then it is stored, not started, as theirs
     expect(error).toBeNull();
-    expect(await storedTests(id)).toEqual([notStarted(id, dayOffset(offset))]);
+    expect(await storedTests(id)).toEqual([notStarted(id, utcDay(offset))]);
   });
 
   it.each([-2, 2])('refuses a test %i days from today', async (offset) => {
@@ -78,7 +75,7 @@ describe('starting a test', () => {
     // When they start a test for that day
     const { error } = await client
       .from('daily_tests')
-      .insert({ day: dayOffset(offset), lines: twoLines });
+      .insert({ day: utcDay(offset), lines: tenLines });
 
     // Then it is refused, and nothing is stored
     expect(error?.code).toBe(PERMISSION_DENIED);
@@ -98,7 +95,7 @@ describe('starting a test', () => {
     // When they start a test supplying that column
     const { error } = await client
       .from('daily_tests')
-      .insert({ day: today, lines: twoLines, [column]: value });
+      .insert({ day: utcDay(), lines: tenLines, [column]: value });
 
     // Then it is refused, and nothing is stored
     expect(error?.code).toBe(PERMISSION_DENIED);
@@ -112,7 +109,7 @@ describe('starting a test', () => {
     // When they start another for today
     const { error } = await client
       .from('daily_tests')
-      .insert({ day: today, lines: [{ type: 'other' }] });
+      .insert({ day: utcDay(), lines: linesOf('other') });
 
     // Then it is refused, and the first is untouched
     expect(error?.code).toBe(UNIQUE_VIOLATION);
@@ -125,7 +122,7 @@ describe('starting a test', () => {
     // When they start a test
     const { error } = await anonClient()
       .from('daily_tests')
-      .insert({ day: today, lines: twoLines });
+      .insert({ day: utcDay(), lines: tenLines });
 
     // Then it is refused
     expect(error?.code).toBe(PERMISSION_DENIED);
@@ -133,38 +130,42 @@ describe('starting a test', () => {
 });
 
 describe('lines', () => {
-  it.each([
-    ['1 line', [{}]],
-    ['10 lines', Array.from({ length: 10 }, () => ({}))],
-    ['just under 256 KB', [{ pad: 'x'.repeat(256 * 1024 - 20) }]],
-  ])('stores %s', async (_, lines) => {
-    // Given a signed-in user
+  const blankLines = (count: number) =>
+    Array.from({ length: count }, () => ({}));
+  const paddedLines = (bytes: number) => [
+    { pad: 'x'.repeat(bytes) },
+    ...blankLines(9),
+  ];
+  const startTestWith = async (lines: unknown) => {
     const { id, client } = await signedInUser();
-
-    // When they start a test with those lines
     const { error } = await client
       .from('daily_tests')
-      .insert({ day: today, lines });
+      .insert({ day: utcDay(), lines });
+    return { id, error };
+  };
+
+  it.each([
+    ['10 lines', blankLines(10)],
+    ['just under 256 KB', paddedLines(256 * 1024 - 60)],
+  ])('stores %s', async (_, lines) => {
+    // When a signed-in user starts a test with those lines
+    const { id, error } = await startTestWith(lines);
 
     // Then it is stored
     expect(error).toBeNull();
-    expect(await storedTests(id)).toEqual([notStarted(id, today, lines)]);
+    expect(await storedTests(id)).toEqual([notStarted(id, utcDay(), lines)]);
   });
 
   it.each([
     ['no lines', []],
-    ['11 lines', Array.from({ length: 11 }, () => ({}))],
-    ['256 KB', [{ pad: 'x'.repeat(256 * 1024) }]],
+    ['9 lines', blankLines(9)],
+    ['11 lines', blankLines(11)],
+    ['256 KB', paddedLines(256 * 1024)],
     ['an object', { type: 'full' }],
     ['a string', 'full'],
   ])('refuses %s', async (_, lines) => {
-    // Given a signed-in user
-    const { id, client } = await signedInUser();
-
-    // When they start a test with those lines
-    const { error } = await client
-      .from('daily_tests')
-      .insert({ day: today, lines });
+    // When a signed-in user starts a test with those lines
+    const { id, error } = await startTestWith(lines);
 
     // Then it is refused, and nothing is stored
     expect(error?.code).toBe(CHECK_VIOLATION);
@@ -186,7 +187,7 @@ describe('progress', () => {
     const { error } = await client
       .from('daily_tests')
       .update(progress)
-      .eq('day', today);
+      .eq('day', utcDay());
 
     // Then it is stored
     expect(error).toBeNull();
@@ -195,9 +196,9 @@ describe('progress', () => {
 
   it('lets the owner finish the test with a score', async () => {
     // Given a user on the last line of today's test
-    const { id, client } = await userWithTest({ line_index: 1 });
+    const { id, client } = await userWithTest({ line_index: 9 });
     const finish = {
-      line_index: 2,
+      line_index: 10,
       move_index: 0,
       results: [['right'], ['wrong']],
       score: 50,
@@ -207,7 +208,7 @@ describe('progress', () => {
     const { error } = await client
       .from('daily_tests')
       .update(finish)
-      .eq('day', today);
+      .eq('day', utcDay());
 
     // Then it is stored as done
     expect(error).toBeNull();
@@ -215,15 +216,15 @@ describe('progress', () => {
   });
 
   it.each([
-    ['a line index past the lines', { line_index: 3 }],
+    ['a line index past the lines', { line_index: 11 }],
     ['a negative line index', { line_index: -1 }],
     ['a move index past 600', { move_index: 601 }],
     ['a negative move index', { move_index: -1 }],
     ['an object of results', { results: { 0: 'right' } }],
     ['64 KB of results', { results: ['x'.repeat(64 * 1024)] }],
-    ['a score before every line is finished', { line_index: 1, score: 50 }],
-    ['a score over 100', { line_index: 2, score: 101 }],
-    ['a negative score', { line_index: 2, score: -1 }],
+    ['a score before every line is finished', { line_index: 9, score: 50 }],
+    ['a score over 100', { line_index: 10, score: 101 }],
+    ['a negative score', { line_index: 10, score: -1 }],
   ])('refuses %s', async (_, progress) => {
     // Given a user who started today's test
     const { id, client } = await userWithTest();
@@ -232,7 +233,7 @@ describe('progress', () => {
     const { error } = await client
       .from('daily_tests')
       .update(progress)
-      .eq('day', today);
+      .eq('day', utcDay());
 
     // Then it is refused, and the test is untouched
     expect(error?.code).toBe(CHECK_VIOLATION);
@@ -244,16 +245,16 @@ describe('progress', () => {
       client
         .from('daily_tests')
         .update({ [column]: value })
-        .eq('day', today);
+        .eq('day', utcDay());
 
   it.each([
-    ['change to lines', changeColumn('lines', [{ type: 'other' }])],
-    ['change to day', changeColumn('day', dayOffset(1))],
+    ['change to lines', changeColumn('lines', linesOf('other'))],
+    ['change to day', changeColumn('day', utcDay(1))],
     ['change to owner_id', changeColumn('owner_id', crypto.randomUUID())],
     [
       'delete',
       (client: SupabaseClient) =>
-        client.from('daily_tests').delete().eq('day', today),
+        client.from('daily_tests').delete().eq('day', utcDay()),
     ],
   ])('refuses the owner a %s', async (_, request) => {
     // Given a user who started today's test
@@ -270,14 +271,14 @@ describe('progress', () => {
   it('freezes a finished test', async () => {
     // Given a user who finished today's test
     const finished = {
-      line_index: 2,
+      line_index: 10,
       results: [['right'], ['right']],
       score: 100,
     };
     const { id, client } = await userWithTest(finished);
 
     // When they change its score
-    await client.from('daily_tests').update({ score: 0 }).eq('day', today);
+    await client.from('daily_tests').update({ score: 0 }).eq('day', utcDay());
 
     // Then it is untouched
     expect(await storedTests(id)).toEqual([{ ...notStarted(id), ...finished }]);
