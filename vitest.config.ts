@@ -37,6 +37,7 @@ export default defineConfig({
           // Edge functions import npm packages as npm:<name>@<version>, which Deno resolves.
           alias: [{ find: /^npm:(@?[^@]+)@.+$/, replacement: '$1' }],
           env: {
+            SUPABASE_DB_URL: testStack.DB_URL,
             SUPABASE_URL: testStack.API_URL,
             SUPABASE_ANON_KEY: testStack.ANON_KEY,
             SUPABASE_SERVICE_ROLE_KEY: testStack.SERVICE_ROLE_KEY,

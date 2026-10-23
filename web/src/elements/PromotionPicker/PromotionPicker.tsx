@@ -1,6 +1,6 @@
 import './PromotionPicker.css';
 import type { Color, PieceSymbol } from 'chess.ts';
-import { PIECES } from '../pieces/pieces.constants';
+import { PIECES } from '../../shared/pieces/pieces.constants';
 
 const CHOICES: { piece: PieceSymbol; name: string }[] = [
   { piece: 'q', name: 'queen' },
