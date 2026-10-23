@@ -4,5 +4,4 @@ coverage
 .stryker-tmp
 reports
 # Built by npm run email:build
-supabase/templates/*.html
-!supabase/templates/layout.html
+supabase/templates/built

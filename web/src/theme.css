@@ -1,6 +1,9 @@
 /* The only file allowed to hold colour literals:
    web/meta/paletteGate/paletteGate.ts exempts this path by name, so
-   move or rename it and that gate must change too. */
+   move or rename it and that gate must change too.
+   The auth emails (supabase/templates/layout.html and bodies/) can't use
+   CSS variables, so they copy these colours, radii and font as literals:
+   change one, change both. */
 
 :root {
   --surface-page: #f7f9fc;

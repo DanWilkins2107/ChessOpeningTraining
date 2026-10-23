@@ -6,6 +6,9 @@ coverage
 reports
 *.local
 
+# Built by npm run email:build
+supabase/templates/built
+
 .env
 .env.*
 !.env.local
