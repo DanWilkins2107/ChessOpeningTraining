@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ACCOUNT_ROUTE_PATH } from '../account/router.constants';
+import { ACCOUNT_ROUTE_PATH } from '../router.constants';
 import { ChangeEmailForm } from './elements/ChangeEmailForm/ChangeEmailForm';
 import './page.css';
 
