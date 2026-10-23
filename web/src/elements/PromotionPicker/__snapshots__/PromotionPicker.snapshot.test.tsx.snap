@@ -20,7 +20,7 @@ exports[`PromotionPicker > matches snapshot 1`] = `
       >
         <img
           alt=""
-          src="/src/elements/pieces/wQ.svg"
+          src="/src/shared/pieces/wQ.svg"
         />
       </button>
       <button
@@ -30,7 +30,7 @@ exports[`PromotionPicker > matches snapshot 1`] = `
       >
         <img
           alt=""
-          src="/src/elements/pieces/wR.svg"
+          src="/src/shared/pieces/wR.svg"
         />
       </button>
       <button
@@ -40,7 +40,7 @@ exports[`PromotionPicker > matches snapshot 1`] = `
       >
         <img
           alt=""
-          src="/src/elements/pieces/wB.svg"
+          src="/src/shared/pieces/wB.svg"
         />
       </button>
       <button
@@ -50,7 +50,7 @@ exports[`PromotionPicker > matches snapshot 1`] = `
       >
         <img
           alt=""
-          src="/src/elements/pieces/wN.svg"
+          src="/src/shared/pieces/wN.svg"
         />
       </button>
     </div>

@@ -485,193 +485,193 @@ exports[`LoadedBoard > matches snapshot 1`] = `
     <img
       alt=""
       class="board-piece"
-      src="/src/elements/pieces/bR.svg"
+      src="/src/shared/pieces/bR.svg"
       style="transform: translate(0%, 0%);"
     />
     <img
       alt=""
       class="board-piece"
-      src="/src/elements/pieces/bN.svg"
+      src="/src/shared/pieces/bN.svg"
       style="transform: translate(100%, 0%);"
     />
     <img
       alt=""
       class="board-piece"
-      src="/src/elements/pieces/bB.svg"
+      src="/src/shared/pieces/bB.svg"
       style="transform: translate(200%, 0%);"
     />
     <img
       alt=""
       class="board-piece"
-      src="/src/elements/pieces/bQ.svg"
+      src="/src/shared/pieces/bQ.svg"
       style="transform: translate(300%, 0%);"
     />
     <img
       alt=""
       class="board-piece"
-      src="/src/elements/pieces/bK.svg"
+      src="/src/shared/pieces/bK.svg"
       style="transform: translate(400%, 0%);"
     />
     <img
       alt=""
       class="board-piece"
-      src="/src/elements/pieces/bB.svg"
+      src="/src/shared/pieces/bB.svg"
       style="transform: translate(500%, 0%);"
     />
     <img
       alt=""
       class="board-piece"
-      src="/src/elements/pieces/bN.svg"
+      src="/src/shared/pieces/bN.svg"
       style="transform: translate(600%, 0%);"
     />
     <img
       alt=""
       class="board-piece"
-      src="/src/elements/pieces/bR.svg"
+      src="/src/shared/pieces/bR.svg"
       style="transform: translate(700%, 0%);"
     />
     <img
       alt=""
       class="board-piece"
-      src="/src/elements/pieces/bP.svg"
+      src="/src/shared/pieces/bP.svg"
       style="transform: translate(0%, 100%);"
     />
     <img
       alt=""
       class="board-piece"
-      src="/src/elements/pieces/bP.svg"
+      src="/src/shared/pieces/bP.svg"
       style="transform: translate(100%, 100%);"
     />
     <img
       alt=""
       class="board-piece"
-      src="/src/elements/pieces/bP.svg"
+      src="/src/shared/pieces/bP.svg"
       style="transform: translate(200%, 100%);"
     />
     <img
       alt=""
       class="board-piece"
-      src="/src/elements/pieces/bP.svg"
+      src="/src/shared/pieces/bP.svg"
       style="transform: translate(300%, 100%);"
     />
     <img
       alt=""
       class="board-piece"
-      src="/src/elements/pieces/bP.svg"
+      src="/src/shared/pieces/bP.svg"
       style="transform: translate(400%, 100%);"
     />
     <img
       alt=""
       class="board-piece"
-      src="/src/elements/pieces/bP.svg"
+      src="/src/shared/pieces/bP.svg"
       style="transform: translate(500%, 100%);"
     />
     <img
       alt=""
       class="board-piece"
-      src="/src/elements/pieces/bP.svg"
+      src="/src/shared/pieces/bP.svg"
       style="transform: translate(600%, 100%);"
     />
     <img
       alt=""
       class="board-piece"
-      src="/src/elements/pieces/bP.svg"
+      src="/src/shared/pieces/bP.svg"
       style="transform: translate(700%, 100%);"
     />
     <img
       alt=""
       class="board-piece"
-      src="/src/elements/pieces/wP.svg"
+      src="/src/shared/pieces/wP.svg"
       style="transform: translate(0%, 600%);"
     />
     <img
       alt=""
       class="board-piece"
-      src="/src/elements/pieces/wP.svg"
+      src="/src/shared/pieces/wP.svg"
       style="transform: translate(100%, 600%);"
     />
     <img
       alt=""
       class="board-piece"
-      src="/src/elements/pieces/wP.svg"
+      src="/src/shared/pieces/wP.svg"
       style="transform: translate(200%, 600%);"
     />
     <img
       alt=""
       class="board-piece"
-      src="/src/elements/pieces/wP.svg"
+      src="/src/shared/pieces/wP.svg"
       style="transform: translate(300%, 600%);"
     />
     <img
       alt=""
       class="board-piece"
-      src="/src/elements/pieces/wP.svg"
+      src="/src/shared/pieces/wP.svg"
       style="transform: translate(400%, 600%);"
     />
     <img
       alt=""
       class="board-piece"
-      src="/src/elements/pieces/wP.svg"
+      src="/src/shared/pieces/wP.svg"
       style="transform: translate(500%, 600%);"
     />
     <img
       alt=""
       class="board-piece"
-      src="/src/elements/pieces/wP.svg"
+      src="/src/shared/pieces/wP.svg"
       style="transform: translate(600%, 600%);"
     />
     <img
       alt=""
       class="board-piece"
-      src="/src/elements/pieces/wP.svg"
+      src="/src/shared/pieces/wP.svg"
       style="transform: translate(700%, 600%);"
     />
     <img
       alt=""
       class="board-piece"
-      src="/src/elements/pieces/wR.svg"
+      src="/src/shared/pieces/wR.svg"
       style="transform: translate(0%, 700%);"
     />
     <img
       alt=""
       class="board-piece"
-      src="/src/elements/pieces/wN.svg"
+      src="/src/shared/pieces/wN.svg"
       style="transform: translate(100%, 700%);"
     />
     <img
       alt=""
       class="board-piece"
-      src="/src/elements/pieces/wB.svg"
+      src="/src/shared/pieces/wB.svg"
       style="transform: translate(200%, 700%);"
     />
     <img
       alt=""
       class="board-piece"
-      src="/src/elements/pieces/wQ.svg"
+      src="/src/shared/pieces/wQ.svg"
       style="transform: translate(300%, 700%);"
     />
     <img
       alt=""
       class="board-piece"
-      src="/src/elements/pieces/wK.svg"
+      src="/src/shared/pieces/wK.svg"
       style="transform: translate(400%, 700%);"
     />
     <img
       alt=""
       class="board-piece"
-      src="/src/elements/pieces/wB.svg"
+      src="/src/shared/pieces/wB.svg"
       style="transform: translate(500%, 700%);"
     />
     <img
       alt=""
       class="board-piece"
-      src="/src/elements/pieces/wN.svg"
+      src="/src/shared/pieces/wN.svg"
       style="transform: translate(600%, 700%);"
     />
     <img
       alt=""
       class="board-piece"
-      src="/src/elements/pieces/wR.svg"
+      src="/src/shared/pieces/wR.svg"
       style="transform: translate(700%, 700%);"
     />
   </div>
