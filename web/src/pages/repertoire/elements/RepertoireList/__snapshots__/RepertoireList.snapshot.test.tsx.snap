@@ -1,0 +1,11 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`RepertoireList > matches snapshot 1`] = `
+<div>
+  <p
+    class="repertoire-list-empty"
+  >
+    No folders yet
+  </p>
+</div>
+`;
