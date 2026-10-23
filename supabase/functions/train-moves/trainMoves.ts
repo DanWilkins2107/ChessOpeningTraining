@@ -26,6 +26,7 @@ async function lockedMoveTrees(
   userId: string,
   treeIds: string[],
 ) {
+  // Row locks held until commit: an editor save to these trees waits, then overwrites (editor wins).
   // Locked in id order, so concurrent calls over overlapping trees cannot deadlock.
   const trees = await tx<MoveTree[]>`
     select id, side, moves from public.move_trees
