@@ -2,7 +2,7 @@ import { fireEvent, render, screen, within } from '@testing-library/react';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { ROOK_ON_H5, ROOKS_HOME } from '../../tests-shared/rookPositions';
 import { LoadedBoard } from './LoadedBoard';
-import { PIECES } from '../pieces/pieces.constants';
+import { PIECES } from '../../shared/pieces/pieces.constants';
 
 // A promise use() reads straight away, so the board draws without suspending.
 const settled = (fen: string) =>

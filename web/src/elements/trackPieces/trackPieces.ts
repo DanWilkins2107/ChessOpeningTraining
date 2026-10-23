@@ -1,5 +1,5 @@
 import type { PlacedPiece } from '../placedPiece/placedPiece';
-import type { Piece } from '../pieces/pieces.constants';
+import type { Piece } from '../../shared/pieces/pieces.constants';
 import { readPlacement } from '../readPlacement/readPlacement';
 
 export function trackPieces(
