@@ -1,12 +1,15 @@
 import { act, screen } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
-import { PASSWORDS_DIFFER_MESSAGE } from '../../../../elements/ConfirmPasswordInput/ConfirmPasswordInput.constants';
-import { TRY_AGAIN_MESSAGE } from '../../../../shared/newPasswordErrorMessage/newPasswordErrorMessage.constants';
-import { CHANGE_PASSWORD_ROUTE_PATH } from '../../../../elements/routes/routes.constants';
-import { SERVER, savePassword } from '../../../../tests-shared/newPasswordForm';
-import { pathOf, renderSettledAt } from '../../../../tests-shared/renderAt';
-import { createTestUser } from '../../../../tests-shared/testUser';
-import { supabase } from '../../../../supabase';
+import { PASSWORDS_DIFFER_MESSAGE } from '../../../../../elements/ConfirmPasswordInput/ConfirmPasswordInput.constants';
+import { TRY_AGAIN_MESSAGE } from '../../../../../shared/newPasswordErrorMessage/newPasswordErrorMessage.constants';
+import { CHANGE_PASSWORD_ROUTE_PATH } from '../../router.constants';
+import {
+  SERVER,
+  savePassword,
+} from '../../../../../tests-shared/newPasswordForm';
+import { pathOf, renderSettledAt } from '../../../../../tests-shared/renderAt';
+import { createTestUser } from '../../../../../tests-shared/testUser';
+import { supabase } from '../../../../../supabase';
 import { CODE_SENT_MESSAGE } from '../../confirmation/elements/ReauthenticationCodeInput/ReauthenticationCodeInput.constants';
 import {
   answerRequests,

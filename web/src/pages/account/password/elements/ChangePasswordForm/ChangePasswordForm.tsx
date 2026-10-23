@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { NewPasswordForm } from '../../../../shared/NewPasswordForm/NewPasswordForm';
-import { SuccessMessage } from '../../../../shared/SuccessMessage/SuccessMessage';
+import { NewPasswordForm } from '../../../../../shared/NewPasswordForm/NewPasswordForm';
+import { SuccessMessage } from '../../../../../shared/SuccessMessage/SuccessMessage';
 import { CHANGE_PASSWORD_CONFIRMATION_ROUTE_PATH } from '../../router.constants';
 import { savePassword } from '../savePassword/savePassword';
 import { PASSWORD_CHANGED_MESSAGE } from '../../page.constants';

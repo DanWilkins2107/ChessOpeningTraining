@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Navigate, useOutletContext } from 'react-router-dom';
-import { newPasswordErrorMessage } from '../../../shared/newPasswordErrorMessage/newPasswordErrorMessage';
-import { SuccessMessage } from '../../../shared/SuccessMessage/SuccessMessage';
-import { supabase } from '../../../supabase';
+import { newPasswordErrorMessage } from '../../../../shared/newPasswordErrorMessage/newPasswordErrorMessage';
+import { SuccessMessage } from '../../../../shared/SuccessMessage/SuccessMessage';
+import { supabase } from '../../../../supabase';
 import { ReauthenticationCodeForm } from './elements/ReauthenticationCodeForm/ReauthenticationCodeForm';
 import { PASSWORD_CHANGED_MESSAGE } from '../page.constants';
 
