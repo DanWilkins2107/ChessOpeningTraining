@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
 import { supabase } from '../../supabase';
 import { renderSettledAt } from '../../tests-shared/renderAt';
@@ -12,6 +12,15 @@ afterEach(() => {
 
 const isRepertoireRequest = (input: RequestInfo | URL) =>
   String(input).includes('/rest/v1/rpc/get_repertoire');
+
+const loadingRepertoire = () =>
+  screen.queryByRole('status', { name: 'Loading repertoire' });
+
+async function expectNoEmptyMessageOnceLoaded() {
+  await renderSettledAt('/repertoire');
+  await waitFor(() => expect(loadingRepertoire()).not.toBeInTheDocument());
+  expect(screen.queryByText('No folders yet')).not.toBeInTheDocument();
+}
 
 it('creates a folder from the page', async () => {
   // Given a signed-in user on the page
@@ -45,6 +54,19 @@ it('says so when the user has no folders or move trees', async () => {
   expect(screen.queryByRole('status')).not.toBeInTheDocument();
 });
 
+it('does not say so when the user has a folder', async () => {
+  // Given a user with one folder
+  const withFolder = await createTestUser();
+  const client = await withFolder.signedInClient();
+  const { error } = await client.from('folders').insert({ name: 'Najdorf' });
+  if (error) throw error;
+  await withFolder.signIn();
+
+  // When the page renders and loading finishes
+  // Then there is no empty message
+  await expectNoEmptyMessageOnceLoaded();
+});
+
 it('does not say so when the user has a move tree', async () => {
   // Given a user with one move tree
   const withMoveTree = await createTestUser();
@@ -56,13 +78,32 @@ it('does not say so when the user has a move tree', async () => {
   await withMoveTree.signIn();
 
   // When the page renders and loading finishes
+  // Then there is no empty message
+  await expectNoEmptyMessageOnceLoaded();
+});
+
+it("shows loading, not the previous user's repertoire, when the user changes", async () => {
+  // Given one user's empty repertoire on screen, and repertoire requests left
+  // unanswered
+  const first = await createTestUser();
+  const second = await createTestUser();
+  await first.signIn();
   await renderSettledAt('/repertoire');
-  await waitFor(() =>
-    expect(screen.queryByRole('status')).not.toBeInTheDocument(),
+  await screen.findByText('No folders yet');
+  const realFetch = window.fetch;
+  // mock-reason: the local server answers too fast to see the loading state
+  // in between. Other requests are sent for real.
+  vi.spyOn(window, 'fetch').mockImplementation((input, init) =>
+    isRepertoireRequest(input) ? new Promise(() => {}) : realFetch(input, init),
   );
 
-  // Then there is no empty message
-  expect(screen.queryByText('No folders yet')).not.toBeInTheDocument();
+  // When a different user signs in
+  await act(() => second.signIn());
+
+  // Then it shows loading in place of the first user's repertoire
+  // (Suspense keeps the old content mounted, just hidden.)
+  await waitFor(() => expect(loadingRepertoire()).toBeInTheDocument());
+  expect(screen.getByText('No folders yet')).not.toBeVisible();
 });
 
 it('loads the repertoire again when the user tries again', async () => {
