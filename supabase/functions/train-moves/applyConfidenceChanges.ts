@@ -1,4 +1,3 @@
-// fallow-ignore-file unused-file -- 87bb3d65 2026-11-17 landed ahead of the train-moves edge function, its first consumer.
 export type Side = 'white' | 'black';
 
 export type TrainedMove = {

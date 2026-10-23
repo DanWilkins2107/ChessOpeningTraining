@@ -1,4 +1,3 @@
-// fallow-ignore-file unused-file -- 87bb3d65 2026-11-17 landed ahead of the train-moves edge function, its first consumer.
 import { z } from 'npm:zod@4.5.4';
 
 const DAY_MS = 86_400_000;
@@ -23,5 +22,4 @@ export const trainingRequestSchema = z
     'Every move on the path needs a confidence change',
   );
 
-/** @expected-unused -- 87bb3d65 2026-11-17 the train-moves edge function is its first consumer. */
 export type TrainingRequest = z.infer<typeof trainingRequestSchema>;
