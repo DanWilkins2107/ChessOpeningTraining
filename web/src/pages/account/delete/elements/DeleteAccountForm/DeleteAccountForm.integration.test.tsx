@@ -1,11 +1,11 @@
 import { fireEvent, screen } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
-import { pathOf, renderSettledAt } from '../../../../tests-shared/renderAt';
+import { pathOf, renderSettledAt } from '../../../../../tests-shared/renderAt';
 import {
   createTestUser,
   registerTestUser,
-} from '../../../../tests-shared/testUser';
-import { supabase } from '../../../../supabase';
+} from '../../../../../tests-shared/testUser';
+import { supabase } from '../../../../../supabase';
 
 const keeping = registerTestUser();
 

@@ -1,7 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { ProtectedLayout } from '../ProtectedLayout/ProtectedLayout';
 import {
-  DELETE_ACCOUNT_ROUTE_PATH,
   PROTECTED_ROUTE_HANDLE,
   ROOT_ROUTE_PATH,
 } from '../routes/routes.constants';
@@ -25,7 +24,8 @@ import {
   CHANGE_PASSWORD_CONFIRMATION_ROUTE_PATH,
   CHANGE_PASSWORD_ROUTE_PATH,
 } from '../../pages/account/password/router.constants';
-import { DeleteAccount } from '../../pages/DeleteAccount/page';
+import { DeleteAccount } from '../../pages/account/delete/page';
+import { DELETE_ACCOUNT_ROUTE_PATH } from '../../pages/account/delete/router.constants';
 import { ForgotPassword } from '../../pages/(auth)/forgot-password/page';
 import { Home } from '../../pages/Home/page';
 import { NotFound } from '../../pages/NotFound/page';

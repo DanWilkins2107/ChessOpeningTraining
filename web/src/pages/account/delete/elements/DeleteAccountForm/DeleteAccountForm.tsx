@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { SIGN_IN_ROUTE_PATH } from '../../../(auth)/sign-in/router.constants';
-import { Button } from '../../../../shared/Button/Button';
-import { ErrorMessage } from '../../../../shared/ErrorMessage/ErrorMessage';
+import { SIGN_IN_ROUTE_PATH } from '../../../../(auth)/sign-in/router.constants';
+import { Button } from '../../../../../shared/Button/Button';
+import { ErrorMessage } from '../../../../../shared/ErrorMessage/ErrorMessage';
 import {
   SIGNED_OUT_ACCOUNT_DELETED,
   SIGNED_OUT_PARAM,
-} from '../../../../shared/signOut/signOut.constants';
-import { TextInput } from '../../../../shared/TextInput/TextInput';
-import { supabase } from '../../../../supabase';
+} from '../../../../../shared/signOut/signOut.constants';
+import { TextInput } from '../../../../../shared/TextInput/TextInput';
+import { supabase } from '../../../../../supabase';
 import { deleteAccountErrorMessage } from '../deleteAccountErrorMessage/deleteAccountErrorMessage';
 import './DeleteAccountForm.css';
 

@@ -1,7 +1,7 @@
 import { fireEvent, screen } from '@testing-library/react';
 import { expect, it } from 'vitest';
-import { pathOf, renderSettledAt } from '../../tests-shared/renderAt';
-import { createTestUser } from '../../tests-shared/testUser';
+import { pathOf, renderSettledAt } from '../../../tests-shared/renderAt';
+import { createTestUser } from '../../../tests-shared/testUser';
 
 it('leads back to the account page', async () => {
   // Given a signed-in user on their delete account page
