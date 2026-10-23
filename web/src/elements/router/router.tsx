@@ -1,7 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { ProtectedLayout } from '../ProtectedLayout/ProtectedLayout';
 import {
-  ACCOUNT_EMAIL_ROUTE_PATH,
   DELETE_ACCOUNT_ROUTE_PATH,
   PROTECTED_ROUTE_HANDLE,
   ROOT_ROUTE_PATH,
@@ -10,6 +9,7 @@ import {
   REPERTOIRE_ROUTE_PATH,
   FOLDER_ROUTE_PATH,
 } from '../../pages/repertoire/router.constants';
+import { MOVE_TREE_ROUTE_PATH } from '../../pages/MoveTree/router.constants';
 import { ACCOUNT_ROUTE_PATH } from '../../pages/account/router.constants';
 import { RootLayout } from '../RootLayout/RootLayout';
 import { Account } from '../../pages/account/page';
@@ -17,7 +17,8 @@ import { FORGOT_PASSWORD_ROUTE_PATH } from '../../pages/(auth)/forgot-password/r
 import { SET_NEW_PASSWORD_ROUTE_PATH } from '../../pages/(auth)/set-new-password/router.constants';
 import { SIGN_IN_ROUTE_PATH } from '../../pages/(auth)/sign-in/router.constants';
 import { SIGN_UP_ROUTE_PATH } from '../../pages/(auth)/sign-up/router.constants';
-import { ChangeEmail } from '../../pages/ChangeEmail/page';
+import { ACCOUNT_EMAIL_ROUTE_PATH } from '../../pages/account/email/router.constants';
+import { ChangeEmail } from '../../pages/account/email/page';
 import { ChangePassword } from '../../pages/account/password/page';
 import { ChangePasswordConfirmation } from '../../pages/account/password/confirmation/page';
 import {
@@ -33,6 +34,7 @@ import { SignIn } from '../../pages/(auth)/sign-in/page';
 import { SignUp } from '../../pages/(auth)/sign-up/page';
 import { Repertoire } from '../../pages/repertoire/page';
 import { Folder } from '../../pages/repertoire/[folderId]/page';
+import { MoveTree } from '../../pages/MoveTree/page';
 
 export const router = createBrowserRouter([
   {
@@ -59,6 +61,7 @@ export const router = createBrowserRouter([
           { path: DELETE_ACCOUNT_ROUTE_PATH, element: <DeleteAccount /> },
           { path: REPERTOIRE_ROUTE_PATH, element: <Repertoire /> },
           { path: FOLDER_ROUTE_PATH, element: <Folder /> },
+          { path: MOVE_TREE_ROUTE_PATH, element: <MoveTree /> },
         ],
       },
       { path: SIGN_IN_ROUTE_PATH, element: <SignIn /> },

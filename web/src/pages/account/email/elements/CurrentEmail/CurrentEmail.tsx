@@ -1,5 +1,5 @@
 import type { User } from '@supabase/supabase-js';
-import { SuccessMessage } from '../../../../shared/SuccessMessage/SuccessMessage';
+import { SuccessMessage } from '../../../../../shared/SuccessMessage/SuccessMessage';
 import './CurrentEmail.css';
 
 type CurrentEmailProps = {

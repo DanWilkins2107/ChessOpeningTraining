@@ -6,6 +6,7 @@ import {
   SIGNED_OUT_PENDING,
 } from '../../shared/signOut/signOut.constants';
 import { supabase } from '../../supabase';
+import { ACCOUNT_EMAIL_ROUTE_PATH } from './email/router.constants';
 import { CHANGE_PASSWORD_ROUTE_PATH } from './password/router.constants';
 import { ProfileSettings } from './elements/ProfileSettings/ProfileSettings';
 import './page.css';
@@ -29,7 +30,7 @@ export function Account() {
   return (
     <section className="account-card">
       <h1 className="account-heading">Account</h1>
-      <Link to="/account/email" className="account-action">
+      <Link to={ACCOUNT_EMAIL_ROUTE_PATH} className="account-action">
         Change email
       </Link>
       <ProfileSettings />
