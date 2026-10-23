@@ -35,19 +35,19 @@ secure_password_change = true
 
 [auth.email.template.recovery]
 subject = "Reset your Chess Opening Training password"
-content_path = "./supabase/templates/recovery.html"
+content_path = "./supabase/templates/built/recovery.html"
 
 [auth.email.template.email_change]
 subject = "Confirm your new Chess Opening Training email"
-content_path = "./supabase/templates/email_change.html"
+content_path = "./supabase/templates/built/email_change.html"
 
 [auth.email.template.reauthentication]
 subject = "Your Chess Opening Training verification code"
-content_path = "./supabase/templates/reauthentication.html"
+content_path = "./supabase/templates/built/reauthentication.html"
 
 [auth.email.template.magic_link]
 subject = "Sign in to Chess Opening Training"
-content_path = "./supabase/templates/magic_link.html"
+content_path = "./supabase/templates/built/magic_link.html"
 
 # Sign-up only hides that an email is already registered when neither email nor
 # SMS autoconfirms, so SMS confirmations are on even though SMS sign-up is not.

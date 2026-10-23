@@ -25,6 +25,8 @@ jobs:
 
       - run: npm ci
 
+      - run: npm run email:build
+
       - run: npx playwright install --with-deps chromium
 
       - run: npm run check
@@ -42,6 +44,8 @@ jobs:
           cache: npm
 
       - run: npm ci
+
+      - run: npm run email:build
 
       - run: npx playwright install --with-deps chromium
 

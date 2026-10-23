@@ -1,4 +1,5 @@
 import {
+  existsSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
@@ -8,16 +9,14 @@ import {
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import {
-  renderTemplate,
-  templateProblems,
-  writeTemplates,
-} from './emailTemplates';
+import { renderTemplate, writeTemplates } from './emailTemplates';
 
-const LAYOUT = '<html><body>\n<!-- BODY -->\n</body></html>\n';
+const SLOT = '<!-- insert content here -->';
+const LAYOUT = `<html><body>\n${SLOT}\n</body></html>\n`;
+const SLOT_ERROR = `layout.html must contain ${SLOT} exactly once`;
 
 describe('renderTemplate', () => {
-  it('fills the body slot and leaves Supabase tags untouched', () => {
+  it('fills the content slot and leaves Supabase tags untouched', () => {
     expect(
       renderTemplate(LAYOUT, '<a href="{{ .ConfirmationURL }}">Go</a>\n'),
     ).toBe(
@@ -26,25 +25,19 @@ describe('renderTemplate', () => {
   });
 
   it('inserts replacement patterns like $& literally', () => {
-    expect(renderTemplate('<!-- BODY -->', 'Costs $& more')).toBe(
-      'Costs $& more',
-    );
+    expect(renderTemplate(SLOT, 'Costs $& more')).toBe('Costs $& more');
   });
 
-  it('rejects a layout without a body slot', () => {
-    expect(() => renderTemplate('<html></html>', 'x')).toThrow(
-      'layout.html must contain <!-- BODY --> exactly once',
-    );
+  it('rejects a layout without a content slot', () => {
+    expect(() => renderTemplate('<html></html>', 'x')).toThrow(SLOT_ERROR);
   });
 
-  it('rejects a layout with two body slots', () => {
-    expect(() => renderTemplate('<!-- BODY --><!-- BODY -->', 'x')).toThrow(
-      'layout.html must contain <!-- BODY --> exactly once',
-    );
+  it('rejects a layout with two content slots', () => {
+    expect(() => renderTemplate(SLOT + SLOT, 'x')).toThrow(SLOT_ERROR);
   });
 });
 
-describe('templates folder', () => {
+describe('writeTemplates', () => {
   let dir: string;
   const write = (file: string, text: string) =>
     writeFileSync(path.join(dir, file), text);
@@ -61,41 +54,25 @@ describe('templates folder', () => {
 
   afterEach(() => rmSync(dir, { recursive: true }));
 
-  it('writes one finished template per body fragment', () => {
+  it('writes one finished template per body fragment into built/', () => {
     writeTemplates(dir);
 
-    expect(read('confirmation.html')).toBe(
+    expect(read('built/confirmation.html')).toBe(
       '<html><body>\n<p>Confirm</p>\n</body></html>\n',
     );
-    expect(read('recovery.html')).toBe(
+    expect(read('built/recovery.html')).toBe(
       '<html><body>\n<p>Reset</p>\n</body></html>\n',
     );
+    expect(existsSync(path.join(dir, 'built/notes.txt'))).toBe(false);
   });
 
-  it('finds no problems once built', () => {
+  it('clears templates whose fragment has gone', () => {
+    writeTemplates(dir);
+    rmSync(path.join(dir, 'bodies/recovery.html'));
+
     writeTemplates(dir);
 
-    expect(templateProblems(dir)).toEqual([]);
-  });
-
-  it('finds no problems when there are no fragments, even without a layout', () => {
-    rmSync(path.join(dir, 'bodies'), { recursive: true });
-    mkdirSync(path.join(dir, 'bodies'));
-    rmSync(path.join(dir, 'layout.html'));
-
-    expect(templateProblems(dir)).toEqual([]);
-  });
-
-  it('reports missing, stale and orphaned templates', () => {
-    writeTemplates(dir);
-    rmSync(path.join(dir, 'confirmation.html'));
-    write('bodies/recovery.html', '<p>Reset now</p>');
-    write('invite.html', '<p>Old</p>');
-
-    expect(templateProblems(dir)).toEqual([
-      `${dir}/invite.html: orphaned, no bodies/invite.html builds it`,
-      `${dir}/confirmation.html: missing, run npm run email:build`,
-      `${dir}/recovery.html: stale, run npm run email:build`,
-    ]);
+    expect(existsSync(path.join(dir, 'built/recovery.html'))).toBe(false);
+    expect(existsSync(path.join(dir, 'built/confirmation.html'))).toBe(true);
   });
 });
