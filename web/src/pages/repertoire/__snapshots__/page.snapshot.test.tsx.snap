@@ -59,7 +59,7 @@ exports[`Repertoire > matches snapshot 1`] = `
             class="repertoire-loading-tile"
           />
           <div
-            class="repertoire-loading-name repertoire-loading-name-wide"
+            class="repertoire-loading-name"
           />
         </div>
         <div
@@ -69,7 +69,7 @@ exports[`Repertoire > matches snapshot 1`] = `
             class="repertoire-loading-tile"
           />
           <div
-            class="repertoire-loading-name repertoire-loading-name-medium"
+            class="repertoire-loading-name"
           />
         </div>
         <div
@@ -79,7 +79,7 @@ exports[`Repertoire > matches snapshot 1`] = `
             class="repertoire-loading-tile"
           />
           <div
-            class="repertoire-loading-name repertoire-loading-name-narrow"
+            class="repertoire-loading-name"
           />
         </div>
       </div>

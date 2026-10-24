@@ -23,15 +23,15 @@
   border-radius: var(--radius-pill);
 }
 
-.repertoire-loading-name-wide {
+.repertoire-loading-row:nth-child(1) .repertoire-loading-name {
   width: 12rem;
 }
 
-.repertoire-loading-name-medium {
+.repertoire-loading-row:nth-child(2) .repertoire-loading-name {
   width: 9rem;
 }
 
-.repertoire-loading-name-narrow {
+.repertoire-loading-row:nth-child(3) .repertoire-loading-name {
   width: 6rem;
 }
 
