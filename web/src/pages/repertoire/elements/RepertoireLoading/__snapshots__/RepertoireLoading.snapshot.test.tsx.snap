@@ -4,8 +4,42 @@ exports[`RepertoireLoading > matches snapshot 1`] = `
 <div>
   <div
     aria-label="Loading repertoire"
-    class="spinner"
     role="status"
-  />
+  >
+    <div
+      class="repertoire-card"
+    >
+      <div
+        class="repertoire-loading-row"
+      >
+        <div
+          class="repertoire-loading-tile"
+        />
+        <div
+          class="repertoire-loading-name repertoire-loading-name-wide"
+        />
+      </div>
+      <div
+        class="repertoire-loading-row"
+      >
+        <div
+          class="repertoire-loading-tile"
+        />
+        <div
+          class="repertoire-loading-name repertoire-loading-name-medium"
+        />
+      </div>
+      <div
+        class="repertoire-loading-row"
+      >
+        <div
+          class="repertoire-loading-tile"
+        />
+        <div
+          class="repertoire-loading-name repertoire-loading-name-narrow"
+        />
+      </div>
+    </div>
+  </div>
 </div>
 `;
