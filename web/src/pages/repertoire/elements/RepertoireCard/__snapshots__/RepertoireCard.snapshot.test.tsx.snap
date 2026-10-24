@@ -1,0 +1,11 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`RepertoireCard > matches snapshot 1`] = `
+<div>
+  <div
+    class="repertoire-card"
+  >
+    Contents
+  </div>
+</div>
+`;
