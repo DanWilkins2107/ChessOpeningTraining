@@ -45,11 +45,45 @@ exports[`Repertoire > matches snapshot 1`] = `
         </button>
       </div>
     </form>
-    <p
-      class="repertoire-empty"
+    <div
+      aria-label="Loading repertoire"
+      role="status"
     >
-      No folders yet
-    </p>
+      <div
+        class="repertoire-card"
+      >
+        <div
+          class="repertoire-loading-row"
+        >
+          <div
+            class="repertoire-loading-tile"
+          />
+          <div
+            class="repertoire-loading-name"
+          />
+        </div>
+        <div
+          class="repertoire-loading-row"
+        >
+          <div
+            class="repertoire-loading-tile"
+          />
+          <div
+            class="repertoire-loading-name"
+          />
+        </div>
+        <div
+          class="repertoire-loading-row"
+        >
+          <div
+            class="repertoire-loading-tile"
+          />
+          <div
+            class="repertoire-loading-name"
+          />
+        </div>
+      </div>
+    </div>
   </section>
 </div>
 `;
