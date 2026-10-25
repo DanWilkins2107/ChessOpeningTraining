@@ -10,8 +10,9 @@ import {
   CHECK_VIOLATION,
   PERMISSION_DENIED,
 } from './tests-shared/pgErrorCodes';
+import { utcDay } from './tests-shared/utcDay';
 
-const today = new Date().toISOString().slice(0, 10);
+const today = utcDay();
 
 async function userWhoTrained(moves: number) {
   const user = await signedInUser();
