@@ -4,7 +4,7 @@ import { RepertoireLoadError } from './RepertoireLoadError';
 
 describe('RepertoireLoadError', () => {
   it('matches snapshot', () => {
-    const { container } = render(<RepertoireLoadError retry={() => {}} />);
+    const { container } = render(<RepertoireLoadError />);
     expect(container).toMatchSnapshot();
   });
 });

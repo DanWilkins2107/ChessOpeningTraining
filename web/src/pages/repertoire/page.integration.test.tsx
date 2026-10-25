@@ -106,30 +106,27 @@ it("shows loading, not the previous user's repertoire, when the user changes", a
   expect(screen.getByText('No folders yet')).not.toBeVisible();
 });
 
-it('loads the repertoire again when the user tries again', async () => {
-  // Given a user whose first repertoire request fails
-  const retrying = await createTestUser();
-  await retrying.signIn();
+it('shows a generic message when the repertoire fails to load', async () => {
+  // Given a user whose repertoire request fails
+  const failing = await createTestUser();
+  await failing.signIn();
   const realFetch = window.fetch;
-  let failed = false;
   // mock-reason: get_repertoire reads only the caller's own rows, so the local
-  // server cannot be made to fail it on demand. Only the first one is failed.
-  vi.spyOn(window, 'fetch').mockImplementation((input, init) => {
-    if (failed || !isRepertoireRequest(input)) return realFetch(input, init);
-    failed = true;
-    return Promise.resolve(
-      Response.json({ message: 'permission denied' }, { status: 403 }),
-    );
-  });
+  // server cannot be made to fail it on demand.
+  vi.spyOn(window, 'fetch').mockImplementation((input, init) =>
+    isRepertoireRequest(input)
+      ? Promise.resolve(
+          Response.json({ message: 'permission denied' }, { status: 403 }),
+        )
+      : realFetch(input, init),
+  );
+
+  // When they open the repertoire
   await renderSettledAt('/repertoire');
 
-  // When they see a generic message and try again
+  // Then they see a generic message, not the server's
   expect(await screen.findByRole('alert')).toHaveTextContent(
     "Couldn't load your repertoire",
   );
   expect(screen.queryByText(/permission denied/)).not.toBeInTheDocument();
-  fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
-
-  // Then their repertoire shows
-  expect(await screen.findByText('No folders yet')).toBeInTheDocument();
 });

@@ -1,6 +1,0 @@
-.repertoire-load-error {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--gap-sm);
-}
