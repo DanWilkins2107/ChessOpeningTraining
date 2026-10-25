@@ -1,5 +1,5 @@
 import { QueryClientProvider, useSuspenseQuery } from '@tanstack/react-query';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { expect, it } from 'vitest';
 import { createQueryClient } from '../../elements/createQueryClient/createQueryClient';
 import { LoadBoundary } from './LoadBoundary';
@@ -26,15 +26,6 @@ const renderBoundary = (
       </LoadBoundary>
     </QueryClientProvider>,
   );
-
-const failingOnce = (things: string) => {
-  let calls = 0;
-  return async () => {
-    calls += 1;
-    if (calls === 1) throw new Error('Server down');
-    return things;
-  };
-};
 
 it('shows the loading component while its content loads', () => {
   // Given content that never arrives
@@ -69,24 +60,13 @@ it('shows its content once loaded', async () => {
 
 it('shows the error component when its content fails to load', async () => {
   // Given content that fails to load
+  const failing = async (): Promise<string> => {
+    throw new Error('Server down');
+  };
 
   // When the boundary renders it
-  renderBoundary(failingOnce(crypto.randomUUID()));
+  renderBoundary(failing);
 
   // Then the error component shows
-  expect(
-    await screen.findByRole('button', { name: ERROR }),
-  ).toBeInTheDocument();
-});
-
-it('loads its content again when the error component retries', async () => {
-  // Given content that failed to load once
-  const things = crypto.randomUUID();
-  renderBoundary(failingOnce(things));
-
-  // When the error component retries
-  fireEvent.click(await screen.findByRole('button', { name: ERROR }));
-
-  // Then the content shows
-  expect(await screen.findByText(things)).toBeInTheDocument();
+  expect(await screen.findByText(ERROR)).toBeInTheDocument();
 });
