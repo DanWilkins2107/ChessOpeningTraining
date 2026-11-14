@@ -10,15 +10,10 @@
         "repo": "DanWilkins2107/pr-evidence-gallery"
       },
       "autoUpdate": true
-    },
-    "agentjira": {
-      "source": { "source": "github", "repo": "DanWilkins2107/AgentJira" },
-      "autoUpdate": true
     }
   },
   "enabledPlugins": {
     "code-style@code-style": true,
-    "pr-evidence@pr-evidence-tools": true,
-    "agentjira@agentjira": true
+    "pr-evidence@pr-evidence-tools": true
   }
 }
