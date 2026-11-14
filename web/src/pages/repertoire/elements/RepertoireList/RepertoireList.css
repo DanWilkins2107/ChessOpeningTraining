@@ -1,3 +1,12 @@
 .repertoire-list-empty {
   color: var(--ink-muted);
 }
+
+.repertoire-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

@@ -16,10 +16,33 @@ const isRepertoireRequest = (input: RequestInfo | URL) =>
 const loadingRepertoire = () =>
   screen.queryByRole('status', { name: 'Loading repertoire' });
 
-async function expectNoEmptyMessageOnceLoaded() {
-  await renderSettledAt('/repertoire');
-  await waitFor(() => expect(loadingRepertoire()).not.toBeInTheDocument());
-  expect(screen.queryByText('No folders yet')).not.toBeInTheDocument();
+type Client = Awaited<ReturnType<typeof pageUser.signedInClient>>;
+
+async function insert(
+  client: Client,
+  table: 'folders' | 'move_trees',
+  row: Record<string, string>,
+) {
+  const { data, error } = await client
+    .from(table)
+    .insert(row)
+    .select('id')
+    .single();
+  if (error) throw error;
+  return data.id;
+}
+
+async function seedRepertoire(client: Client) {
+  await insert(client, 'folders', { name: 'Caro-Kann' });
+  const london = await insert(client, 'folders', { name: 'London' });
+  await insert(client, 'move_trees', { name: 'Scotch', side: 'white' });
+  await insert(client, 'move_trees', { name: 'Sicilian', side: 'black' });
+  await insert(client, 'folders', { name: 'Nested', parent_id: london });
+  await insert(client, 'move_trees', {
+    name: 'Filed',
+    side: 'white',
+    folder_id: london,
+  });
 }
 
 it('creates a folder from the page', async () => {
@@ -54,32 +77,25 @@ it('says so when the user has no folders or move trees', async () => {
   expect(screen.queryByRole('status')).not.toBeInTheDocument();
 });
 
-it('does not say so when the user has a folder', async () => {
-  // Given a user with one folder
-  const withFolder = await createTestUser();
-  const client = await withFolder.signedInClient();
-  const { error } = await client.from('folders').insert({ name: 'Najdorf' });
-  if (error) throw error;
-  await withFolder.signIn();
+it('lists top-level folders, then top-level move trees with a pawn for their side, in the order they were added', async () => {
+  // Given a user with two top-level folders and move trees, and one of each inside a folder
+  const listing = await createTestUser();
+  const client = await listing.signedInClient();
+  await seedRepertoire(client);
+  await listing.signIn();
 
-  // When the page renders and loading finishes
-  // Then there is no empty message
-  await expectNoEmptyMessageOnceLoaded();
-});
+  // When the page renders
+  await renderSettledAt('/repertoire');
 
-it('does not say so when the user has a move tree', async () => {
-  // Given a user with one move tree
-  const withMoveTree = await createTestUser();
-  const client = await withMoveTree.signedInClient();
-  const { error } = await client
-    .from('move_trees')
-    .insert({ name: 'Scotch', side: 'white' });
-  if (error) throw error;
-  await withMoveTree.signIn();
-
-  // When the page renders and loading finishes
-  // Then there is no empty message
-  await expectNoEmptyMessageOnceLoaded();
+  // Then folders come first, then move trees, each in the order they were added
+  expect(
+    (await screen.findAllByRole('listitem')).map((row) => row.textContent),
+  ).toEqual(['Caro-Kann', 'London', 'Scotch', 'Sicilian']);
+  expect(
+    screen.getAllByRole('img').map((pawn) => pawn.getAttribute('alt')),
+  ).toEqual(['white pawn', 'black pawn']);
+  expect(screen.queryByText('No folders yet')).not.toBeInTheDocument();
+  expect(loadingRepertoire()).not.toBeInTheDocument();
 });
 
 it("shows loading, not the previous user's repertoire, when the user changes", async () => {
