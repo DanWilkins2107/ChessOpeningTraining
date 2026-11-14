@@ -1,0 +1,26 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`MoveTreeItem > matches snapshot 1`] = `
+<div>
+  <ul>
+    <li
+      class="move-tree-item"
+    >
+      <span
+        class="pawn-tile"
+      >
+        <img
+          alt="black pawn"
+          class="pawn-tile-icon"
+          src="/src/shared/pieces/bP.svg"
+        />
+      </span>
+      <span
+        class="move-tree-item-name"
+      >
+        Sicilian
+      </span>
+    </li>
+  </ul>
+</div>
+`;
