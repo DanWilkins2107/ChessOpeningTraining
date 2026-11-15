@@ -1,4 +1,4 @@
-// fallow-ignore-file unused-file -- landed ahead of deriveExercises, its first consumer.
+// fallow-ignore-file unused-file -- 1c3bb1b3 2026-11-29 landed ahead of deriveExercises (74a47fb0), its first consumer.
 import type { ChosenMoveTree } from '../ChosenMoveTree/ChosenMoveTree';
 import type { Exercise } from '../Exercise/Exercise';
 import { mapMovesToLineArray } from '../mapMovesToLineArray/mapMovesToLineArray';
