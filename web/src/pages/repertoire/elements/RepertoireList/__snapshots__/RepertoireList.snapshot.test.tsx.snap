@@ -2,71 +2,10 @@
 
 exports[`RepertoireList > matches snapshot 1`] = `
 <div>
-  <div
-    class="repertoire-card"
+  <p
+    class="repertoire-list-empty"
   >
-    <ul
-      class="repertoire-list"
-    >
-      <li
-        class="folder-item"
-      >
-        <span
-          class="folder-tile"
-        >
-          <svg
-            aria-hidden="true"
-            class="folder-tile-icon"
-            viewBox="0 0 24 24"
-          >
-            <path
-              d="M3 6.5A2.5 2.5 0 0 1 5.5 4h4l2 2.2h7A2.5 2.5 0 0 1 21 8.7v8.8a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5Z"
-            />
-          </svg>
-        </span>
-        <span
-          class="folder-item-name"
-        >
-          London
-        </span>
-      </li>
-      <li
-        class="move-tree-item"
-      >
-        <span
-          class="pawn-tile"
-        >
-          <img
-            alt="white pawn"
-            class="pawn-tile-icon"
-            src="/src/shared/pieces/wP.svg"
-          />
-        </span>
-        <span
-          class="move-tree-item-name"
-        >
-          Scotch
-        </span>
-      </li>
-      <li
-        class="move-tree-item"
-      >
-        <span
-          class="pawn-tile"
-        >
-          <img
-            alt="black pawn"
-            class="pawn-tile-icon"
-            src="/src/shared/pieces/bP.svg"
-          />
-        </span>
-        <span
-          class="move-tree-item-name"
-        >
-          Sicilian
-        </span>
-      </li>
-    </ul>
-  </div>
+    No folders yet
+  </p>
 </div>
 `;
