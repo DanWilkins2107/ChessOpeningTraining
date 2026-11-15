@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { Board } from '../../../../elements/Board/Board';
 import './MoveTreeLayout.css';
 
-// TODO dbda0c80 2026-11-15: derive the position, orientation and animation from the move tree.
+// TODO e62ad75f 2026-12-14: derive the position, orientation and animation from the move tree.
 const POSITION = new Promise<string>(() => {});
 
 export function MoveTreeLayout({ children }: { children: ReactNode }) {
