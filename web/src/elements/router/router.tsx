@@ -33,6 +33,7 @@ import { SignUp } from '../../pages/(auth)/sign-up/page';
 import { Repertoire } from '../../pages/repertoire/page';
 import { Folder } from '../../pages/repertoire/[folderId]/page';
 import { MoveTree } from '../../pages/MoveTree/page';
+import { TilesPreview } from '../../pages/tiles-preview/page';
 
 export const router = createBrowserRouter([
   {
@@ -66,6 +67,7 @@ export const router = createBrowserRouter([
       { path: SIGN_UP_ROUTE_PATH, element: <SignUp /> },
       { path: FORGOT_PASSWORD_ROUTE_PATH, element: <ForgotPassword /> },
       { path: SET_NEW_PASSWORD_ROUTE_PATH, element: <SetNewPassword /> },
+      { path: '/tiles-preview', element: <TilesPreview /> },
       { path: '*', element: <NotFound /> },
     ],
   },
