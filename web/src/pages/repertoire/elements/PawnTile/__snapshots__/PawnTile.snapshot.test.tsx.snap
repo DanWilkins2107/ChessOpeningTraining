@@ -1,0 +1,15 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`PawnTile > matches snapshot 1`] = `
+<div>
+  <span
+    class="pawn-tile"
+  >
+    <img
+      alt="black pawn"
+      class="pawn-tile-icon"
+      src="/src/shared/pieces/bP.svg"
+    />
+  </span>
+</div>
+`;
