@@ -1,4 +1,4 @@
-// fallow-ignore-file unused-file -- 357a3b13 2026-11-16 landed ahead of the cap error message, its first consumer.
+// fallow-ignore-file unused-file -- 357a3b13 2026-12-14 landed ahead of the cap error message (ba599ba8), its first consumer.
 import type { PostgrestError } from '@supabase/supabase-js';
 import { CHECK_VIOLATION } from '../../shared/postgresErrorCodes/postgresErrorCodes.constants';
 
