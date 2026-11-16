@@ -5,10 +5,6 @@ import { lineStatus } from '../lineStatus/lineStatus';
 import { maxConfidence } from '../maxConfidence/maxConfidence';
 import type { MoveNode } from '../MoveNode/MoveNode';
 
-// You play the opponent of the tree's side, so the line stays unseen until you
-// have seen it in your own tree. The quizzed replies are the opponent moves
-// that are their position's only child, as in enumerateOtherColour. Moves
-// missing from a tree count as 0.
 export const otherColourStatus = (
   side: ChosenMoveTree['side'],
   trees: Record<ChosenMoveTree['side'], MoveNode[]>,
@@ -36,7 +32,6 @@ const quizzedConfidences = (
       : [],
   );
 
-// The moves on offer at each step of the path, empty once it leaves the tree.
 const positionsAlong = (tree: MoveNode[], path: string[]): MoveNode[][] => {
   const positions: MoveNode[][] = [];
   let nodes = tree;
@@ -50,6 +45,5 @@ const positionsAlong = (tree: MoveNode[], path: string[]): MoveNode[][] => {
 const find = (nodes: MoveNode[], san: string) =>
   nodes.find((candidate) => candidate.san === san);
 
-// A missing move with no siblings still counts, at 0.
 const isOnlyChild = (nodes: MoveNode[], san: string) =>
   nodes.every((candidate) => candidate.san === san);
