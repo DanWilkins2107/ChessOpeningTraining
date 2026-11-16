@@ -1,0 +1,15 @@
+/* fallow-ignore-file unused-file -- e195d80a 2026-11-29 landed ahead of the repertoire rows (67fc4ba0), its first consumer. */
+.pawn-tile {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.125rem;
+  height: 2.125rem;
+  border-radius: var(--radius-md);
+  background: var(--surface-muted);
+}
+
+.pawn-tile-icon {
+  width: 1.75rem;
+  height: 1.75rem;
+}
