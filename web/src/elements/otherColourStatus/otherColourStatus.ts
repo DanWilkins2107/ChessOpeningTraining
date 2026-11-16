@@ -29,15 +29,27 @@ const quizzedConfidences = (
   tree: MoveNode[],
   path: string[],
   opponentParity: number,
-): number[] => {
-  const found: number[] = [];
+): number[] =>
+  positionsAlong(tree, path).flatMap((nodes, index) =>
+    index % 2 === opponentParity && isOnlyChild(nodes, path[index])
+      ? [find(nodes, path[index])?.confidence ?? 0]
+      : [],
+  );
+
+// The moves on offer at each step of the path, empty once it leaves the tree.
+const positionsAlong = (tree: MoveNode[], path: string[]): MoveNode[][] => {
+  const positions: MoveNode[][] = [];
   let nodes = tree;
-  path.forEach((san, index) => {
-    const node = nodes.find((candidate) => candidate.san === san);
-    const onlyChild = nodes.every((candidate) => candidate.san === san);
-    if (index % 2 === opponentParity && onlyChild)
-      found.push(node?.confidence ?? 0);
-    nodes = node?.children ?? [];
-  });
-  return found;
+  for (const san of path) {
+    positions.push(nodes);
+    nodes = find(nodes, san)?.children ?? [];
+  }
+  return positions;
 };
+
+const find = (nodes: MoveNode[], san: string) =>
+  nodes.find((candidate) => candidate.san === san);
+
+// A missing move with no siblings still counts, at 0.
+const isOnlyChild = (nodes: MoveNode[], san: string) =>
+  nodes.every((candidate) => candidate.san === san);
