@@ -1,0 +1,54 @@
+name: supabase-dev-deploy
+
+# Deploys supabase/ to the hosted dev project: migrations, config.toml (auth
+# settings and email templates), the edge function secrets, then the edge
+# functions. `config push` prints the diff before applying it.
+on:
+  push:
+    branches: [main]
+    paths:
+      - supabase/**
+      - '!supabase/tests/**'
+      - '!supabase/meta/**'
+      - .github/workflows/supabase-dev-deploy.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: supabase-dev-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      PROJECT_REF: ${{ secrets.SUPABASE_DEV_PROJECT_REF }}
+      # Dev has no hosted frontend; it is used from a local one.
+      ALLOWED_ORIGIN: http://localhost:5173
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # The built templates are gitignored; config.toml points at them.
+      - run: npm run email:build
+
+      - run: npx supabase link --project-ref "$PROJECT_REF"
+
+      # Migrations go first so the functions deploy against the new schema.
+      - run: npx supabase db push --linked --yes
+
+      - run: npx supabase config push --project-ref "$PROJECT_REF" --yes
+
+      - run: npx supabase secrets set --project-ref "$PROJECT_REF" ALLOWED_ORIGIN="$ALLOWED_ORIGIN"
+
+      - run: npx supabase functions deploy --project-ref "$PROJECT_REF" --use-api --yes
