@@ -33,6 +33,10 @@ enable_confirmations = true
 double_confirm_changes = true
 secure_password_change = true
 
+[auth.email.template.confirmation]
+subject = "Confirm your Chess Opening Training email"
+content_path = "./supabase/templates/built/confirmation.html"
+
 [auth.email.template.recovery]
 subject = "Reset your Chess Opening Training password"
 content_path = "./supabase/templates/built/recovery.html"
