@@ -1,4 +1,3 @@
-// fallow-ignore-file unused-file -- e195d80a 2026-11-29 landed ahead of the repertoire rows (67fc4ba0), its first consumer.
 import { PIECES } from '../../../../shared/pieces/pieces.constants';
 import type { RepertoireMoveTree } from '../RepertoireMoveTree/RepertoireMoveTree';
 import './PawnTile.css';

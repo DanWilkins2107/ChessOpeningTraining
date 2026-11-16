@@ -1,4 +1,3 @@
-// fallow-ignore-file unused-file -- e195d80a 2026-11-29 landed ahead of the repertoire rows (67fc4ba0), its first consumer.
 import './FolderTile.css';
 
 export function FolderTile() {
