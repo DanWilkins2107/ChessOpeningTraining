@@ -2,6 +2,21 @@
 
 exports[`RepertoireList > matches snapshot 1`] = `
 <div>
+  <button
+    aria-expanded="false"
+    class="repertoire-list-new-folder"
+    type="button"
+  >
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+    >
+      <path
+        d="M12 5v14M5 12h14"
+      />
+    </svg>
+    New folder
+  </button>
   <div
     class="repertoire-card"
   >
