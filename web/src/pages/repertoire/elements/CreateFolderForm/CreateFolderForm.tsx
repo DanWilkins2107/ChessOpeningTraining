@@ -10,7 +10,7 @@ import './CreateFolderForm.css';
 const NAME_MAX_LENGTH = 100;
 
 type CreateFolderFormProps = {
-  onCreated: () => void;
+  onCreated: () => void | Promise<void>;
 };
 
 export function CreateFolderForm({ onCreated }: CreateFolderFormProps) {
@@ -33,7 +33,7 @@ export function CreateFolderForm({ onCreated }: CreateFolderFormProps) {
     setError(undefined);
     form.reset();
     setName('');
-    onCreated();
+    await onCreated();
   }
 
   return (

@@ -68,10 +68,14 @@ it('creates a first folder from the empty state and lists it', async () => {
   expect(await screen.findByLabelText('Folder name')).toHaveFocus();
   await submitFolderNamed('Najdorf');
 
-  // Then the naming row closes, the folder is listed and it is saved
-  await waitFor(() =>
-    expect(screen.queryByLabelText('Folder name')).not.toBeInTheDocument(),
-  );
+  // Then the naming row closes, the folder is listed without the empty state
+  // coming back in between, and it is saved
+  let emptyStateReturned = false;
+  await waitFor(() => {
+    if (screen.queryByText('Nothing here yet')) emptyStateReturned = true;
+    expect(screen.queryByLabelText('Folder name')).not.toBeInTheDocument();
+  });
+  expect(emptyStateReturned).toBe(false);
   expect(await listedRows()).toEqual(['Najdorf']);
   const { data } = await supabase.from('folders').select('name');
   expect(data).toEqual([{ name: 'Najdorf' }]);

@@ -21,9 +21,9 @@ export function RepertoireList() {
   );
   const empty = folders.length === 0 && moveTrees.length === 0;
 
-  function folderCreated() {
+  async function folderCreated() {
+    await queryClient.invalidateQueries({ queryKey: [REPERTOIRE_QUERY_KEY] });
     setNaming(false);
-    void queryClient.invalidateQueries({ queryKey: [REPERTOIRE_QUERY_KEY] });
   }
 
   if (empty && !naming) {
