@@ -58,6 +58,12 @@ content_path = "./supabase/templates/built/magic_link.html"
 [auth.sms]
 enable_confirmations = true
 
+# Overrides for the hosted dev project, applied by `supabase config push`.
+# site_url stays on localhost: dev has no hosted frontend, so it is used from
+# a local one and email links must land there.
+[remotes.dev]
+project_id = "cffjsoojxjloybaahain"
+
 # Production sets these with `supabase secrets set`.
 [edge_runtime.secrets]
 ALLOWED_ORIGIN = "http://localhost:5173"
