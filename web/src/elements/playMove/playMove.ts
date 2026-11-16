@@ -1,4 +1,4 @@
-// fallow-ignore-file unused-file -- 5f46d3ff 2026-11-16 landed ahead of the folder page, its first consumer.
+// fallow-ignore-file unused-file -- 5f46d3ff 2026-12-14 landed ahead of the move tree editor (87592ff7), its first consumer.
 import { Chess } from 'chess.ts';
 import type { PartialMove } from 'chess.ts';
 import type { MoveNode } from '../MoveNode/MoveNode';
