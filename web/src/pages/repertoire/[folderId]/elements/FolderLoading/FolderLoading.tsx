@@ -1,6 +1,6 @@
 import { Spinner } from '../../../../../shared/Spinner/Spinner';
 
 export function FolderLoading() {
-  // TODO 76e88a53 2026-10-27: replace with the page skeleton, every tab showing its own empty state.
+  // TODO eaaf199e 2026-12-14: delete with the folder page once folders open inline.
   return <Spinner label="Loading folder" />;
 }

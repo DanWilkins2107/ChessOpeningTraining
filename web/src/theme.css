@@ -40,6 +40,8 @@
   --text-xl: 2rem;
 
   --shadow: 0 1px 3px rgb(31 41 55 / 8%), 0 4px 12px rgb(31 41 55 / 6%);
+  /* A card lifted on hover. */
+  --shadow-raised: 0 10px 24px rgb(31 41 55 / 14%);
 
   --content-width: 64rem;
 }

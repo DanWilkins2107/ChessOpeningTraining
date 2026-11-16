@@ -1,0 +1,37 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`TrainCard > matches snapshot 1`] = `
+<div>
+  <section
+    class="train-card"
+  >
+    <img
+      alt=""
+      class="train-card-piece"
+      src="/src/shared/pieces/bN.svg"
+    />
+    <h2
+      class="train-card-heading"
+    >
+      Train
+    </h2>
+    <p
+      class="train-card-stat"
+    >
+      Last trained 2 days ago
+    </p>
+    <p
+      class="train-card-stat"
+    >
+      7 moves trained today
+    </p>
+    <a
+      class="train-card-action"
+      data-discover="true"
+      href="/train"
+    >
+      Start training
+    </a>
+  </section>
+</div>
+`;
