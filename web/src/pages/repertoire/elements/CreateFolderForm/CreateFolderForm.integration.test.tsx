@@ -4,14 +4,20 @@ import { supabase } from '../../../../supabase';
 import { createTestUser } from '../../../../tests-shared/testUser';
 import { CreateFolderForm } from './CreateFolderForm';
 
-const createButton = () =>
-  screen.getByRole('button', { name: 'Create folder' });
+const createButton = () => screen.getByRole('button', { name: 'Create' });
 
 const nameField = () => screen.getByLabelText('Folder name');
 
 function renderForm() {
   const creations: string[] = [];
-  render(<CreateFolderForm onCreated={() => creations.push('created')} />);
+  render(
+    <CreateFolderForm
+      onCreated={() => {
+        creations.push('created');
+      }}
+      onCancel={() => {}}
+    />,
+  );
   return creations;
 }
 
