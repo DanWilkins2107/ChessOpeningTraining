@@ -11,9 +11,13 @@ const NAME_MAX_LENGTH = 100;
 
 type CreateFolderFormProps = {
   onCreated: () => void | Promise<void>;
+  onCancel: () => void;
 };
 
-export function CreateFolderForm({ onCreated }: CreateFolderFormProps) {
+export function CreateFolderForm({
+  onCreated,
+  onCancel,
+}: CreateFolderFormProps) {
   const [name, setName] = useState('');
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string>();
@@ -49,6 +53,9 @@ export function CreateFolderForm({ onCreated }: CreateFolderFormProps) {
           autoFocus
           maxLength={NAME_MAX_LENGTH}
           onChange={(event) => setName(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === 'Escape') onCancel();
+          }}
           required
         />
         <Button disabled={pending || name.trim() === ''}>Create</Button>

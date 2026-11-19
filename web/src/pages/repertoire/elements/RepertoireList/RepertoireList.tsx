@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CreateFolderForm } from '../CreateFolderForm/CreateFolderForm';
 import { EmptyRepertoire } from '../EmptyRepertoire/EmptyRepertoire';
 import { FolderItem } from '../FolderItem/FolderItem';
@@ -13,6 +13,10 @@ export function RepertoireList() {
   const repertoire = useRepertoire();
   const queryClient = useQueryClient();
   const [naming, setNaming] = useState(false);
+  // Set once the naming row has closed, so focus returns to what opened it
+  // rather than falling to the page.
+  const [closedNaming, setClosedNaming] = useState(false);
+  const newFolder = useRef<HTMLButtonElement>(null);
   const folders = repertoire.folders.filter(
     (folder) => folder.parent_id === null,
   );
@@ -21,13 +25,27 @@ export function RepertoireList() {
   );
   const empty = folders.length === 0 && moveTrees.length === 0;
 
+  useEffect(() => {
+    if (closedNaming && !naming) newFolder.current?.focus();
+  }, [closedNaming, naming]);
+
+  function closeNaming() {
+    setNaming(false);
+    setClosedNaming(true);
+  }
+
   async function folderCreated() {
     await queryClient.invalidateQueries({ queryKey: [REPERTOIRE_QUERY_KEY] });
-    setNaming(false);
+    closeNaming();
   }
 
   if (empty && !naming) {
-    return <EmptyRepertoire onCreateFolder={() => setNaming(true)} />;
+    return (
+      <EmptyRepertoire
+        onCreateFolder={() => setNaming(true)}
+        focusCreate={closedNaming}
+      />
+    );
   }
 
   return (
@@ -35,6 +53,7 @@ export function RepertoireList() {
       {!empty && (
         <button
           type="button"
+          ref={newFolder}
           className="repertoire-list-new-folder"
           aria-expanded={naming}
           onClick={() => setNaming(!naming)}
@@ -49,7 +68,10 @@ export function RepertoireList() {
         <ul className="repertoire-list">
           {naming && (
             <li>
-              <CreateFolderForm onCreated={folderCreated} />
+              <CreateFolderForm
+                onCreated={folderCreated}
+                onCancel={closeNaming}
+              />
             </li>
           )}
           {folders.map((folder) => (

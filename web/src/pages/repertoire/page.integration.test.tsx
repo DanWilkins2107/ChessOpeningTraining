@@ -77,6 +77,7 @@ it('creates a first folder from the empty state and lists it', async () => {
   });
   expect(emptyStateReturned).toBe(false);
   expect(await listedRows()).toEqual(['Najdorf']);
+  expect(screen.getByRole('button', { name: 'New folder' })).toHaveFocus();
   const { data } = await supabase.from('folders').select('name');
   expect(data).toEqual([{ name: 'Najdorf' }]);
 });
@@ -93,9 +94,53 @@ it('creates a folder with New folder, after the existing ones', async () => {
   fireEvent.click(await screen.findByRole('button', { name: 'New folder' }));
   await submitFolderNamed('Dutch');
 
-  // Then the new folder is listed after the existing one
+  // Then the new folder is listed after the existing one, and focus is back
+  // on New folder
   expect(await screen.findByText('Dutch')).toBeInTheDocument();
   expect(await listedRows()).toEqual(['Slav', 'Dutch']);
+  await waitFor(() =>
+    expect(screen.getByRole('button', { name: 'New folder' })).toHaveFocus(),
+  );
+});
+
+it('closes the naming row on Escape, back to the empty state', async () => {
+  // Given a user with nothing yet, naming a first folder
+  const escaping = await createTestUser();
+  await escaping.signIn();
+  await renderSettledAt('/repertoire');
+  fireEvent.click(await screen.findByRole('button', { name: 'Create folder' }));
+
+  // When they press Escape in the name field
+  fireEvent.keyDown(await screen.findByLabelText('Folder name'), {
+    key: 'Escape',
+  });
+
+  // Then the empty state is back, with focus on Create folder, and nothing
+  // was saved
+  expect(await emptyHeading()).toBeInTheDocument();
+  expect(screen.queryByLabelText('Folder name')).not.toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Create folder' })).toHaveFocus();
+  const { data } = await supabase.from('folders').select('name');
+  expect(data).toEqual([]);
+});
+
+it('closes the naming row on Escape, back to New folder', async () => {
+  // Given a user with a folder and the naming row open
+  const escaping = await createTestUser();
+  const client = await escaping.signedInClient();
+  await insert(client, 'folders', { name: 'Slav' });
+  await escaping.signIn();
+  await renderSettledAt('/repertoire');
+  const newFolder = await screen.findByRole('button', { name: 'New folder' });
+  fireEvent.click(newFolder);
+
+  // When they press Escape in the name field
+  fireEvent.keyDown(screen.getByLabelText('Folder name'), { key: 'Escape' });
+
+  // Then the naming row is gone and focus is on New folder
+  expect(screen.queryByLabelText('Folder name')).not.toBeInTheDocument();
+  expect(newFolder).toHaveAttribute('aria-expanded', 'false');
+  expect(newFolder).toHaveFocus();
 });
 
 it('closes the naming row when New folder is pressed again', async () => {

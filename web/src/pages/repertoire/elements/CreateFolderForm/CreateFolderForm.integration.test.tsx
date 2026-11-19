@@ -10,7 +10,14 @@ const nameField = () => screen.getByLabelText('Folder name');
 
 function renderForm() {
   const creations: string[] = [];
-  render(<CreateFolderForm onCreated={() => creations.push('created')} />);
+  render(
+    <CreateFolderForm
+      onCreated={() => {
+        creations.push('created');
+      }}
+      onCancel={() => {}}
+    />,
+  );
   return creations;
 }
 
