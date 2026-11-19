@@ -5,8 +5,10 @@ import './EmptyRepertoire.css';
 
 export function EmptyRepertoire({
   onCreateFolder,
+  focusCreate = false,
 }: {
   onCreateFolder: () => void;
+  focusCreate?: boolean;
 }) {
   return (
     <div className="empty-repertoire">
@@ -15,7 +17,7 @@ export function EmptyRepertoire({
         <PawnTile side="white" />
       </div>
       <h2 className="empty-repertoire-title">Nothing here yet</h2>
-      <Button disabled={false} onClick={onCreateFolder}>
+      <Button disabled={false} onClick={onCreateFolder} autoFocus={focusCreate}>
         Create folder
       </Button>
     </div>

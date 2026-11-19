@@ -14,6 +14,20 @@ it('asks to create a folder when the button is pressed', () => {
   expect(onCreateFolder).toHaveBeenCalledOnce();
 });
 
+it('focuses Create folder only when asked to', () => {
+  // Given the empty state, once without focusCreate and once with it
+  const { unmount } = render(<EmptyRepertoire onCreateFolder={() => {}} />);
+  const unfocused = screen.getByRole('button', { name: 'Create folder' });
+  expect(unfocused).not.toHaveFocus();
+  unmount();
+
+  // When it renders with focusCreate
+  render(<EmptyRepertoire onCreateFolder={() => {}} focusCreate />);
+
+  // Then Create folder has focus
+  expect(screen.getByRole('button', { name: 'Create folder' })).toHaveFocus();
+});
+
 it('says there is nothing here yet, without exposing its decorative tiles', () => {
   // Given the empty state
   render(<EmptyRepertoire onCreateFolder={() => {}} />);
