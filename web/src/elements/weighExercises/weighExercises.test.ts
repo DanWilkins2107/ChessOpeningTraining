@@ -10,20 +10,21 @@ const whiteLine = (...path: string[]): Exercise => ({
   path,
 });
 
+const learningLines = {
+  white: [
+    rated(1, 'e4', move('e5', rated(3, 'Nf3'))),
+    rated(3, 'd4', move('d5', rated(4, 'c4'))),
+    rated(5, 'c4', move('c5', rated(5, 'Nc3'))),
+  ],
+  black: [],
+};
+
 it('weights active lines by their lowest own move', () => {
   // Given white lines at lowest levels 1 and 3, a finished line, and their
   // unseen other-colour lines, 58% confident overall
-  const trees = {
-    white: [
-      rated(1, 'e4', move('e5', rated(3, 'Nf3'))),
-      rated(3, 'd4', move('d5', rated(4, 'c4'))),
-      rated(5, 'c4', move('c5', rated(5, 'Nc3'))),
-    ],
-    black: [],
-  };
 
   // When the exercises are weighed
-  const candidates = weighExercises(trees, [], always(0));
+  const candidates = weighExercises(learningLines, [], always(0));
 
   // Then the shakier line weighs 2 to the other's 0.5, boosted 8.4% for low
   // confidence and by the root of the two unfinished lines
@@ -37,6 +38,26 @@ it('weights active lines by their lowest own move', () => {
       exercise: { ...whiteLine('d4', 'd5', 'c4'), status: 'active' },
       weight: expect.closeTo(0.5 * boost),
     },
+  ]);
+});
+
+it('holds back recent picks while there are lines to learn', () => {
+  // Given white lines at lowest levels 1 and 3 and a finished line, 58%
+  // confident overall, the 1...e5 line last picked
+
+  // When the exercises are weighed
+  const candidates = weighExercises(
+    learningLines,
+    [whiteLine('e4', 'e5', 'Nf3')],
+    always(0),
+  );
+
+  // Then that line is held back to 0.006 and the other line to 0.6, on top of
+  // their level, confidence and line count weights
+  const boost = 1.084 * Math.SQRT2;
+  expect(candidates.map(({ weight }) => weight)).toEqual([
+    expect.closeTo(2 * boost * 0.006),
+    expect.closeTo(0.5 * boost * 0.6),
   ]);
 });
 

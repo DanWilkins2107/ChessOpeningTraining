@@ -21,6 +21,8 @@ const LEVEL_WEIGHTS: Record<PickedType, number[]> = {
   otherColour: [2, 1],
 };
 
+const SIDES = ['white', 'black'] as const;
+
 // New lines join until the active exercises' weights add up to this.
 const MIN_WORK = 15;
 
@@ -44,10 +46,9 @@ export const weighExercises = (
   ];
   if (candidates.length === 0) return revision(exercises, recent);
 
-  const percent = confidencePercent([
-    { side: 'white', moves: trees.white },
-    { side: 'black', moves: trees.black },
-  ]);
+  const percent = confidencePercent(
+    SIDES.map((side) => ({ side, moves: trees[side] })),
+  );
   return candidates.map(({ exercise, weight }) => ({
     exercise,
     weight:
