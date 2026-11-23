@@ -20,8 +20,9 @@ async function fetchRepertoire() {
 
 export function useRepertoire() {
   const userId = useAuthenticatedUser().id;
-  return useSuspenseQuery({
+  const { data, refetch } = useSuspenseQuery({
     queryKey: [REPERTOIRE_QUERY_KEY, userId],
     queryFn: fetchRepertoire,
-  }).data;
+  });
+  return { ...data, refetch };
 }
