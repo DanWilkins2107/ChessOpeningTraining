@@ -1,5 +1,10 @@
 import { ErrorMessage } from '../../../../shared/ErrorMessage/ErrorMessage';
+import { MoveTreeLayout } from '../MoveTreeLayout/MoveTreeLayout';
 
 export function MoveTreeLoadError() {
-  return <ErrorMessage>Couldn't load this move tree, try again</ErrorMessage>;
+  return (
+    <MoveTreeLayout>
+      <ErrorMessage>Couldn't load this move tree, try again</ErrorMessage>
+    </MoveTreeLayout>
+  );
 }

@@ -2,11 +2,33 @@
 
 exports[`MoveTreeLoadError > matches snapshot 1`] = `
 <div>
-  <p
-    class="error-message"
-    role="alert"
+  <section
+    aria-label="Move tree"
+    class="move-tree-layout"
   >
-    Couldn't load this move tree, try again
-  </p>
+    <div
+      class="move-tree-layout-board"
+    >
+      <div
+        class="board-loading"
+      >
+        <div
+          aria-label="Loading board"
+          class="spinner"
+          role="status"
+        />
+      </div>
+    </div>
+    <div
+      class="move-tree-layout-panel"
+    >
+      <p
+        class="error-message"
+        role="alert"
+      >
+        Couldn't load this move tree, try again
+      </p>
+    </div>
+  </section>
 </div>
 `;

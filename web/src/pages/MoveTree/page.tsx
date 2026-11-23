@@ -11,19 +11,15 @@ const paramsSchema = z.object({ moveTreeId: z.uuid() });
 export function MoveTree() {
   const params = paramsSchema.safeParse(useParams());
 
-  return (
-    <MoveTreeLayout>
-      {params.success ? (
-        <LoadBoundary
-          key={params.data.moveTreeId}
-          Loading={null}
-          LoadError={MoveTreeLoadError}
-        >
-          <MoveTreeDetails moveTreeId={params.data.moveTreeId} />
-        </LoadBoundary>
-      ) : (
-        <MoveTreeNotFound />
-      )}
-    </MoveTreeLayout>
+  return params.success ? (
+    <LoadBoundary
+      key={params.data.moveTreeId}
+      Loading={MoveTreeLayout}
+      LoadError={MoveTreeLoadError}
+    >
+      <MoveTreeDetails moveTreeId={params.data.moveTreeId} />
+    </LoadBoundary>
+  ) : (
+    <MoveTreeNotFound />
   );
 }

@@ -1,21 +1,20 @@
 import type { ReactNode } from 'react';
-import { Board } from '../../../../elements/Board/Board';
+import { BoardLoading } from '../../../../elements/BoardLoading/BoardLoading';
 import './MoveTreeLayout.css';
 
-// TODO e62ad75f 2026-12-14: derive the position, orientation and animation from the move tree.
-const POSITION = new Promise<string>(() => {});
+type MoveTreeLayoutProps = {
+  // A placeholder board until there's a move tree to show.
+  board?: ReactNode;
+  children?: ReactNode;
+};
 
-export function MoveTreeLayout({ children }: { children: ReactNode }) {
+export function MoveTreeLayout({
+  board = <BoardLoading />,
+  children,
+}: MoveTreeLayoutProps) {
   return (
     <section aria-label="Move tree" className="move-tree-layout">
-      <div className="move-tree-layout-board">
-        <Board
-          position={POSITION}
-          orientation="white"
-          animatePieces={false}
-          showMoveHints={false}
-        />
-      </div>
+      <div className="move-tree-layout-board">{board}</div>
       <div className="move-tree-layout-panel">{children}</div>
     </section>
   );
