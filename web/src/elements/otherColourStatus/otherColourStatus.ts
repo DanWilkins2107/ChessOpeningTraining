@@ -4,6 +4,7 @@ import type { ExerciseStatus } from '../ExerciseStatus/ExerciseStatus';
 import { lineStatus } from '../lineStatus/lineStatus';
 import { maxConfidence } from '../maxConfidence/maxConfidence';
 import type { MoveNode } from '../MoveNode/MoveNode';
+import { quizzedConfidences } from '../quizzedConfidences/quizzedConfidences';
 
 export const otherColourStatus = (
   side: ChosenMoveTree['side'],
@@ -14,36 +15,9 @@ export const otherColourStatus = (
   if (lineStatus(yourSide, trees[yourSide], path) === 'unseen') return 'unseen';
   const opponentParity = side === 'white' ? 1 : 0;
   const opponentMax = maxConfidence(opponentParity + 1, side);
-  return quizzedConfidences(trees[side], path, opponentParity).every(
+  return quizzedConfidences(side, trees[side], path).every(
     (confidence) => confidence === opponentMax,
   )
     ? 'finished'
     : 'active';
 };
-
-const quizzedConfidences = (
-  tree: MoveNode[],
-  path: string[],
-  opponentParity: number,
-): number[] =>
-  positionsAlong(tree, path).flatMap((nodes, index) =>
-    index % 2 === opponentParity && isOnlyChild(nodes, path[index])
-      ? [find(nodes, path[index])?.confidence ?? 0]
-      : [],
-  );
-
-const positionsAlong = (tree: MoveNode[], path: string[]): MoveNode[][] => {
-  const positions: MoveNode[][] = [];
-  let nodes = tree;
-  for (const san of path) {
-    positions.push(nodes);
-    nodes = find(nodes, san)?.children ?? [];
-  }
-  return positions;
-};
-
-const find = (nodes: MoveNode[], san: string) =>
-  nodes.find((candidate) => candidate.san === san);
-
-const isOnlyChild = (nodes: MoveNode[], san: string) =>
-  nodes.every((candidate) => candidate.san === san);
