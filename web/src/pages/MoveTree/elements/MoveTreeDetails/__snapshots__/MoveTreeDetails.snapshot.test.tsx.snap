@@ -2,11 +2,33 @@
 
 exports[`MoveTreeDetails > matches snapshot 1`] = `
 <div>
-  <p
-    class="error-message"
-    role="alert"
+  <section
+    aria-label="Move tree"
+    class="move-tree-layout"
   >
-    Move tree not found
-  </p>
+    <div
+      class="move-tree-layout-board"
+    >
+      <div
+        class="board-loading"
+      >
+        <div
+          aria-label="Loading board"
+          class="spinner"
+          role="status"
+        />
+      </div>
+    </div>
+    <div
+      class="move-tree-layout-panel"
+    >
+      <p
+        class="error-message"
+        role="alert"
+      >
+        Move tree not found
+      </p>
+    </div>
+  </section>
 </div>
 `;

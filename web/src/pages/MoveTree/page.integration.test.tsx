@@ -1,4 +1,4 @@
-import { act, screen } from '@testing-library/react';
+import { act, screen, within } from '@testing-library/react';
 import { afterEach, beforeAll, expect, it, vi } from 'vitest';
 import { renderAt } from '../../tests-shared/renderAt';
 import { registerTestUser } from '../../tests-shared/testUser';
@@ -45,7 +45,7 @@ async function expectAlertBesideBoard(message: string) {
   expect(placeholderBoard()).toBeInTheDocument();
 }
 
-// The board suspends for good, so effects only flush once act is awaited.
+// Effects only flush once act is awaited.
 async function renderPageAt(path: string) {
   let memoryRouter!: ReturnType<typeof renderAt>;
   await act(async () => {
@@ -107,18 +107,24 @@ it('shows the layout with a placeholder board while the move tree loads', async 
   expect(placeholderBoard()).toBeInTheDocument();
 });
 
-it('keeps the layout and placeholder board, with no error, once the move tree loads', async () => {
-  // Given a signed-in owner
+it('shows the move tree name and its start position, from its side, once it loads', async () => {
+  // Given a signed-in owner of a move tree for black
   await moveTreeOwner.signIn();
-  const moveTreeRequests = spyOnMoveTreeRequests();
 
   // When their move tree page renders and the move tree loads
   await renderPageAt(`/tree/${mainLineId}`);
-  await moveTreeRequests.answered();
 
-  // Then the layout stays, with the placeholder board and no error
+  // Then it heads the panel with the name, and shows the start position with
+  // black at the bottom, and no error
+  expect(
+    await screen.findByRole('heading', { level: 1, name: 'Main line' }),
+  ).toBeInTheDocument();
+  const board = await screen.findByRole('grid', { name: 'Chess board' });
+  expect(
+    within(board).getAllByRole('gridcell')[0]!.getAttribute('aria-label'),
+  ).toBe('h1, white rook');
   expect(moveTreeLayout()).toBeInTheDocument();
-  expect(placeholderBoard()).toBeInTheDocument();
+  expect(placeholderBoard()).not.toBeInTheDocument();
   expect(screen.queryByRole('alert')).not.toBeInTheDocument();
 });
 
