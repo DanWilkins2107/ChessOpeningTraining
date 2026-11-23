@@ -21,3 +21,25 @@ it('shows a black pawn for a black tree', () => {
   // Then it holds the black pawn
   expect(screen.getByRole('img', { name: 'black pawn' })).toBeInTheDocument();
 });
+
+it('is the regular size by default', () => {
+  // Given a move tree row
+  const { container } = render(<PawnTile side="white" />);
+
+  // When the tile renders
+
+  // Then it isn't the large tile
+  expect(container.querySelector('.pawn-tile-large')).not.toBeInTheDocument();
+});
+
+it('can be large', () => {
+  // Given a large pawn tile
+  const { container } = render(<PawnTile side="white" large />);
+
+  // When the tile renders
+
+  // Then it is the large tile
+  expect(
+    container.querySelector('.pawn-tile.pawn-tile-large'),
+  ).toBeInTheDocument();
+});

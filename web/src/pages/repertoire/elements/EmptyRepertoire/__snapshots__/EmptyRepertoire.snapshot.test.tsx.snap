@@ -10,7 +10,7 @@ exports[`EmptyRepertoire > matches snapshot 1`] = `
       class="empty-repertoire-tiles"
     >
       <span
-        class="folder-tile"
+        class="folder-tile folder-tile-large"
       >
         <svg
           aria-hidden="true"
@@ -23,7 +23,7 @@ exports[`EmptyRepertoire > matches snapshot 1`] = `
         </svg>
       </span>
       <span
-        class="pawn-tile"
+        class="pawn-tile pawn-tile-large"
       >
         <img
           alt="white pawn"

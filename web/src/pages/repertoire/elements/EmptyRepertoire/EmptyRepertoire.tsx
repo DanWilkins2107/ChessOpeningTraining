@@ -13,8 +13,8 @@ export function EmptyRepertoire({
   return (
     <div className="empty-repertoire">
       <div className="empty-repertoire-tiles" aria-hidden="true">
-        <FolderTile />
-        <PawnTile side="white" />
+        <FolderTile large />
+        <PawnTile side="white" large />
       </div>
       <h2 className="empty-repertoire-title">Nothing here yet</h2>
       <Button disabled={false} onClick={onCreateFolder} autoFocus={focusCreate}>

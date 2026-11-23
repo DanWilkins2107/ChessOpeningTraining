@@ -15,21 +15,6 @@
   gap: 0.625rem;
 }
 
-.empty-repertoire-tiles :is(.folder-tile, .pawn-tile) {
-  width: 3.25rem;
-  height: 3.25rem;
-}
-
-.empty-repertoire-tiles .folder-tile-icon {
-  width: 1.625rem;
-  height: 1.625rem;
-}
-
-.empty-repertoire-tiles .pawn-tile-icon {
-  width: 2.5rem;
-  height: 2.5rem;
-}
-
 .empty-repertoire-title {
   font-size: var(--text-lg);
 }
