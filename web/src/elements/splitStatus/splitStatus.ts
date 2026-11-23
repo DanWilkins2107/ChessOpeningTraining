@@ -23,6 +23,7 @@ export const splitStatus = (
   if (lines.every((line) => lineStatus(side, tree, line) === 'unseen')) {
     return 'unseen';
   }
+  // Stryker disable next-line ArithmeticOperator: maxConfidence reads only the ply's parity, so path.length - 1 gives the same max.
   const replyMax = maxConfidence(path.length + 1, side);
   return node.children.every((reply) => (reply.confidence ?? 0) === replyMax)
     ? 'finished'

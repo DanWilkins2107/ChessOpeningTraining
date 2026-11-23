@@ -13,3 +13,13 @@
   height: 1.125rem;
   fill: var(--accent);
 }
+
+.folder-tile-large {
+  width: 3.25rem;
+  height: 3.25rem;
+}
+
+.folder-tile-large .folder-tile-icon {
+  width: 1.625rem;
+  height: 1.625rem;
+}

@@ -4,14 +4,20 @@ import { supabase } from '../../../../supabase';
 import { createTestUser } from '../../../../tests-shared/testUser';
 import { CreateFolderForm } from './CreateFolderForm';
 
-const createButton = () =>
-  screen.getByRole('button', { name: 'Create folder' });
+const createButton = () => screen.getByRole('button', { name: 'Create' });
 
 const nameField = () => screen.getByLabelText('Folder name');
 
 function renderForm() {
   const creations: string[] = [];
-  render(<CreateFolderForm onCreated={() => creations.push('created')} />);
+  render(
+    <CreateFolderForm
+      onCreated={() => {
+        creations.push('created');
+      }}
+      onCancel={() => {}}
+    />,
+  );
   return creations;
 }
 
@@ -192,4 +198,24 @@ it('shows a generic message when the folder cannot be created', async () => {
   expect(await screen.findByRole('alert')).toHaveTextContent(
     "Couldn't create your folder, try again",
   );
+});
+
+it('cancels on Escape, and only on Escape', () => {
+  // Given the form, counting cancels
+  const cancels: string[] = [];
+  render(
+    <CreateFolderForm
+      onCreated={() => {}}
+      onCancel={() => {
+        cancels.push('cancelled');
+      }}
+    />,
+  );
+
+  // When they press Enter, then Escape, in the name field
+  fireEvent.keyDown(nameField(), { key: 'Enter' });
+  fireEvent.keyDown(nameField(), { key: 'Escape' });
+
+  // Then only Escape cancelled
+  expect(cancels).toEqual(['cancelled']);
 });

@@ -1,0 +1,20 @@
+.empty-repertoire {
+  display: grid;
+  justify-items: center;
+  gap: var(--gap-md);
+  padding: 3rem var(--gap-md);
+  text-align: center;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
+}
+
+.empty-repertoire-tiles {
+  display: flex;
+  gap: 0.625rem;
+}
+
+.empty-repertoire-title {
+  font-size: var(--text-lg);
+}

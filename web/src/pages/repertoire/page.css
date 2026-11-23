@@ -1,5 +1,15 @@
+/* RepertoireList.css places its New folder button in row 1, column 2. */
 .repertoire {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
   gap: var(--gap-md);
+}
+
+:where(.repertoire > *) {
+  grid-column: 1 / -1;
+}
+
+.repertoire-title {
+  grid-column: 1;
 }

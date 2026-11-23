@@ -20,9 +20,9 @@ const ROOT_EXCEPTIONS = [
 const TEMPORARY_EXCLUDES: TemporaryExclude[] = [
   {
     path: 'src/elements/Board',
-    expiry: '2026-11-17',
+    expiry: '2026-12-14',
     reason:
-      'The move tree page is its only consumer until Training and Daily test (604a0091) reuse it.',
+      'The move tree page is its only consumer until the Daily test page (5fe722b7) reuses it.',
   },
 ];
 

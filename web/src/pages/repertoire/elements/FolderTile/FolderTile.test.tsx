@@ -13,3 +13,25 @@ it('shows a folder icon', () => {
     container.querySelector('.folder-tile .folder-tile-icon'),
   ).toBeInTheDocument();
 });
+
+it('is the regular size by default', () => {
+  // Given a folder row
+  const { container } = render(<FolderTile />);
+
+  // When the tile renders
+
+  // Then it isn't the large tile
+  expect(container.querySelector('.folder-tile-large')).not.toBeInTheDocument();
+});
+
+it('can be large', () => {
+  // Given a large folder tile
+  const { container } = render(<FolderTile large />);
+
+  // When the tile renders
+
+  // Then it is the large tile
+  expect(
+    container.querySelector('.folder-tile.folder-tile-large'),
+  ).toBeInTheDocument();
+});

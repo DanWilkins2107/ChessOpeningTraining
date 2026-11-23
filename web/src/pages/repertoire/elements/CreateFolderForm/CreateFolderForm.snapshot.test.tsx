@@ -4,7 +4,9 @@ import { CreateFolderForm } from './CreateFolderForm';
 
 describe('CreateFolderForm', () => {
   it('matches snapshot', () => {
-    const { container } = render(<CreateFolderForm onCreated={() => {}} />);
+    const { container } = render(
+      <CreateFolderForm onCreated={() => {}} onCancel={() => {}} />,
+    );
     expect(container).toMatchSnapshot();
   });
 });

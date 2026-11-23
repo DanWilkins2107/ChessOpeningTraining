@@ -4,6 +4,7 @@ type ButtonProps = {
   disabled: boolean;
   danger?: boolean;
   onClick?: () => void;
+  autoFocus?: boolean;
   children: string;
 };
 
@@ -11,6 +12,7 @@ export function Button({
   disabled,
   danger = false,
   onClick,
+  autoFocus = false,
   children,
 }: ButtonProps) {
   return (
@@ -19,6 +21,7 @@ export function Button({
       type={onClick ? 'button' : 'submit'}
       disabled={disabled}
       onClick={onClick}
+      autoFocus={autoFocus}
     >
       {children}
     </button>

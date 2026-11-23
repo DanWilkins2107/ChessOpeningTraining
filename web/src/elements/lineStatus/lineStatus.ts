@@ -25,11 +25,13 @@ export const lineStatus = (
 
 const confidences = (tree: MoveNode[], path: string[]): number[] => {
   const found: number[] = [];
-  let nodes = tree;
+  let nodes: MoveNode[] | undefined = tree;
   for (const san of path) {
-    const node = nodes.find((candidate) => candidate.san === san);
+    const node: MoveNode | undefined = nodes?.find(
+      (candidate) => candidate.san === san,
+    );
     found.push(node?.confidence ?? 0);
-    nodes = node?.children ?? [];
+    nodes = node?.children;
   }
   return found;
 };
