@@ -199,3 +199,23 @@ it('shows a generic message when the folder cannot be created', async () => {
     "Couldn't create your folder, try again",
   );
 });
+
+it('cancels on Escape, and only on Escape', () => {
+  // Given the form, counting cancels
+  const cancels: string[] = [];
+  render(
+    <CreateFolderForm
+      onCreated={() => {}}
+      onCancel={() => {
+        cancels.push('cancelled');
+      }}
+    />,
+  );
+
+  // When they press Enter, then Escape, in the name field
+  fireEvent.keyDown(nameField(), { key: 'Enter' });
+  fireEvent.keyDown(nameField(), { key: 'Escape' });
+
+  // Then only Escape cancelled
+  expect(cancels).toEqual(['cancelled']);
+});

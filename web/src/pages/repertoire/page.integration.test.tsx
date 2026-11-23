@@ -205,6 +205,40 @@ it('lists top-level folders, then top-level move trees with a pawn for their sid
   expect(loadingRepertoire()).not.toBeInTheDocument();
 });
 
+it('lists move trees when there are no folders', async () => {
+  // Given a user with a top-level move tree and no folders
+  const treesOnly = await createTestUser();
+  const client = await treesOnly.signedInClient();
+  await insert(client, 'move_trees', { name: 'Scotch', side: 'white' });
+  await treesOnly.signIn();
+
+  // When the page renders
+  await renderSettledAt('/repertoire');
+
+  // Then the move tree is listed, with New folder and no empty state
+  expect(await listedRows()).toEqual(['Scotch']);
+  expect(
+    screen.getByRole('button', { name: 'New folder' }),
+  ).toBeInTheDocument();
+  expect(screen.queryByText('Nothing here yet')).not.toBeInTheDocument();
+});
+
+it('leaves focus alone when the page loads', async () => {
+  // Given a user with a folder
+  const loading = await createTestUser();
+  const client = await loading.signedInClient();
+  await insert(client, 'folders', { name: 'Slav' });
+  await loading.signIn();
+
+  // When the page renders
+  await renderSettledAt('/repertoire');
+
+  // Then New folder doesn't take focus
+  expect(
+    await screen.findByRole('button', { name: 'New folder' }),
+  ).not.toHaveFocus();
+});
+
 it("shows loading, not the previous user's repertoire, when the user changes", async () => {
   // Given one user's empty repertoire on screen, and repertoire requests left
   // unanswered

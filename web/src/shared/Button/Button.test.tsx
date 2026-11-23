@@ -63,3 +63,27 @@ it('runs its click handler without submitting', () => {
     'button',
   );
 });
+
+it('leaves focus alone by default', () => {
+  // Given a button without autoFocus
+  render(<Button disabled={false}>Save</Button>);
+
+  // When it renders
+
+  // Then it doesn't take focus
+  expect(screen.getByRole('button', { name: 'Save' })).not.toHaveFocus();
+});
+
+it('takes focus with autoFocus', () => {
+  // Given a button with autoFocus
+  render(
+    <Button disabled={false} autoFocus>
+      Save
+    </Button>,
+  );
+
+  // When it renders
+
+  // Then it has focus
+  expect(screen.getByRole('button', { name: 'Save' })).toHaveFocus();
+});
