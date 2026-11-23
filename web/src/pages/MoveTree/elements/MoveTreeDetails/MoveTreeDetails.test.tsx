@@ -1,26 +1,6 @@
-import type { User } from '@supabase/supabase-js';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { render, screen, within } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import { expect, it } from 'vitest';
-import { authUserQuery } from '../../../../elements/authUserQuery/authUserQuery';
-import { createQueryClient } from '../../../../elements/createQueryClient/createQueryClient';
-import { MOVE_TREE_QUERY_KEY } from '../useMoveTree/useMoveTree.constants';
-import { MoveTreeDetails } from './MoveTreeDetails';
-
-const MOVE_TREE_ID = '7c3e1d2a-5b4f-4e6a-9c8d-1f2e3a4b5c6d';
-
-function renderWith(moveTree: { name: string; side: 'white' | 'black' }) {
-  const client = createQueryClient();
-  // as-reason: the move tree query reads only the user's id, and a full
-  // supabase User has a dozen required fields that would mean nothing here.
-  client.setQueryData(authUserQuery.queryKey, { id: 'user' } as User);
-  client.setQueryData([MOVE_TREE_QUERY_KEY, 'user', MOVE_TREE_ID], moveTree);
-  render(
-    <QueryClientProvider client={client}>
-      <MoveTreeDetails moveTreeId={MOVE_TREE_ID} />
-    </QueryClientProvider>,
-  );
-}
+import { renderMoveTreeDetails } from '../../tests-shared/moveTreeDetails';
 
 const board = () => screen.findByRole('grid', { name: 'Chess board' });
 
@@ -34,7 +14,7 @@ const cornerSquares = async () => {
 it('heads the panel with the move tree name', async () => {
   // Given a move tree called Main line
   // When its details render
-  renderWith({ name: 'Main line', side: 'white' });
+  renderMoveTreeDetails({ name: 'Main line', side: 'white' });
 
   // Then the heading is its name
   expect(
@@ -50,7 +30,7 @@ it.each([
   async (side, corners) => {
     // Given a move tree for that side
     // When its details render
-    renderWith({ name: 'Main line', side });
+    renderMoveTreeDetails({ name: 'Main line', side });
 
     // Then the board shows the start position with that side at the bottom
     expect(await cornerSquares()).toEqual(corners);
@@ -60,7 +40,7 @@ it.each([
 it('takes no moves on the board', async () => {
   // Given a move tree
   // When its details render
-  renderWith({ name: 'Main line', side: 'white' });
+  renderMoveTreeDetails({ name: 'Main line', side: 'white' });
 
   // Then the board isn't interactive
   expect((await board()).closest('.board')).not.toHaveClass(
