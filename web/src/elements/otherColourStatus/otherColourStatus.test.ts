@@ -122,3 +122,32 @@ it('treats a missing lone reply as 0', () => {
   // Then the missing reply keeps it active
   expect(status).toBe('active');
 });
+
+it('treats lone replies past the end of the tree as 0', () => {
+  // Given a longer white line seen as black, whose tree stops after 1...e5
+  const longPath = ['e4', 'e5', 'Nf3', 'Nc6'];
+  const trees = {
+    white: [move('e4', rated(2, 'e5'))],
+    black: [move('e4', rated(1, 'e5', move('Nf3', rated(1, 'Nc6'))))],
+  };
+
+  // When its other-colour status is derived
+  const status = otherColourStatus('white', trees, longPath);
+
+  // Then the missing 2...Nc6 keeps it active
+  expect(status).toBe('active');
+});
+
+it('follows the path past an earlier sibling move', () => {
+  // Given a white tree with 1.d4 before 1.e4, and 1...e5 at 0
+  const trees = {
+    white: [move('d4', rated(2, 'd5')), move('e4', rated(0, 'e5'))],
+    black: seenAsBlack,
+  };
+
+  // When its other-colour status is derived
+  const status = otherColourStatus('white', trees, path);
+
+  // Then 1...e5 is the reply read, so it is active
+  expect(status).toBe('active');
+});

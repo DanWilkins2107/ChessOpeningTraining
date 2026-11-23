@@ -63,3 +63,20 @@ it('makes splits on black moves in a black tree', () => {
     { type: 'split', side: 'black', path: ['d4', 'Nf6'] },
   ]);
 });
+
+it('makes splits on sibling white moves', () => {
+  // Given a white tree branching after both 1.e4 and 1.d4
+  const tree = [
+    move('e4', move('e5'), move('c5')),
+    move('d4', move('d5'), move('Nf6')),
+  ];
+
+  // When its splits are enumerated
+  const found = enumerateSplits('white', tree);
+
+  // Then each first move is a split
+  expect(found).toEqual([
+    { type: 'split', side: 'white', path: ['e4'] },
+    { type: 'split', side: 'white', path: ['d4'] },
+  ]);
+});
