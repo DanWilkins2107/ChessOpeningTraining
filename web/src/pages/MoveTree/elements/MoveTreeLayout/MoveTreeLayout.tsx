@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { BoardLoading } from '../../../../elements/BoardLoading/BoardLoading';
+import { BoardLoading } from '../../../../shared/BoardLoading/BoardLoading';
 import './MoveTreeLayout.css';
 
 type MoveTreeLayoutProps = {

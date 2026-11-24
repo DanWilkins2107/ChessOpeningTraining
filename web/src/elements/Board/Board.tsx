@@ -1,6 +1,6 @@
 import type { ComponentProps } from 'react';
 import { LoadBoundary } from '../../shared/LoadBoundary/LoadBoundary';
-import { BoardLoading } from '../BoardLoading/BoardLoading';
+import { BoardLoading } from '../../shared/BoardLoading/BoardLoading';
 import { LoadedBoard } from '../LoadedBoard/LoadedBoard';
 
 export function Board(props: ComponentProps<typeof LoadedBoard>) {
