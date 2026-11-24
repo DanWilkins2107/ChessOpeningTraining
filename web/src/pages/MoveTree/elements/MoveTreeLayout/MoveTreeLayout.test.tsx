@@ -1,23 +1,27 @@
-import { render } from '@testing-library/react';
-import { expect, it, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { expect, it } from 'vitest';
 import { MoveTreeLayout } from './MoveTreeLayout';
 
-// mock-reason: the vi.mock factory below runs before this module body, so the
-// Board spy has to be built inside vi.hoisted to exist in time.
-const { Board } = vi.hoisted(() => ({ Board: vi.fn(() => null) }));
-
-// mock-reason: the placeholder position never arrives, so the real Board stays
-// on its loading state and never shows what it was told about animation/hints.
-vi.mock('../../../../elements/Board/Board', () => ({ Board }));
-
-it('shows a still board without move hints', () => {
-  // Given the move tree layout
+it('shows a placeholder board when given no board', () => {
+  // Given the move tree layout without a board
   // When it renders
   render(<MoveTreeLayout>Panel</MoveTreeLayout>);
 
-  // Then the board neither animates pieces nor hints at moves
-  expect(Board).toHaveBeenCalledWith(
-    expect.objectContaining({ animatePieces: false, showMoveHints: false }),
-    undefined,
-  );
+  // Then it shows the loading board beside the panel
+  expect(
+    screen.getByRole('status', { name: 'Loading board' }),
+  ).toBeInTheDocument();
+  expect(screen.getByText('Panel')).toBeInTheDocument();
+});
+
+it('shows the board it is given', () => {
+  // Given the move tree layout with a board
+  // When it renders
+  render(<MoveTreeLayout board={<p>The board</p>}>Panel</MoveTreeLayout>);
+
+  // Then it shows that board, not the placeholder
+  expect(screen.getByText('The board')).toBeInTheDocument();
+  expect(
+    screen.queryByRole('status', { name: 'Loading board' }),
+  ).not.toBeInTheDocument();
 });
